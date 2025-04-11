@@ -1,23 +1,20 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt)
+    alias(libs.plugins.hilt) // This applies the Hilt Gradle plugin
     id 'kotlin-kapt'
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    namespace 'com.k_office.app'
+    namespace 'com.k_office.presentation'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.k_office.app"
         minSdk 24
-        targetSdk 35
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
@@ -33,8 +30,14 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+
     buildFeatures {
+        viewBinding true
         compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10" // match your compose version
     }
 }
 
@@ -56,8 +59,41 @@ dependencies {
     debugImplementation libs.androidx.ui.tooling
     debugImplementation libs.androidx.ui.test.manifest
 
-    implementation project(":presentation")
-
     implementation libs.hilt.android
     kapt libs.hilt.compiler
+
+    // Kotlin Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+
+    // Coil
+    implementation(libs.coil.compose)
+
+    // Timber
+    implementation(libs.timber)
+
+    def appcompat_version = "1.1.0"
+
+    implementation("androidx.appcompat:appcompat:$appcompat_version")
+    implementation("androidx.appcompat:appcompat-resources:$appcompat_version")
+
+    implementation("androidx.activity:activity-ktx:1.8.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
+    // Jetpack ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+
+    // LiveData (optional)
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+
+    // SavedStateHandle support
+    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2")
+
+    // Hilt ViewModel integration
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
 }

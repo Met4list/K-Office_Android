@@ -1,4 +1,4 @@
-package com.k_office.app.ui.theme
+package com.k_office.presentation.base.theme.ui
 
 import androidx.compose.ui.graphics.Color
 
