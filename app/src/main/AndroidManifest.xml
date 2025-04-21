@@ -14,7 +14,7 @@
         android:theme="@style/Theme.KOffice"
         tools:targetApi="31">
         <activity
-            android:name="com.k_office.presentation.screen.main.MainActivity"
+            android:name="com.k_office.presentation.screen.main_activity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.KOffice">

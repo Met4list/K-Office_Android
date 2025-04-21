@@ -2,6 +2,9 @@ package com.k_office.presentation.base.utils
 
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -10,6 +13,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import com.k_office.presentation.R
 
 class FragmentViewBindingDelegate<T : ViewBinding>(
     val fragment: Fragment,
@@ -63,4 +67,18 @@ inline fun <T : ViewBinding> AppCompatActivity.viewBinding(
     crossinline bindingInflater: (LayoutInflater) -> T) =
     lazy(LazyThreadSafetyMode.NONE) {
         bindingInflater.invoke(layoutInflater)
+    }
+
+fun Fragment.setFragmentContent(
+    backgroundColor: Int = R.color.white,
+    body: @Composable () -> Unit
+) =
+    ComposeView(requireContext()).apply {
+        setBackgroundResource(backgroundColor)
+        setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner)
+        )
+        setContent {
+            body()
+        }
     }

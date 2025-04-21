@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "351969825260",
+    "project_id": "com-koffice-app",
+    "storage_bucket": "com-koffice-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351969825260:android:49ebb4a972ae48f5dff0c9",
+        "android_client_info": {
+          "package_name": "com.k_office.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhsfouUqjvKnyBnSay-kH1swL4qLT6dbE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
