@@ -60,6 +60,7 @@ dependencies {
     androidTestImplementation libs.androidx.ui.test.junit4
     debugImplementation libs.androidx.ui.tooling
     debugImplementation libs.androidx.ui.test.manifest
+    implementation project(":domain")
 
     implementation libs.hilt.android
     kapt libs.hilt.compiler
@@ -95,5 +96,5 @@ dependencies {
     // SavedStateHandle support
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2")
 
-    implementation project(":domain")
+    implementation("com.google.zxing:core:3.5.3")
 }

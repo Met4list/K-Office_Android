@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.k_office.presentation.R
 import com.k_office.presentation.screen.login.RegistrationViewModel
 
 @Composable
@@ -57,7 +59,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel, onClick: () ->
         Icon(
             imageVector = Icons.Default.Call,
             contentDescription = "Phone Icon",
-            tint = Color.Magenta,
+            tint = colorResource(id = R.color.blue_primary),
             modifier = Modifier
                 .size(72.dp)
                 .background(Color(0xFFF5F5F5), shape = CircleShape)
@@ -117,11 +119,11 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel, onClick: () ->
         Text(
             text = buildAnnotatedString {
                 append("By continuing, you agree to the ")
-                withStyle(style = SpanStyle(color = Color.Magenta)) {
+                withStyle(style = SpanStyle(color = colorResource(id = R.color.blue_primary))) {
                     append("Privacy Policy")
                 }
                 append(" and the ")
-                withStyle(style = SpanStyle(color = Color.Magenta)) {
+                withStyle(style = SpanStyle(color = colorResource(R.color.blue_light))) {
                     append("Offer Agreement")
                 }
             },

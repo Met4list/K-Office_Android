@@ -62,7 +62,6 @@ class HomeFragment: BaseFragment() {
             bottomNav.setOnItemSelectedListener { item ->
                 val selectedFragment = when (item.itemId) {
                     R.id.nav_main -> mainFragment
-                    R.id.nav_scan_bonus_card -> scanBonusFragment
                     R.id.nav_profile -> otherFragment
                     else -> null
                 }
@@ -75,6 +74,15 @@ class HomeFragment: BaseFragment() {
                     )
                 }
                 true
+            }
+
+            centerFab.setOnClickListener {
+                activeFragment = FragmentUtil.hideShowOrAdd(
+                    activeFragment,
+                    scanBonusFragment,
+                    childFragmentManager,
+                    R.id.nav_container
+                )
             }
         }
     }
