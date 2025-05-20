@@ -23,6 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -93,4 +94,6 @@ dependencies {
 
     // SavedStateHandle support
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2")
+
+    implementation project(":domain")
 }

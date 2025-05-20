@@ -1,15 +1,12 @@
 package com.k_office.app.application
 
 import android.app.Application
-import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
 @HiltAndroidApp
-class KOfficeApplication: Application() {
+class KOfficeApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()

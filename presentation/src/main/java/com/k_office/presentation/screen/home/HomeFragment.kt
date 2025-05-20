@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
 import com.k_office.presentation.base.utils.FragmentUtil
@@ -19,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class HomeFragment: BaseFragment() {
 
     private val binding by viewBinding(FragmentHomeBinding::inflate)
+    private val viewModel: HomeViewModel by viewModels()
 
     private lateinit var mainFragment: MainFragment
     private lateinit var otherFragment: OtherFragment
@@ -34,6 +37,17 @@ class HomeFragment: BaseFragment() {
 
     override fun setupClicks() {
         super.setupClicks()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (requireActivity().supportFragmentManager.fragments.size == 1) {
+                    requireActivity().finishAffinity()
+                } else {
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
+
         mainFragment = MainFragment()
         otherFragment = OtherFragment()
         scanBonusFragment = ScanBonusFragment()

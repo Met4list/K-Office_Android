@@ -22,6 +22,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -52,6 +53,7 @@ dependencies {
     // Retrofit2
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.gson)
+    implementation 'com.google.code.gson:gson:2.6.2'
 
     // Chucker (use only in debug builds)
     // For debug builds
