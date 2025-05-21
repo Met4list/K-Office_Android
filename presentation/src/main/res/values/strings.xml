@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="greetings_title">Вітаю</string>
+    <string name="balance">Баланс</string>
+    <string name="main_title">Головна</string>
+    <string name="other_title">Інше</string>
+    <string name="news">Новини</string>
+    <string name="we_on_map_title">Ми на мапі</string>
+    <string name="settings">Налаштування</string>
+    <string name="privacy_policy">Політика конфіденційності</string>
+    <string name="feedback">Зворотній зв\'язок</string>
+    <string name="name_or_scan_the_barcode">Назвіть або відскануйте штрих-код</string>
+</resources>

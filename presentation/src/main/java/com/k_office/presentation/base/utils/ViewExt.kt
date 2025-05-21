@@ -58,3 +58,4 @@ fun getColorForChar(char: Char): Color {
         else -> Color.Gray
     }
 }
+

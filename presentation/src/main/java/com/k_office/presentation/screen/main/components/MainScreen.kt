@@ -3,6 +3,7 @@ package com.k_office.presentation.screen.main.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,15 +30,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.k_office.presentation.R
+import com.k_office.presentation.base.utils.FragmentUtil
+import com.k_office.presentation.base.utils.findActivity
+import com.k_office.presentation.screen.choose_shop.ChooseShopFragment
 import com.k_office.presentation.screen.home.HomeViewModel
 
 @Composable
 internal fun MainScreen(viewModel: HomeViewModel) {
+
+    val context = LocalContext.current
 
     val currentUser = viewModel.currentUser.collectAsState()
 
@@ -49,7 +57,9 @@ internal fun MainScreen(viewModel: HomeViewModel) {
     ) {
         HeaderGreeting(name = currentUser.value?.name.orEmpty(), balance = "${currentUser.value?.sum} грн")
         Spacer(modifier = Modifier.height(16.dp))
-        StoreLocation(address = "вул. Замостянська, 34а", city = "Вінниця")
+        StoreLocation(address = "вул. Замостянська, 26", city = "Вінниця") {
+//            FragmentUtil.setFragmentIfAbsent(ChooseShopFragment(), context.findActivity(), R.id.nav_container)
+        }
         Spacer(modifier = Modifier.height(16.dp))
         SocialProjects(activeCount = 1)
         Spacer(modifier = Modifier.height(16.dp))
@@ -67,23 +77,24 @@ internal fun HeaderGreeting(name: String, balance: String) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            Text(text = "Вітаю,", style = MaterialTheme.typography.bodyMedium)
+            Text(text = stringResource(R.string.greetings_title), style = MaterialTheme.typography.bodyMedium)
             Text(text = name, color = colorResource(R.color.blue_primary), style = MaterialTheme.typography.bodyLarge)
         }
         Column(horizontalAlignment = Alignment.End) {
-            Text(text = "Баланс", color = Color.Gray)
+            Text(text = stringResource(R.string.balance), color = Color.Gray)
             Text(text = balance, color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Bold)
         }
     }
 }
 
 @Composable
-internal fun StoreLocation(address: String, city: String) {
+internal fun StoreLocation(address: String, city: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFFF3F3F3), shape = RoundedCornerShape(12.dp))
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         androidx.compose.material3.Icon(
@@ -92,7 +103,7 @@ internal fun StoreLocation(address: String, city: String) {
             tint = Color.Gray
         )
         Column(modifier = Modifier.padding(start = 8.dp)) {
-            Text(text = "Mashket $address", fontWeight = FontWeight.Bold)
+            Text(text = "KOffice $address", fontWeight = FontWeight.Bold)
             Text(text = city, color = Color.Gray)
         }
     }
@@ -127,10 +138,9 @@ internal fun NewsSection() {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.Start
         ) {
-            Text(text = "Новини", style = MaterialTheme.typography.titleMedium)
-            Text(text = "Всі", color = colorResource(R.color.blue_primary))
+            Text(text = stringResource(R.string.news), style = MaterialTheme.typography.titleMedium)
         }
         Spacer(modifier = Modifier.height(8.dp))
         NewsCard(

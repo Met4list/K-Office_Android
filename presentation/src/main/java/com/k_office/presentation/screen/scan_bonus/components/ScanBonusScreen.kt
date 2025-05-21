@@ -4,26 +4,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,39 +45,25 @@ internal fun ScanBonusScreen(viewModel: HomeViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
 
         Card(
-            modifier = Modifier.fillMaxSize().padding(18.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(18.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    androidx.compose.material3.Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = "Expand",
-                        tint = colorResource(R.color.blue_primary)
-                    )
-                    androidx.compose.material3.Icon(
-                        imageVector = Icons.Default.Warning,
-                        contentDescription = "Error",
-                        tint = colorResource(R.color.blue_primary)
-                    )
-                }
-
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Replace with real barcode
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth().weight(1f)
-                        .background(Color.Black.copy(alpha = 0.8f), shape = RectangleShape)
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .background(Color.White, shape = RectangleShape)
                 ) {
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
@@ -88,7 +75,7 @@ internal fun ScanBonusScreen(viewModel: HomeViewModel) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Name or scan the barcode", fontSize = 14.sp, color = Color.Gray)
+                Text(stringResource(R.string.name_or_scan_the_barcode), fontSize = 14.sp, color = Color.Gray)
 
                 Text(
                     text = currentUser?.code.orEmpty(),

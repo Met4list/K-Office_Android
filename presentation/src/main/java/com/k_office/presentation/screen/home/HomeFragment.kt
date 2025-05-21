@@ -55,7 +55,7 @@ class HomeFragment: BaseFragment() {
         binding.apply {
             activeFragment = FragmentUtil.hideShowOrAdd(
                 null,
-                MainFragment(),
+                mainFragment,
                 childFragmentManager,
                 R.id.nav_container
             )
