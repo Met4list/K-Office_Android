@@ -21,9 +21,10 @@ interface CurrentUserInfoDataSource {
 
     fun getConde(): String
 
-    class Base(private val context: Context): CurrentUserInfoDataSource {
+    class Base(context: Context) : CurrentUserInfoDataSource {
 
-        private val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_config", Context.MODE_PRIVATE)
+        private val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences("user_config", Context.MODE_PRIVATE)
         private val sharedPrefEdit = sharedPreferences.edit()
         private val gson: Gson = Gson()
 

@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.FragmentUtil
 import com.k_office.presentation.base.utils.findActivity
-import com.k_office.presentation.screen.choose_shop.ChooseShopFragment
+import com.k_office.presentation.screen.shop_list.ShopListFragment
 import com.k_office.presentation.screen.home.HomeViewModel
 
 @Composable
@@ -55,15 +55,15 @@ internal fun MainScreen(viewModel: HomeViewModel) {
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        HeaderGreeting(name = currentUser.value?.name.orEmpty(), balance = "${currentUser.value?.sum} грн")
+        HeaderGreeting(
+            name = currentUser.value?.name.orEmpty(),
+            balance = "${currentUser.value?.sum} грн"
+        )
         Spacer(modifier = Modifier.height(16.dp))
         StoreLocation(address = "вул. Замостянська, 26", city = "Вінниця") {
-//            FragmentUtil.setFragmentIfAbsent(ChooseShopFragment(), context.findActivity(), R.id.nav_container)
+            FragmentUtil.setFragmentIfAbsent(ShopListFragment(), context.findActivity(), R.id.nav_container)
         }
         Spacer(modifier = Modifier.height(16.dp))
-        SocialProjects(activeCount = 1)
-        Spacer(modifier = Modifier.height(16.dp))
-        NewsSection()
     }
 }
 
@@ -77,12 +77,23 @@ internal fun HeaderGreeting(name: String, balance: String) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            Text(text = stringResource(R.string.greetings_title), style = MaterialTheme.typography.bodyMedium)
-            Text(text = name, color = colorResource(R.color.blue_primary), style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = stringResource(R.string.greetings_title),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = name,
+                color = colorResource(R.color.blue_primary),
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(text = stringResource(R.string.balance), color = Color.Gray)
-            Text(text = balance, color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Bold)
+            Text(
+                text = balance,
+                color = colorResource(R.color.blue_primary),
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

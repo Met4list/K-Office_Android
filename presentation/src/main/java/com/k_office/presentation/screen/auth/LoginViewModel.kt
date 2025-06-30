@@ -37,6 +37,11 @@ class LoginViewModel @Inject constructor(
                             _loading.emit(false)
                         }
                     }
+
+                    is ResponseState.Loading -> {
+
+                    }
+
                     is ResponseState.Error -> {
                         _onSuccess.emit(false)
                         _loading.emit(false)

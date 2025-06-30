@@ -13,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val currentUserInfoDataSource: CurrentUserInfoDataSource
-): BaseViewModel() {
+) : BaseViewModel() {
 
     private val _isLoggedIn = MutableSharedFlow<Boolean>()
     val isLoggedIn = _isLoggedIn.asSharedFlow()
@@ -32,4 +32,6 @@ class MainViewModel @Inject constructor(
             Timber.e(it)
         }
     }
+
+
 }

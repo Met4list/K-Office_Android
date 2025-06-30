@@ -5,13 +5,13 @@ import com.k_office.domain.base.Mapper
 import com.k_office.domain.model.CardInformationModel
 
 object CardInfoMapper : Mapper<CardInformationResponse, CardInformationModel> {
-    override fun mapTo(response: CardInformationResponse): CardInformationModel {
-        return CardInformationModel(
-            response.bonusCard, response.code
+    override fun mapTo(response: CardInformationResponse): CardInformationModel = with(response) {
+         CardInformationModel(
+            bonusCard, code
         )
     }
 
-    override fun mapFrom(model: CardInformationModel): CardInformationResponse {
-        return CardInformationResponse(model.bonusCard, model.code)
+    override fun mapFrom(model: CardInformationModel): CardInformationResponse = with(model) {
+        CardInformationResponse(bonusCard, code)
     }
 }

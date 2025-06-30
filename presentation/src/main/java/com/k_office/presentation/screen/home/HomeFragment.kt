@@ -1,11 +1,14 @@
 package com.k_office.presentation.screen.home
 
+import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
@@ -16,6 +19,7 @@ import com.k_office.presentation.screen.main.MainFragment
 import com.k_office.presentation.screen.other.OtherFragment
 import com.k_office.presentation.screen.scan_bonus.ScanBonusFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint
 class HomeFragment: BaseFragment() {
@@ -43,7 +47,7 @@ class HomeFragment: BaseFragment() {
                 if (requireActivity().supportFragmentManager.fragments.size == 1) {
                     requireActivity().finishAffinity()
                 } else {
-                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                    requireActivity().supportFragmentManager.popBackStack()
                 }
             }
         })

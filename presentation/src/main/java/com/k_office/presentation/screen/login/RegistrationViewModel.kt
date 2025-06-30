@@ -34,6 +34,10 @@ class RegistrationViewModel @Inject constructor(
                         _isSuccessfulyRegistered.emit(true)
                     }
 
+                    is ResponseState.Loading -> {
+
+                    }
+
                     is ResponseState.Error -> {
                         _loading.emit(false)
                         _errorMessage.emit(response?.throwable?.message!!)
