@@ -19,6 +19,6 @@ internal fun OtherScreen(viewModel: HomeViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         HeaderInfo(name = currentUser.value?.name.orEmpty(), phone = currentUser.value?.telephone.orEmpty())
         Spacer(modifier = Modifier.padding(vertical = 8.dp))
-        MenuList()
+        MenuList(viewModel)
     }
 }

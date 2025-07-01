@@ -10,4 +10,14 @@
     <string name="privacy_policy">Політика конфіденційності</string>
     <string name="feedback">Зворотній зв\'язок</string>
     <string name="name_or_scan_the_barcode">Назвіть або відскануйте штрих-код</string>
+    <string name="logout">Вийти</string>
+
+    <string name="by_continuing_you_agree">Продовжуючи, ви погоджуєтеся з </string>
+    <string name="login_privacy_policy">Політикою конфіденційності</string>
+    <string name="and">та</string>
+    <string name="offer_agreement">Угодою про оферту</string>
+    <string name="register_now">Зареєструватись зараз</string>
+    <string name="login">Логін</string>
+    <string name="auth">Авторизація</string>
+    <string name="phone_number">Номер телефону</string>
 </resources>

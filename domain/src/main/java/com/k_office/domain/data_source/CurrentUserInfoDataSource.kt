@@ -9,6 +9,8 @@ interface CurrentUserInfoDataSource {
 
     fun insertUser(currentUser: CurrentUserInfoModel)
 
+    fun clear()
+
     fun getUser(): CurrentUserInfoModel?
 
     fun getBonusCard(): String
@@ -31,6 +33,10 @@ interface CurrentUserInfoDataSource {
         override fun insertUser(currentUser: CurrentUserInfoModel) {
             val userModel = gson.toJson(currentUser)
             sharedPrefEdit.putString(CURRENT_USER_MODEL_KEY, userModel).apply()
+        }
+
+        override fun clear() {
+            sharedPrefEdit.clear().apply()
         }
 
         override fun getUser(): CurrentUserInfoModel? {

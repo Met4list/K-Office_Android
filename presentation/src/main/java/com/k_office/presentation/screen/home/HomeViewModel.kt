@@ -3,10 +3,11 @@ package com.k_office.presentation.screen.home
 import androidx.lifecycle.viewModelScope
 import com.k_office.domain.data_source.CurrentUserInfoDataSource
 import com.k_office.domain.model.CurrentUserInfoModel
-import com.k_office.domain.use_case.GetShopsInfoUseCase
 import com.k_office.presentation.base.view_model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -20,6 +21,16 @@ class HomeViewModel @Inject constructor(
 
     private val _currentUser = MutableStateFlow<CurrentUserInfoModel?>(null)
     val currentUser = _currentUser.asStateFlow()
+
+    private val _logoutAction = MutableSharedFlow<Boolean>()
+    val logoutAction = _logoutAction.asSharedFlow()
+
+    fun logout() {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            currentUserInfoDataSource.clear()
+            _logoutAction.emit(true)
+        }
+    }
 
     init {
         runCatching {

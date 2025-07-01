@@ -51,4 +51,15 @@ class MainActivity : BaseActivity() {
         )
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
+
+    fun logout(oldFragment: Fragment?) {
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+        FragmentUtil.hideShowOrAdd(
+            null,
+            LoginFragment(),
+            supportFragmentManager,
+            R.id.container
+        )
+    }
 }

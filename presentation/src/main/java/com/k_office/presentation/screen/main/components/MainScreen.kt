@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.FragmentUtil
 import com.k_office.presentation.base.utils.findActivity
-import com.k_office.presentation.screen.shop_list.ShopListFragment
 import com.k_office.presentation.screen.home.HomeViewModel
+import com.k_office.presentation.screen.shop_list.ShopListFragment
 
 @Composable
 internal fun MainScreen(viewModel: HomeViewModel) {
@@ -57,11 +57,15 @@ internal fun MainScreen(viewModel: HomeViewModel) {
     ) {
         HeaderGreeting(
             name = currentUser.value?.name.orEmpty(),
-            balance = "${currentUser.value?.sum} грн"
+            balance = "${currentUser.value?.sum} бонусів"
         )
         Spacer(modifier = Modifier.height(16.dp))
-        StoreLocation(address = "вул. Замостянська, 26", city = "Вінниця") {
-            FragmentUtil.setFragmentIfAbsent(ShopListFragment(), context.findActivity(), R.id.nav_container)
+        StoreLocation(title = "Адреси магазинів") {
+            FragmentUtil.setFragmentIfAbsent(
+                ShopListFragment(),
+                context.findActivity(),
+                R.id.nav_container
+            )
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -99,7 +103,7 @@ internal fun HeaderGreeting(name: String, balance: String) {
 }
 
 @Composable
-internal fun StoreLocation(address: String, city: String, onClick: () -> Unit) {
+internal fun StoreLocation(title: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,81 +117,78 @@ internal fun StoreLocation(address: String, city: String, onClick: () -> Unit) {
             contentDescription = null,
             tint = Color.Gray
         )
-        Column(modifier = Modifier.padding(start = 8.dp)) {
-            Text(text = "KOffice $address", fontWeight = FontWeight.Bold)
-            Text(text = city, color = Color.Gray)
-        }
+        Text(modifier = Modifier.padding(start = 8.dp), text = title, fontWeight = FontWeight.Bold)
     }
 }
+//
+//@Composable
+//internal fun SocialProjects(activeCount: Int) {
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .background(Color.White, shape = RoundedCornerShape(12.dp))
+//            .border(1.dp, Color.LightGray, shape = RoundedCornerShape(12.dp))
+//            .padding(16.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        androidx.compose.material3.Icon(
+//            imageVector = Icons.Default.Favorite,
+//            contentDescription = "",
+//            tint = colorResource(R.color.blue_primary),
+//            modifier = Modifier.size(24.dp)
+//        )
+//        Spacer(modifier = Modifier.width(8.dp))
+//        Column {
+//            Text(text = "Соціальні проекти", fontWeight = FontWeight.Bold)
+//            Text(text = "Активні збори: $activeCount", color = Color.Gray)
+//        }
+//    }
+//}
+//
+//@Composable
+//internal fun NewsSection() {
+//    Column {
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.Start
+//        ) {
+//            Text(text = stringResource(R.string.news), style = MaterialTheme.typography.titleMedium)
+//        }
+//        Spacer(modifier = Modifier.height(8.dp))
+//        NewsCard(
+//            title1 = "Масло ПМКК селянське",
+//            subtitle1 = "солодковершкове 73%, 180 г",
+//            title2 = "Масло ПМКК Екстра",
+//            subtitle2 = "солодковершкове 82.5%, 180 г"
+//        )
+//    }
+//}
 
-@Composable
-internal fun SocialProjects(activeCount: Int) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White, shape = RoundedCornerShape(12.dp))
-            .border(1.dp, Color.LightGray, shape = RoundedCornerShape(12.dp))
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        androidx.compose.material3.Icon(
-            imageVector = Icons.Default.Favorite,
-            contentDescription = "",
-            tint = colorResource(R.color.blue_primary),
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column {
-            Text(text = "Соціальні проекти", fontWeight = FontWeight.Bold)
-            Text(text = "Активні збори: $activeCount", color = Color.Gray)
-        }
-    }
-}
-
-@Composable
-internal fun NewsSection() {
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(text = stringResource(R.string.news), style = MaterialTheme.typography.titleMedium)
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        NewsCard(
-            title1 = "Масло ПМКК селянське",
-            subtitle1 = "солодковершкове 73%, 180 г",
-            title2 = "Масло ПМКК Екстра",
-            subtitle2 = "солодковершкове 82.5%, 180 г"
-        )
-    }
-}
-
-@Composable
-internal fun NewsCard(title1: String, subtitle1: String, title2: String, subtitle2: String) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = title1, fontWeight = FontWeight.Bold)
-                Text(text = subtitle1, color = Color.Gray)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = title2, fontWeight = FontWeight.Bold)
-                Text(text = subtitle2, color = Color.Gray)
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_home),
-                contentDescription = null,
-                modifier = Modifier.size(80.dp)
-            )
-        }
-    }
-}
+//@Composable
+//internal fun NewsCard(title1: String, subtitle1: String, title2: String, subtitle2: String) {
+//    Card(
+//        shape = RoundedCornerShape(12.dp),
+//        modifier = Modifier.fillMaxWidth(),
+//        elevation = CardDefaults.cardElevation(4.dp)
+//    ) {
+//        Row(
+//            modifier = Modifier
+//                .padding(16.dp)
+//                .fillMaxWidth()
+//        ) {
+//            Column(modifier = Modifier.weight(1f)) {
+//                Text(text = title1, fontWeight = FontWeight.Bold)
+//                Text(text = subtitle1, color = Color.Gray)
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Text(text = title2, fontWeight = FontWeight.Bold)
+//                Text(text = subtitle2, color = Color.Gray)
+//            }
+//            Spacer(modifier = Modifier.width(16.dp))
+//            Image(
+//                imageVector = ImageVector.vectorResource(id = R.drawable.ic_home),
+//                contentDescription = null,
+//                modifier = Modifier.size(80.dp)
+//            )
+//        }
+//    }
+//}

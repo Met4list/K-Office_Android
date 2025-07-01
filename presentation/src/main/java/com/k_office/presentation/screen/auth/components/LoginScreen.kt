@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
@@ -58,19 +59,20 @@ internal fun LoginScreen(viewModel: LoginViewModel, onClick: () -> Unit) {
     val loading by viewModel.loading.collectAsState()
 
     val annotatedText = buildAnnotatedString {
-        append("By continuing, you agree to the ")
+        append(stringResource(R.string.by_continuing_you_agree))
 
         pushStringAnnotation(tag = "PRIVACY", annotation = "privacy")
         withStyle(style = SpanStyle(color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Medium)) {
-            append("Privacy Policy")
+            append(stringResource(R.string.login_privacy_policy))
         }
         pop()
 
-        append(" and the ")
+
+        append(" " + stringResource(R.string.and) + " ")
 
         pushStringAnnotation(tag = "OFFER", annotation = "offer")
         withStyle(style = SpanStyle(color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Medium)) {
-            append("Offer Agreement")
+            append(stringResource(R.string.offer_agreement))
         }
         pop()
     }
@@ -101,7 +103,7 @@ internal fun LoginScreen(viewModel: LoginViewModel, onClick: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Phone Login",
+                text = stringResource(R.string.auth),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
             )
@@ -130,7 +132,7 @@ internal fun LoginScreen(viewModel: LoginViewModel, onClick: () -> Unit) {
                         )
                     }
                 },
-                label = { Text("Phone Number") },
+                label = { Text(stringResource(R.string.phone_number)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -168,7 +170,7 @@ internal fun LoginScreen(viewModel: LoginViewModel, onClick: () -> Unit) {
             // Anonymous login
             TextButton(onClick = onClick) {
                 Text(
-                    text = "Register now",
+                    text = stringResource(R.string.register_now),
                     color = colorResource(R.color.blue_light)
                 )
             }
@@ -187,7 +189,7 @@ internal fun LoginScreen(viewModel: LoginViewModel, onClick: () -> Unit) {
                     containerColor = colorResource(R.color.blue_primary)
                 )
             ) {
-                Text("Login")
+                Text(stringResource(R.string.login))
             }
         }
     }

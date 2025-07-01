@@ -14,21 +14,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.QRCodeHelper
@@ -36,7 +30,6 @@ import com.k_office.presentation.screen.home.HomeViewModel
 
 @Composable
 internal fun ScanBonusScreen(viewModel: HomeViewModel) {
-    val context = LocalContext.current
 
     val currentUser = viewModel.currentUser.collectAsState().value
 
@@ -67,15 +60,18 @@ internal fun ScanBonusScreen(viewModel: HomeViewModel) {
                 ) {
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
-                        model = QRCodeHelper.generateQRCode(currentUser?.bonusCard.orEmpty()),
-                        contentDescription = "Generated QRCode",
-                        imageLoader = ImageLoader(context)
+                        model = QRCodeHelper.generateQRCode(currentUser?.code),
+                        contentDescription = "Generated QRCode"
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(stringResource(R.string.name_or_scan_the_barcode), fontSize = 14.sp, color = Color.Gray)
+                Text(
+                    stringResource(R.string.name_or_scan_the_barcode),
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
 
                 Text(
                     text = currentUser?.code.orEmpty(),
