@@ -7,10 +7,8 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.k_office.presentation.base.fragment.BaseFragment
 import com.k_office.presentation.base.utils.setFragmentContent

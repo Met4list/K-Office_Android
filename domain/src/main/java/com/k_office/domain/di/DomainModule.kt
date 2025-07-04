@@ -4,6 +4,7 @@ import android.content.Context
 import com.k_office.data.api.KOfficeApi
 import com.k_office.domain.data_source.CurrentUserInfoDataSource
 import com.k_office.domain.data_source.KOfficeDataSource
+import com.k_office.domain.use_case.GetAdsBannersUseCase
 import com.k_office.domain.use_case.GetCurrentUserInfoUseCase
 import com.k_office.domain.use_case.GetShopsInfoUseCase
 import dagger.Module
@@ -39,4 +40,9 @@ class DomainModule {
     @Singleton
     fun provideGetShopsInfoUseCase(): GetShopsInfoUseCase =
         GetShopsInfoUseCase()
+
+    @Provides
+    @Singleton
+    fun provideGetAdsBannersUseCase(): GetAdsBannersUseCase =
+        GetAdsBannersUseCase()
 }
