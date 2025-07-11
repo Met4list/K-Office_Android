@@ -20,4 +20,10 @@
     <string name="login">Логін</string>
     <string name="auth">Авторизація</string>
     <string name="phone_number">Номер телефону</string>
+    <string name="scan_in_shop">Скануйте у магазині</string>
+    <string name="logout_message">Ви впевнені, що хочете вийти?</string>
+    <string name="cancel">Скасувати</string>
+
+    <string name="dialog_button_cancel">СКАСУВАТИ</string>
+    <string name="dialog_button_exit">ВИЙТИ</string>
 </resources>

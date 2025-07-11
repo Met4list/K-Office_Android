@@ -47,9 +47,15 @@ class LoginViewModel @Inject constructor(
                         _loading.emit(false)
                     }
                 }
+            }.invokeOnCompletion {
+                sendFCMToken()
             }
         }.onFailure {
             Timber.e(it)
         }
+    }
+
+    private fun sendFCMToken() {
+        // TODO implement this functionality to provide token to server
     }
 }
