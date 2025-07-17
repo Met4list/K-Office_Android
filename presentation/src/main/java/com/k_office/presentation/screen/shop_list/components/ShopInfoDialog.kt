@@ -35,9 +35,8 @@ import com.k_office.presentation.R
 fun ShopInfoDialog(
     shop: Shop,
     onDismiss: () -> Unit,
-    onRouteClick: () -> Unit // Этот callback теперь будет просто уведомлять о клике
+    onRouteClick: () -> Unit
 ) {
-    val context = LocalContext.current // Получаем Context для использования extension-функции
     val shopLatLng = remember { LatLng(shop.latLng.latitude, shop.latLng.longitude) }
 
     val locationState = rememberLocationState()
@@ -46,11 +45,6 @@ fun ShopInfoDialog(
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(shopLatLng, 15f)
-    }
-
-    LaunchedEffect(cameraPositionState.position) {
-        // Здесь можно было бы обновить состояние камеры в ViewModel, если ShopInfoModal
-        // тоже имел доступ к той же ViewModel, но для этого сценария это не обязательно.
     }
 
     val markerState = remember { MarkerState(position = shopLatLng) }
@@ -91,14 +85,14 @@ fun ShopInfoDialog(
                         properties = MapProperties(isMyLocationEnabled = userLocation != null),
                         uiSettings = MapUiSettings(zoomControlsEnabled = true),
                         onMapClick = {
-                            onDismiss() // Скрыть модал при клике на карту
+                            onDismiss()
                         }
                     ) {
                         Marker(
                             state = markerState,
                             title = shop.name,
                             snippet = shop.fullAddress + if (shop.locationDetails.isNotEmpty()) "\n${shop.locationDetails}" else "",
-                            onClick = { true } // Не открываем стандартное инфо-окно
+                            onClick = { true }
                         )
                     }
                 }

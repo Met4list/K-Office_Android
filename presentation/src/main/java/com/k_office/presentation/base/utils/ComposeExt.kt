@@ -9,14 +9,19 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.IdRes
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
 /**
@@ -40,9 +45,8 @@ data class LocationState(
 fun rememberLocationState(): LocationState {
     val context = LocalContext.current
     var userLocation by remember { mutableStateOf<Location?>(null) }
-    var isLoading by remember { mutableStateOf(true) } // Изначально загружается
+    var isLoading by remember { mutableStateOf(true) }
 
-    // Флаг, чтобы не запрашивать разрешения снова и снова, если пользователь уже отказал
     var permissionRequested by remember { mutableStateOf(false) }
 
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -51,11 +55,14 @@ fun rememberLocationState(): LocationState {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { location ->
                     userLocation = location
-                    isLoading = false // Местоположение получено
-                    Log.d("rememberLocationState", "Location updated: ${location.latitude}, ${location.longitude}")
+                    isLoading = false
+                    Log.d(
+                        "rememberLocationState",
+                        "Location updated: ${location.latitude}, ${location.longitude}"
+                    )
                 } ?: run {
                     Log.w("rememberLocationState", "Location result was null.")
-                    isLoading = true // Если null, продолжаем загрузку
+                    isLoading = true
                 }
             }
         }
@@ -64,33 +71,37 @@ fun rememberLocationState(): LocationState {
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val granted = permissions.any { it.value } // True, если хотя бы одно разрешение дано
+        val granted = permissions.any { it.value }
         if (granted) {
-            startLocationUpdatesInternal(context, fusedLocationClient, locationCallback) { isUpdating ->
+            startLocationUpdatesInternal(
+                context,
+                fusedLocationClient,
+                locationCallback
+            ) { isUpdating ->
                 isLoading = isUpdating
             }
         } else {
-            Toast.makeText(context, "Location permission denied. Cannot get current location.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "Location permission denied. Cannot get current location.",
+                Toast.LENGTH_SHORT
+            ).show()
             userLocation = null
-            isLoading = false // Разрешение отклонено, загрузка завершена
+            isLoading = false
         }
     }
 
-    // Функция для запроса разрешений, которую можно вызвать из UI
     val requestPermissionsExplicitly = remember {
         {
-            if (!permissionRequested) { // Запрашиваем только один раз
+            if (!permissionRequested) {
                 requestPermissionLauncher.launch(
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     )
                 )
-                permissionRequested = true // Помечаем, что запрос был
+                permissionRequested = true
             } else {
-                // Если разрешения уже запрашивались, но не даны, можно показать объяснение
-                // Или просто попробовать снова запросить, но тогда убрать if (!permissionRequested)
-                // Для простоты, пока без дополнительного объяснения
                 requestPermissionLauncher.launch(
                     arrayOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -111,14 +122,16 @@ fun rememberLocationState(): LocationState {
         ) == PackageManager.PERMISSION_GRANTED
 
         if (hasFineLocationPermission || hasCoarseLocationPermission) {
-            // Разрешения уже есть, запускаем обновления
-            startLocationUpdatesInternal(context, fusedLocationClient, locationCallback) { isUpdating ->
+            startLocationUpdatesInternal(
+                context,
+                fusedLocationClient,
+                locationCallback
+            ) { isUpdating ->
                 isLoading = isUpdating
             }
-        } else if (!permissionRequested) { // Запрашиваем разрешение, если еще не запрашивалось
-            requestPermissionsExplicitly() // Инициируем запрос разрешений
+        } else if (!permissionRequested) {
+            requestPermissionsExplicitly()
         } else {
-            // Если разрешение уже запрашивалось и не было дано, то isLoading уже false
             isLoading = false
         }
 
@@ -131,25 +144,56 @@ fun rememberLocationState(): LocationState {
     return LocationState(userLocation, isLoading, requestPermissionsExplicitly)
 }
 
-// Внутренняя функция для запуска запросов местоположения
-@SuppressLint("MissingPermission") // Разрешение проверяется перед вызовом
+@SuppressLint("MissingPermission")
 private fun startLocationUpdatesInternal(
     context: Context,
     fusedLocationClient: FusedLocationProviderClient,
     locationCallback: LocationCallback,
-    onStatusUpdate: (Boolean) -> Unit // Callback для обновления isLoading
+    onStatusUpdate: (Boolean) -> Unit
 ) {
     val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000L)
         .setMinUpdateIntervalMillis(5000L)
         .build()
 
     try {
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, context.mainLooper)
-        onStatusUpdate(true) // Показываем загрузку, пока не придет первое местоположение
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            context.mainLooper
+        )
+        onStatusUpdate(true)
         Log.d("startLocationUpdatesInternal", "Location updates requested.")
     } catch (e: SecurityException) {
-        Toast.makeText(context, "Location permission not truly granted for updates: ${e.message}", Toast.LENGTH_LONG).show()
-        Log.e("startLocationUpdatesInternal", "SecurityException requesting location updates: ${e.message}")
-        onStatusUpdate(false) // Ошибка, загрузка завершена
+        Toast.makeText(
+            context,
+            "Location permission not truly granted for updates: ${e.message}",
+            Toast.LENGTH_LONG
+        ).show()
+        Log.e(
+            "startLocationUpdatesInternal",
+            "SecurityException requesting location updates: ${e.message}"
+        )
+        onStatusUpdate(false)
     }
+}
+
+@Composable
+fun Context.withFragmentNavigator(
+    @IdRes containerId: Int,
+    content: @Composable (navigateTo: (Fragment) -> Unit) -> Unit
+) {
+    val activity = this.findActivity()
+
+    if (activity == null) {
+        return
+    }
+
+    val fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager
+        ?: throw IllegalStateException("Context's Activity must be a FragmentActivity to use FragmentManager.")
+
+    val navigateTo: (Fragment) -> Unit = { fragment ->
+        FragmentUtil.setFragmentIfAbsent(fragment, fragmentManager, containerId)
+    }
+
+    content(navigateTo)
 }

@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,9 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -46,8 +47,7 @@ import com.k_office.presentation.base.compose.LoadingDialog
 import com.k_office.presentation.screen.login.RegistrationViewModel
 
 @Composable
-internal fun RegistrationScreen(viewModel: RegistrationViewModel, onClick: () -> Unit) {
-    // State variables for new fields (make sure they're declared in your Composable or ViewModel)
+internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
     var name by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
 
@@ -92,7 +92,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel, onClick: () ->
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name") },
+                label = { Text("Прізвище та Ім'я") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -106,7 +106,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel, onClick: () ->
             OutlinedTextField(
                 value = address,
                 onValueChange = { address = it },
-                label = { Text("Address") },
+                label = { Text("Адреса") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -138,7 +138,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel, onClick: () ->
                         )
                     }
                 },
-                label = { Text("Phone Number") },
+                label = { Text("Номер телефону") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -151,14 +151,23 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel, onClick: () ->
             // Legal links
             Text(
                 text = buildAnnotatedString {
-                    append("By continuing, you agree to the ")
-                    withStyle(style = SpanStyle(color = colorResource(id = R.color.blue_primary))) {
-                        append("Privacy Policy")
+                    append(stringResource(R.string.by_continuing_you_agree))
+
+                    append(" ")
+
+                    pushStringAnnotation(tag = "PRIVACY", annotation = "privacy")
+                    withStyle(style = SpanStyle(color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Medium)) {
+                        append(stringResource(R.string.login_privacy_policy))
                     }
-                    append(" and the ")
-                    withStyle(style = SpanStyle(color = colorResource(R.color.blue_light))) {
-                        append("Offer Agreement")
+                    pop()
+
+                    append(" " + stringResource(R.string.and) + " ")
+
+                    pushStringAnnotation(tag = "OFFER", annotation = "offer")
+                    withStyle(style = SpanStyle(color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Medium)) {
+                        append(stringResource(R.string.offer_agreement))
                     }
+                    pop()
                 },
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp,
@@ -166,14 +175,6 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel, onClick: () ->
             )
 
             Spacer(modifier = Modifier.weight(1f))
-
-            // Anonymous login
-            TextButton(onClick = { onClick.invoke() }) {
-                Text(
-                    text = "Anonymous login",
-                    color = colorResource(R.color.blue_light)
-                )
-            }
 
             // Continue button
             Button(
@@ -189,7 +190,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel, onClick: () ->
                     containerColor = colorResource(R.color.blue_primary)
                 )
             ) {
-                Text("Continue")
+                Text(text = stringResource(id = R.string.key_continue))
             }
         }
     }

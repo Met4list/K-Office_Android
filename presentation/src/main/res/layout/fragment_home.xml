@@ -29,6 +29,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="24dp"
                 android:src="@drawable/ic_notifications"
+                android:visibility="invisible"
                 android:tint="#000000" />
 
         </LinearLayout>

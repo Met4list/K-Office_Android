@@ -78,11 +78,11 @@ internal fun HeaderInfo(
                 )
             }
 
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Arrow",
-                tint = Color.Gray
-            )
+//            Icon(
+//                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+//                contentDescription = "Arrow",
+//                tint = Color.Gray
+//            )
         }
     }
 }

@@ -29,14 +29,16 @@ internal inline fun MenuList(
     }
 
     val currentList = listOf(
-        MenuItem(stringResource(R.string.news), isFirstOption = true),
+//        MenuItem(stringResource(R.string.news), isFirstOption = true),
         MenuItem(stringResource(R.string.we_on_map_title), onClick = {
             FragmentUtil.setFragmentIfAbsent(AllShopsFragment(), context.findActivity(), R.id.nav_container)
         }),
-        MenuItem(stringResource(R.string.settings), onClick = {
-            FragmentUtil.setFragmentIfAbsent(SettingsFragment(), context.findActivity(), R.id.nav_container)
+//        MenuItem(stringResource(R.string.settings), onClick = {
+//            FragmentUtil.setFragmentIfAbsent(SettingsFragment(), context.findActivity(), R.id.nav_container)
+//        }),
+        MenuItem(stringResource(R.string.feedback), onClick = {
+            context.openBrowserPage(FEEDBACK_LINK)
         }),
-        MenuItem(stringResource(R.string.feedback)),
         MenuItem(stringResource(R.string.privacy_policy), onClick = {
             context.openBrowserPage(PRIVACY_POLICY_LINK)
         }),
@@ -73,3 +75,4 @@ internal inline fun MenuList(
 
 private const val PRIVACY_POLICY_LINK = "https://k-office.vn.ua/politika-konfidencijnosti"
 private const val OFFER_AGREEMENT_LINK = "https://k-office.vn.ua/publichnij-dogovir-oferta"
+private const val FEEDBACK_LINK = "https://k-office.vn.ua/reviews"

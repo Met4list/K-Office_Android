@@ -38,6 +38,7 @@ import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.QRCodeHelper
 import kotlinx.coroutines.launch
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal inline fun BonusCardDialog(
@@ -82,7 +83,6 @@ internal inline fun BonusCardDialog(
                     ) {
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Replace with real barcode
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()

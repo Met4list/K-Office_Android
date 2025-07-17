@@ -5,14 +5,12 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.util.DisplayMetrics
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import timber.log.Timber
 
 fun Context.openBrowserPage(link: String?) {
-//    if (link.isNullOrEmpty()) return
-//    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-//    startActivity(browserIntent)
     try {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
         startActivity(intent)
@@ -69,3 +67,6 @@ fun Context.openNotificationSettings() {
 //        .putExtra(Settings.EXTRA_CHANNEL_ID, MY_CHANNEL_ID)
     startActivity(settingsIntent)
 }
+
+fun Float.pxToDp(context: Context): Float =
+    (this / (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT))

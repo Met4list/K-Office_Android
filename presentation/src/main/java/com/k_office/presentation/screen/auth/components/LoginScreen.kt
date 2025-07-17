@@ -61,6 +61,8 @@ internal fun LoginScreen(viewModel: LoginViewModel, onClick: () -> Unit) {
     val annotatedText = buildAnnotatedString {
         append(stringResource(R.string.by_continuing_you_agree))
 
+        append(" ")
+
         pushStringAnnotation(tag = "PRIVACY", annotation = "privacy")
         withStyle(style = SpanStyle(color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Medium)) {
             append(stringResource(R.string.login_privacy_policy))

@@ -26,4 +26,8 @@
 
     <string name="dialog_button_cancel">СКАСУВАТИ</string>
     <string name="dialog_button_exit">ВИЙТИ</string>
+    <string name="client_card_title">Карта клієнта</string>
+    <string name="close_dialog">Закрити діалог</string>
+    <string name="generated_barcode">Згенерований штрих-код</string>
+    <string name="key_continue">Продовжити</string>
 </resources>

@@ -35,8 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.k_office.presentation.R
-import com.k_office.presentation.base.utils.FragmentUtil
-import com.k_office.presentation.base.utils.findActivity
+import com.k_office.presentation.base.utils.withFragmentNavigator
 import com.k_office.presentation.screen.dialogs.BonusCardDialog
 import com.k_office.presentation.screen.home.HomeViewModel
 import com.k_office.presentation.screen.shop_list.ShopListFragment
@@ -50,16 +49,16 @@ internal inline fun MainScreen(viewModel: HomeViewModel) {
     val banners = viewModel.banners.collectAsStateWithLifecycle(listOf())
     val currentUser = viewModel.currentUser.collectAsState()
 
-    var showBonusCard by remember { mutableStateOf(false) }
+    var showBonusCard by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadBanners(context)
     }
 
     if (showBonusCard) {
-        BonusCardDialog(
-            currentUser.value,
-        ) {
+        BonusCardDialog(currentUser.value) {
             showBonusCard = false
         }
     }
@@ -68,28 +67,29 @@ internal inline fun MainScreen(viewModel: HomeViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceAround
     ) {
         HeaderGreeting(
             name = currentUser.value?.name.orEmpty(),
             balance = "${currentUser.value?.sum} бонусів"
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        StoreLocation(title = "Адреси магазинів") {
-            FragmentUtil.setFragmentIfAbsent(
-                ShopListFragment(),
-                context.findActivity(),
-                R.id.nav_container
-            )
+        Spacer(modifier = Modifier.height(6.dp))
+
+        context.withFragmentNavigator(R.id.nav_container) { navigateTo ->
+            StoreLocation(title = "Адреси магазинів") {
+                navigateTo.invoke(ShopListFragment())
+            }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         BarCode(currentUser.value) {
             showBonusCard = true
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-        AdsBanners(banners.value)
+        Spacer(modifier = Modifier.height(8.dp))
+        AdsBanners(banners = banners.value)
     }
 }
 

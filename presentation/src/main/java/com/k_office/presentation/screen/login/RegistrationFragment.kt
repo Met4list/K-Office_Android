@@ -23,9 +23,7 @@ class RegistrationFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = setFragmentContent {
-        RegistrationScreen(viewModel) {
-            (requireActivity() as MainActivity).clearLogin(this)
-        }
+        RegistrationScreen(viewModel)
     }
 
     override fun setupViewModelCallbacks() {

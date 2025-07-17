@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -28,10 +29,11 @@ import coil.request.ImageRequest
 import com.k_office.domain.model.AdsBanner
 import com.k_office.presentation.base.compose.ShimmerPlaceholder
 import com.k_office.presentation.base.utils.openBrowserPage
+import com.k_office.presentation.base.utils.pxToDp
 import kotlinx.coroutines.delay
 
 @Composable
-internal inline fun AdsBanners(banners: List<AdsBanner>) {
+internal inline fun AdsBanners(modifier: Modifier = Modifier, banners: List<AdsBanner>) {
 
     val context = LocalContext.current
 
@@ -52,7 +54,9 @@ internal inline fun AdsBanners(banners: List<AdsBanner>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .height(670f.pxToDp(context).dp)
+            .padding(vertical = 4.dp)
+            .then(modifier),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -101,6 +105,9 @@ private inline fun BannerItem(
             },
         model = imageRequest,
         loading = {
+            ShimmerPlaceholder(modifier = Modifier.fillMaxSize())
+        },
+        error = {
             ShimmerPlaceholder(modifier = Modifier.fillMaxSize())
         },
 //        contentScale = ContentScale.FillHeight,
