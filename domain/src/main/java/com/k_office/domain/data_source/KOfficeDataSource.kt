@@ -21,9 +21,7 @@ interface KOfficeDataSource {
     ): ResponseState<CardInformationModel>
 
     suspend fun authorizationBonus(
-        telephone: String,
-        name: String,
-        address: String
+        telephone: String
     ): ResponseState<BonusCardModel>
 
     class Base(private val api: KOfficeApi) : KOfficeDataSource {
@@ -36,8 +34,12 @@ interface KOfficeDataSource {
                     )
                 )
                 if (response.success) {
-                    val reply = response.reply.map { CurrentUserMapper.mapTo(it) }.first()
-                    ResponseState.Success(reply)
+                    val reply = response.reply.map { CurrentUserMapper.mapTo(it) }
+                    if (reply.isEmpty()) {
+                        ResponseState.Error(Exception("There is no user in database"))
+                    } else {
+                        ResponseState.Success(reply.first())
+                    }
                 } else {
                     ResponseState.Error(Throwable(response.message))
                 }
@@ -75,18 +77,14 @@ interface KOfficeDataSource {
         }
 
         override suspend fun authorizationBonus(
-            telephone: String,
-            name: String,
-            address: String
+            telephone: String
         ): ResponseState<BonusCardModel> {
             return try {
                 val response = api.authorizationBonus(
                     BaseRequest.Authorization(
                         data = listOf(
-                            BaseRequest.Data(
-                                telephone = telephone,
-                                name = name,
-                                address = address
+                            BaseRequest.Auth(
+                                telephone = telephone
                             )
                         )
                     )

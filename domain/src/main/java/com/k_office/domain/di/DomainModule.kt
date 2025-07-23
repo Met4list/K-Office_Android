@@ -4,9 +4,11 @@ import android.content.Context
 import com.k_office.data.api.KOfficeApi
 import com.k_office.domain.data_source.CurrentUserInfoDataSource
 import com.k_office.domain.data_source.KOfficeDataSource
+import com.k_office.domain.use_case.AuthorizationUseCase
 import com.k_office.domain.use_case.GetAdsBannersUseCase
 import com.k_office.domain.use_case.GetCurrentUserInfoUseCase
 import com.k_office.domain.use_case.GetShopsInfoUseCase
+import com.k_office.domain.use_case.RegistrationUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,8 +30,8 @@ class DomainModule {
 
     @Provides
     @Singleton
-    fun provideCurrentUserInfoDataSource(@ApplicationContext context: Context): CurrentUserInfoDataSource
-        = CurrentUserInfoDataSource.Base(context)
+    fun provideCurrentUserInfoDataSource(@ApplicationContext context: Context): CurrentUserInfoDataSource =
+        CurrentUserInfoDataSource.Base(context)
 
     @Provides
     @Singleton
@@ -45,4 +47,20 @@ class DomainModule {
     @Singleton
     fun provideGetAdsBannersUseCase(): GetAdsBannersUseCase =
         GetAdsBannersUseCase()
+
+    @Provides
+    @Singleton
+    fun provideAuthorizationUseCase(
+        kOfficeDataSource: KOfficeDataSource,
+        getCurrentUserInfoDataSource: CurrentUserInfoDataSource
+    ): AuthorizationUseCase =
+        AuthorizationUseCase(kOfficeDataSource, getCurrentUserInfoDataSource)
+
+    @Singleton
+    @Provides
+    fun provideRegistrationUseCase(
+        kOfficeDataSource: KOfficeDataSource,
+        getCurrentUserInfoDataSource: CurrentUserInfoDataSource
+    ): RegistrationUseCase =
+        RegistrationUseCase(kOfficeDataSource, getCurrentUserInfoDataSource)
 }

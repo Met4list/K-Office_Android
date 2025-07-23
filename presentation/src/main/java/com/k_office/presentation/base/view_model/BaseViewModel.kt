@@ -3,6 +3,7 @@ package com.k_office.presentation.base.view_model
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.k_office.domain.base.ResponseState
+import com.k_office.domain.base.UIText
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,6 +27,9 @@ abstract class BaseViewModel: ViewModel() {
 
     protected val _errorMessage = MutableSharedFlow<String>()
     val errorMessage = _errorMessage.asSharedFlow()
+
+    protected val _uiTextMessage = MutableStateFlow<UIText?>(null)
+    val uiTextMessage = _uiTextMessage.asStateFlow()
 
     private fun emitError(message: String) {
         viewModelScope.launch {

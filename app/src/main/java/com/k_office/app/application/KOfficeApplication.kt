@@ -6,6 +6,7 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.util.DebugLogger
+import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
@@ -16,6 +17,7 @@ class KOfficeApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree(), logCrashlytics())
+//        FirebaseCrashlytics.getInstance().setUserId()
     }
 
     private fun logCrashlytics(): Timber.Tree {

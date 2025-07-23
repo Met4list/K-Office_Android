@@ -21,12 +21,19 @@ sealed class BaseRequest {
         @SerializedName("Method")
         private val method: String = AUTORIZATION_BONUS_KEY,
         @SerializedName("Data")
-        val data: List<Data>
+        val data: List<Auth>
     ): BaseRequest()
 
     class Parameters(
         @SerializedName("Telephones")
         val telephones: List<String>
+    )
+
+    class Auth(
+        @SerializedName("url")
+        val url: String = BASE_API_URL,
+        @SerializedName("Telephone")
+        val telephone: String
     )
 
     class Data(

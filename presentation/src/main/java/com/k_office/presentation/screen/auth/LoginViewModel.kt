@@ -1,9 +1,12 @@
 package com.k_office.presentation.screen.auth
 
 import androidx.lifecycle.viewModelScope
+import com.k_office.domain.base.DataState
 import com.k_office.domain.base.ResponseState
 import com.k_office.domain.data_source.CurrentUserInfoDataSource
 import com.k_office.domain.data_source.KOfficeDataSource
+import com.k_office.domain.model.CurrentUserInfoModel
+import com.k_office.domain.use_case.AuthorizationUseCase
 import com.k_office.presentation.base.view_model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val kOfficeDataSource: KOfficeDataSource,
-    private val getCurrentUserInfoDataSource: CurrentUserInfoDataSource
+    private val authorizationUseCase: AuthorizationUseCase
 ) : BaseViewModel() {
 
     private val _onSuccess = MutableSharedFlow<Boolean>()
@@ -26,25 +28,15 @@ class LoginViewModel @Inject constructor(
         runCatching {
             viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
                 _loading.emit(true)
-                when (val response = kOfficeDataSource.getBalanceBonus(telephoneNumber)) {
-                    is ResponseState.Success -> {
-                        if (response.data != null) {
-                            getCurrentUserInfoDataSource.insertUser(response.data!!)
+                authorizationUseCase.invoke(telephoneNumber).collect {
+                    when (it) {
+                        DataState.Default -> Unit
+                        is DataState.Failure -> _onSuccess.emit(false)
+                        DataState.Loading -> _loading.emit(true)
+                        is DataState.Success<*> -> {
+                            _loading.emit(false)
                             _onSuccess.emit(true)
-                            _loading.emit(false)
-                        } else {
-                            _onSuccess.emit(false)
-                            _loading.emit(false)
                         }
-                    }
-
-                    is ResponseState.Loading -> {
-
-                    }
-
-                    is ResponseState.Error -> {
-                        _onSuccess.emit(false)
-                        _loading.emit(false)
                     }
                 }
             }.invokeOnCompletion {
