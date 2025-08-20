@@ -30,4 +30,15 @@
     <string name="close_dialog">Закрити діалог</string>
     <string name="generated_barcode">Згенерований штрих-код</string>
     <string name="key_continue">Продовжити</string>
+
+    <string name="otp_verification_title">Введіть код з SMS</string>
+    <string name="verify_otp">Підтвердити</string>
+    <string name="otp_verification_description">Ми відправили вам SMS повідомлення
+з 4-х значним кодом на ваш номер телефону  %s</string>
+
+    <string name="did_not_receive_code">Не отримали код?</string>
+
+    <string name="retry">Повторити</string>
+
+    <string name="enter_otp">Введіть код підтвердження</string>
 </resources>

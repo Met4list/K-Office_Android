@@ -1,8 +1,8 @@
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt) // This applies the Hilt Gradle plugin
-    id 'kotlin-kapt'
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
+    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -11,7 +11,6 @@ android {
 
     defaultConfig {
         minSdk 24
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -27,8 +26,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = '11'
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -40,30 +44,32 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
+    androidTestImplementation libs.androidx.junit
 
-    // Room
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    // Hilt for dependency injection
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
 
-    // OkHttp3
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
-
-    // Retrofit2
+    // Retrofit2 for networking
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.gson)
-    implementation 'com.google.code.gson:gson:2.6.2'
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.chucker)
 
-    // Chucker (use only in debug builds)
-    // For debug builds
-    debugImplementation(libs.chucker)
-    // For release builds
-    releaseImplementation(libs.chucker.noop)
+    // Other libraries
+    implementation libs.gson
 
-    // Kotlin Coroutines
-    implementation(libs.kotlinx.coroutines.core)
+    // Coroutines for async operations
+    implementation libs.kotlinx.coroutines.android
+    implementation libs.kotlinx.coroutines.core
 
-    implementation libs.hilt.android
-    kapt libs.hilt.compiler
+    // Room for local database
+    implementation libs.androidx.room.ktx
+    implementation libs.androidx.room.runtime
+    ksp libs.androidx.room.compiler
+
+    implementation platform('com.google.firebase:firebase-bom:33.1.2')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-auth-ktx'
 }

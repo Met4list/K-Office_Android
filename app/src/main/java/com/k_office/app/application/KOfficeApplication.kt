@@ -8,8 +8,7 @@ import coil.memory.MemoryCache
 import coil.util.DebugLogger
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.k_office.domain.data_source.CurrentUserInfoDataSource
-import com.k_office.domain.data_source.KOfficeDataSource
+import com.k_office.data.storage.CurrentUserStorage
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject
@@ -18,16 +17,16 @@ import javax.inject.Inject
 class KOfficeApplication : Application(), ImageLoaderFactory {
 
     @Inject
-    lateinit var getCurrentUserInfoDataSource: CurrentUserInfoDataSource
+    lateinit var currentUserStorage: CurrentUserStorage
 
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree(), logCrashlytics())
+        FirebaseApp.initializeApp(this)
 
-        // TODO replaced with real userId
-        val bonusCard = getCurrentUserInfoDataSource.getBonusCard()
-        if (!bonusCard.isNullOrBlank()) {
-            FirebaseCrashlytics.getInstance().setUserId(bonusCard)
+        val userId = currentUserStorage.getUserId()
+        if (!userId.isNullOrBlank()) {
+            FirebaseCrashlytics.getInstance().setUserId(userId)
         }
     }
 
@@ -38,7 +37,7 @@ class KOfficeApplication : Application(), ImageLoaderFactory {
                 priority: Int,
                 tag: String?,
                 message: String,
-                t: Throwable?
+                t: Throwable?,
             ) {
                 if (t != null) {
                     crashlytics.recordException(t)

@@ -33,7 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.k_office.domain.model.CurrentUserInfoModel
+import com.k_office.domain.model.CurrentUserModel
 import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.QRCodeHelper
 import kotlinx.coroutines.launch
@@ -42,14 +42,14 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal inline fun BonusCardDialog(
-    currentUser: CurrentUserInfoModel?,
+    currentUser: CurrentUserModel?,
     sheetState: SheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         { newValue ->
             newValue != SheetValue.Hidden
         }
     ),
-    crossinline onDismissRequest: () -> Unit = {}
+    crossinline onDismissRequest: () -> Unit = {},
 ) {
 
     val scope = rememberCoroutineScope()

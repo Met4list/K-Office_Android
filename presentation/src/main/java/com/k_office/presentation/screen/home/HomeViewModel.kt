@@ -2,10 +2,11 @@ package com.k_office.presentation.screen.home
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.k_office.domain.data_source.CurrentUserInfoDataSource
 import com.k_office.domain.model.AdsBanner
-import com.k_office.domain.model.CurrentUserInfoModel
+import com.k_office.domain.model.CurrentUserModel
 import com.k_office.domain.use_case.GetAdsBannersUseCase
+import com.k_office.domain.use_case.GetCurrentUserUseCase
+import com.k_office.domain.use_case.LogoutUseCase
 import com.k_office.presentation.base.view_model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,15 +20,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val currentUserInfoDataSource: CurrentUserInfoDataSource,
-    private val getAdsBannersUseCase: GetAdsBannersUseCase
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getAdsBannersUseCase: GetAdsBannersUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : BaseViewModel() {
 
-    private val _currentUser = MutableStateFlow<CurrentUserInfoModel?>(null)
+    private val _currentUser = MutableStateFlow<CurrentUserModel?>(null)
     val currentUser = _currentUser.asStateFlow()
 
-    private val _logoutAction = MutableSharedFlow<Boolean>()
-    val logoutAction = _logoutAction.asSharedFlow()
+    private val _logoutAction = MutableStateFlow(false)
+    val logoutAction = _logoutAction.asStateFlow()
 
     private val _banners = MutableSharedFlow<List<AdsBanner>>()
     val banners = _banners.asSharedFlow()
@@ -35,10 +37,7 @@ class HomeViewModel @Inject constructor(
     init {
         runCatching {
             viewModelScope.launch(coroutineExceptionHandler) {
-                val user = currentUserInfoDataSource.getUser()
-                if (user != null) {
-                    _currentUser.emit(user)
-                }
+                _currentUser.emit(getCurrentUserUseCase.invoke(Unit))
             }
 
         }.onFailure {
@@ -47,9 +46,10 @@ class HomeViewModel @Inject constructor(
     }
 
     fun logout() {
-        viewModelScope.launch(coroutineExceptionHandler) {
-            currentUserInfoDataSource.clear()
-            _logoutAction.emit(true)
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            logoutUseCase {
+                _logoutAction.value = true
+            }
         }
     }
 

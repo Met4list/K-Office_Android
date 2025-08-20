@@ -1,14 +1,22 @@
 package com.k_office.domain.di
 
 import android.content.Context
-import com.k_office.data.api.KOfficeApi
-import com.k_office.domain.data_source.CurrentUserInfoDataSource
-import com.k_office.domain.data_source.KOfficeDataSource
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
+import com.k_office.data.api.KOfficeApiService
+import com.k_office.data.api.NotificationApiService
+import com.k_office.data.provider.BaseConfigProvider
+import com.k_office.data.storage.CurrentUserStorage
+import com.k_office.data.storage.TokenStorage
+import com.k_office.domain.data_source.AuthDataSource
+import com.k_office.domain.data_source.TokenDataSource
 import com.k_office.domain.use_case.AuthorizationUseCase
 import com.k_office.domain.use_case.GetAdsBannersUseCase
-import com.k_office.domain.use_case.GetCurrentUserInfoUseCase
+import com.k_office.domain.use_case.GetCurrentUserUseCase
 import com.k_office.domain.use_case.GetShopsInfoUseCase
-import com.k_office.domain.use_case.RegistrationUseCase
+import com.k_office.domain.use_case.LogoutUseCase
+import com.k_office.domain.use_case.ReceiveFCMTokenUseCase
+import com.k_office.domain.use_case.VerifyOtpUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,21 +30,24 @@ class DomainModule {
 
     @Provides
     @Singleton
-    fun provideGetCurrentUserInfoUseCase(
-        kOfficeApi: KOfficeApi,
-        currentUserInfoDataSource: CurrentUserInfoDataSource
-    ): GetCurrentUserInfoUseCase =
-        GetCurrentUserInfoUseCase(kOfficeApi, currentUserInfoDataSource)
+    fun provideVerifyOtpUseCase(
+        authDataSource: AuthDataSource,
+        currentUserStorage: CurrentUserStorage,
+        tokenStorage: TokenStorage,
+    ): VerifyOtpUseCase =
+        VerifyOtpUseCase(authDataSource, currentUserStorage, tokenStorage)
 
     @Provides
     @Singleton
-    fun provideCurrentUserInfoDataSource(@ApplicationContext context: Context): CurrentUserInfoDataSource =
-        CurrentUserInfoDataSource.Base(context)
+    fun provideAuthDataSource(kOfficeApi: KOfficeApiService): AuthDataSource =
+        AuthDataSource.Base(kOfficeApi)
 
     @Provides
     @Singleton
-    fun provideKOfficeDataSource(kOfficeApi: KOfficeApi): KOfficeDataSource =
-        KOfficeDataSource.Base(kOfficeApi)
+    fun provideTokenDataSource(@ApplicationContext context: Context, gson: Gson): TokenDataSource {
+        val sharedPreferences = context.getSharedPreferences("tokens_config", Context.MODE_PRIVATE)
+        return TokenDataSource.Base(sharedPreferences, gson)
+    }
 
     @Provides
     @Singleton
@@ -50,17 +61,28 @@ class DomainModule {
 
     @Provides
     @Singleton
-    fun provideAuthorizationUseCase(
-        kOfficeDataSource: KOfficeDataSource,
-        getCurrentUserInfoDataSource: CurrentUserInfoDataSource
-    ): AuthorizationUseCase =
-        AuthorizationUseCase(kOfficeDataSource, getCurrentUserInfoDataSource)
+    fun provideReceiveFCMTokenUseCase(): ReceiveFCMTokenUseCase = ReceiveFCMTokenUseCase()
 
-    @Singleton
     @Provides
-    fun provideRegistrationUseCase(
-        kOfficeDataSource: KOfficeDataSource,
-        getCurrentUserInfoDataSource: CurrentUserInfoDataSource
-    ): RegistrationUseCase =
-        RegistrationUseCase(kOfficeDataSource, getCurrentUserInfoDataSource)
+    @Singleton
+    fun provideGetCurrentUserUseCase(
+        currentUserStorage: CurrentUserStorage,
+    ): GetCurrentUserUseCase = GetCurrentUserUseCase(currentUserStorage)
+
+    @Provides
+    @Singleton
+    fun provideLogoutUseCase(
+        currentUserStorage: CurrentUserStorage,
+        tokenStorage: TokenStorage,
+        authDataSource: AuthDataSource
+    ): LogoutUseCase = LogoutUseCase(currentUserStorage, tokenStorage, authDataSource, FirebaseMessaging.getInstance())
+
+    @Provides
+    @Singleton
+    fun provideAuthorizationUseCase(
+        authDataSource: AuthDataSource,
+        receiveFCMTokenUseCase: ReceiveFCMTokenUseCase,
+        notificationApiService: NotificationApiService,
+        baseConfigProvider: BaseConfigProvider
+    ): AuthorizationUseCase = AuthorizationUseCase(authDataSource, receiveFCMTokenUseCase, notificationApiService, baseConfigProvider)
 }

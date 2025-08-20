@@ -38,7 +38,7 @@ class GetShopsInfoUseCase : BaseUseCase<Context, List<Shop>> {
     }
 
     private suspend fun getLatLngFromAddress(context: Context, address: String): LatLng {
-        return return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             val geocoder = Geocoder(context, Locale("uk", "UA"))
             try {
                 val addresses = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

@@ -16,21 +16,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.k_office.domain.model.CurrentUserInfoModel
+import com.k_office.domain.model.CurrentUserModel
 import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.QRCodeHelper
 
 @Composable
 internal inline fun BarCode(
-    currentUser: CurrentUserInfoModel?,
-    crossinline onClick: () -> Unit
+    currentUser: CurrentUserModel?,
+    crossinline onClick: () -> Unit,
 ) {
 
     var barcodeWidth by remember {
@@ -42,7 +41,8 @@ internal inline fun BarCode(
             .fillMaxWidth()
             .onSizeChanged {
                 if (it.width > barcodeWidth) barcodeWidth = it.width
-            }.clickable { onClick.invoke() }) {
+            }
+            .clickable { onClick.invoke() }) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally

@@ -1,5 +1,6 @@
 package com.k_office.presentation.screen.shop_list
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -16,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,33 +40,37 @@ class ShopListViewModel @Inject constructor(
     )
         private set
 
+    @SuppressLint("TimberArgCount")
     fun onShopMapClick(shop: Shop) {
         selectedShopForModal = shop
         showModalBottomSheet = true
-        Log.d("ShopListViewModel", "Shop ${shop.name} selected for map modal.")
+        Timber.d("ShopListViewModel", "Shop ${shop.name} selected for map modal.")
     }
 
+    @SuppressLint("TimberArgCount")
     fun onShopDetailsClick(shop: Shop) {
         selectedShopForModal = shop
         showModalBottomSheet = true // Или другой флаг, если детали в отдельном модале
-        Log.d("ShopListViewModel", "Shop ${shop.name} details clicked, opening modal.")
+        Timber.d("ShopListViewModel", "Shop ${shop.name} details clicked, opening modal.")
     }
 
+    @SuppressLint("TimberArgCount")
     fun hideShopInfoModal() {
         showModalBottomSheet = false
         selectedShopForModal = null
-        Log.d("ShopListViewModel", "Shop info modal hidden.")
+        Timber.d("ShopListViewModel", "Shop info modal hidden.")
     }
 
     fun updateCameraPosition(position: CameraPosition) {
         cameraPosition = position
     }
 
+    @SuppressLint("TimberArgCount")
     fun loadShops(context: Context) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val shops = getShopsInfoUseCase.invoke(context)
             _shopsInfo.emit(shops)
-            Log.d("ShopListViewModel", "Shops loaded: ${shops.size}")
+            Timber.d("ShopListViewModel", "Shops loaded: ${shops.size}")
         }
     }
 }

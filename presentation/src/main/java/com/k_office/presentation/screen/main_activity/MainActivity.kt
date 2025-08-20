@@ -7,7 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.k_office.presentation.R
 import com.k_office.presentation.base.activity.BaseActivity
 import com.k_office.presentation.base.utils.FragmentUtil
-import com.k_office.presentation.screen.auth.LoginFragment
+import com.k_office.presentation.screen.login.LoginFragment
 import com.k_office.presentation.screen.home.HomeFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

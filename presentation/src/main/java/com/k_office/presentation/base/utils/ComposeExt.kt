@@ -23,24 +23,17 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import timber.log.Timber
 
-/**
- * Data class для хранения состояния местоположения.
- * @param location Текущее местоположение пользователя (null, если недоступно или загружается).
- * @param isLoading True, если местоположение активно загружается или ожидаются разрешения.
- * @param requestPermissions Функция для явного повторного запроса разрешений.
- */
+
 data class LocationState(
     val location: Location?,
     val isLoading: Boolean,
     val requestPermissions: () -> Unit
 )
 
-/**
- * Composable-хук для получения и управления состоянием местоположения пользователя.
- * Запрашивает разрешения и запускает/останавливает обновления местоположения в соответствии с жизненным циклом Composable.
- * @return LocationState, содержащий местоположение, состояние загрузки и функцию для запроса разрешений.
- */
+
+@SuppressLint("TimberArgCount")
 @Composable
 fun rememberLocationState(): LocationState {
     val context = LocalContext.current
@@ -52,16 +45,17 @@ fun rememberLocationState(): LocationState {
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val locationCallback = remember {
         object : LocationCallback() {
+            @SuppressLint("TimberArgCount")
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { location ->
                     userLocation = location
                     isLoading = false
-                    Log.d(
-                        "rememberLocationState",
-                        "Location updated: ${location.latitude}, ${location.longitude}"
+                    Timber.d(
+                        message = "rememberLocationState",
+                        args = arrayOf("Location updated: ${location.latitude}, ${location.longitude}")
                     )
                 } ?: run {
-                    Log.w("rememberLocationState", "Location result was null.")
+                    Timber.w("rememberLocationState", "Location result was null.")
                     isLoading = true
                 }
             }
@@ -112,7 +106,6 @@ fun rememberLocationState(): LocationState {
         }
     }
 
-    // Эффект для запуска/остановки обновлений местоположения в соответствии с жизненным циклом Composable
     DisposableEffect(fusedLocationClient, locationCallback) {
         val hasFineLocationPermission = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
@@ -137,14 +130,14 @@ fun rememberLocationState(): LocationState {
 
         onDispose {
             fusedLocationClient.removeLocationUpdates(locationCallback)
-            Log.d("rememberLocationState", "Location updates removed on dispose.")
+            Timber.d("rememberLocationState", "Location updates removed on dispose.")
         }
     }
 
     return LocationState(userLocation, isLoading, requestPermissionsExplicitly)
 }
 
-@SuppressLint("MissingPermission")
+@SuppressLint("MissingPermission", "TimberArgCount")
 private fun startLocationUpdatesInternal(
     context: Context,
     fusedLocationClient: FusedLocationProviderClient,
@@ -162,14 +155,14 @@ private fun startLocationUpdatesInternal(
             context.mainLooper
         )
         onStatusUpdate(true)
-        Log.d("startLocationUpdatesInternal", "Location updates requested.")
+        Timber.d("startLocationUpdatesInternal", "Location updates requested.")
     } catch (e: SecurityException) {
         Toast.makeText(
             context,
             "Location permission not truly granted for updates: ${e.message}",
             Toast.LENGTH_LONG
         ).show()
-        Log.e(
+        Timber.e(
             "startLocationUpdatesInternal",
             "SecurityException requesting location updates: ${e.message}"
         )

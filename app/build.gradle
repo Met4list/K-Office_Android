@@ -13,14 +13,32 @@ android {
     namespace 'com.k_office.app'
     compileSdk 35
 
+    flavorDimensions += "environment"
+
     defaultConfig {
         applicationId "com.k_office.app"
         minSdk 24
         targetSdk 35
         versionCode 1
         versionName "1.1.2"
+        manifestPlaceholders = [
+                MAPS_API_KEY: "AIzaSyCPGCg4pZ99sr1K9ep2sWM1LyH-Vut8fNo"
+        ]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            buildConfigField("Boolean", "IS_DEV", "true")
+            buildConfigField("String", "BASE_URL", "\"https://k-office-server-staging.onrender.com\"")
+        }
+        create("prod") {
+            dimension = "environment"
+            buildConfigField("Boolean", "IS_DEV", "false")
+            buildConfigField("String", "BASE_URL", "\"https://k-office-server.onrender.com\"")
+        }
     }
 
     buildTypes {
@@ -57,6 +75,7 @@ dependencies {
     implementation libs.androidx.ui.graphics
     implementation libs.androidx.ui.tooling.preview
     implementation libs.androidx.material3
+    implementation platform('com.google.firebase:firebase-bom:33.1.2')
     implementation libs.firebase.crashlytics
     implementation libs.firebase.messaging
     testImplementation libs.junit
@@ -68,7 +87,7 @@ dependencies {
     debugImplementation libs.androidx.ui.test.manifest
 
     implementation project(":presentation")
-    implementation project(":domain")
+    implementation project(":data")
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
