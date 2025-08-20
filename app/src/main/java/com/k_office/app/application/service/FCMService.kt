@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -23,7 +22,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Random
-import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -69,7 +67,9 @@ class FCMService : FirebaseMessagingService() {
             val userId = currentUserStorage.getUserId()
             token?.let {
                 if (userId == null) return@launch
-                if (baseConfigProvider.provideIsDevEnv()) notificationApiService.sendMessagingToken(MessagingTokenRequest(it, userId))
+                if (currentUserStorage.isLoggedIn() && baseConfigProvider.provideIsDevEnv()) notificationApiService.sendMessagingToken(
+                    MessagingTokenRequest(it, userId)
+                )
             }
         }
         Timber.d(TAG, "Sending token to server: $token")

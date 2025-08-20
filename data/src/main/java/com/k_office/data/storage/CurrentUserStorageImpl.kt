@@ -41,11 +41,15 @@ class CurrentUserStorageImpl(private val sharedPreferences: SharedPreferences): 
     }
 
     override fun getBalance(): Float {
-        return gson.currentUser()?.sum ?: Float.NaN
+        return gson.currentUser()?.sum ?: 0f
     }
 
     override fun getCode(): String {
         return gson.currentUser()?.code.orEmpty()
+    }
+
+    override fun isLoggedIn(): Boolean {
+        return gson.currentUser() != null
     }
 
     private fun Gson.currentUser(): UserModel? {

@@ -75,21 +75,19 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инжектируется здесь
+internal fun ShopListScreen(viewModel: ShopListViewModel) {
 
     val context = LocalContext.current
-    val shops by viewModel.shopsInfo.collectAsStateWithLifecycle() // Список магазинов (без дистанции пока)
+    val shops by viewModel.shopsInfo.collectAsStateWithLifecycle()
 
-    // --- Состояния, управляемые Composable для местоположения ---
     var userLocation by remember { mutableStateOf<Location?>(null) }
-    var isLoadingLocation by remember { mutableStateOf(true) } // Индикатор загрузки именно местоположения
-    var hasLocationPermissionBeenAsked by remember { mutableStateOf(false) } // Флаг, чтобы избежать повторного запроса без причины
+    var isLoadingLocation by remember { mutableStateOf(true) }
+    var hasLocationPermissionBeenAsked by remember { mutableStateOf(false) }
 
-    // Состояние для списка магазинов с вычисленными дистанциями
     val shopsWithCalculatedDistances =
-        remember(shops, userLocation) { // Пересчитываем, когда shops ИЛИ userLocation меняется
+        remember(shops, userLocation) {
             if (userLocation == null) {
-                shops.map { it.copy(distance = "Calculating...") } // Если нет местоположения, дистанция "Calculating..."
+                shops.map { it.copy(distance = "Calculating...") }
             } else {
                 shops.map { shop ->
                     val storeLocation = Location("").apply {
@@ -109,7 +107,6 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инж�
             }
         }
 
-    // Запускатель для запроса разрешений
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -119,7 +116,7 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инж�
                 context,
                 userLocation,
                 isLoadingLocation
-            ) { loc, loading -> // Обновленная лямбда для startLocationUpdates
+            ) { loc, loading ->
                 userLocation = loc
                 isLoadingLocation = loading
             }
@@ -135,7 +132,6 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инж�
         hasLocationPermissionBeenAsked = true
     }
 
-    // FusedLocationProviderClient и LocationCallback управляются DisposableEffect
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     val locationCallback = remember {
         object : LocationCallback() {
@@ -144,14 +140,12 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инж�
                     userLocation = location
                     isLoadingLocation = false
                 } ?: run {
-                    // Если onLocationResult null, но разрешения есть, продолжаем загрузку
                     isLoadingLocation = true
                 }
             }
         }
     }
 
-    // Эффект для запроса разрешений и запуска/остановки обновлений местоположения
     DisposableEffect(Unit) {
         val hasFineLocationPermission = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
@@ -161,7 +155,7 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инж�
             context, Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
-        if (!hasLocationPermissionBeenAsked) { // Только если разрешение еще не запрашивалось
+        if (!hasLocationPermissionBeenAsked) {
             if (hasFineLocationPermission || hasCoarseLocationPermission) {
                 startLocationUpdates(context, userLocation, isLoadingLocation) { loc, loading ->
                     userLocation = loc
@@ -182,14 +176,12 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инж�
         }
     }
 
-    // Обсервация состояний BottomSheet из ViewModel
     val showModalBottomSheet = viewModel.showModalBottomSheet
     val selectedShopForInfoModal = viewModel.selectedShopForModal
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
-    // Синхронизация видимости BottomSheet с состоянием ViewModel
     LaunchedEffect(showModalBottomSheet) {
         if (showModalBottomSheet) {
             scope.launch { sheetState.show() }
@@ -208,7 +200,7 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инж�
             .fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        if (isLoadingLocation) { // Используем isLoadingLocation для индикатора загрузки местоположения
+        if (isLoadingLocation) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -241,10 +233,10 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инж�
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                items(shopsWithCalculatedDistances) { shop -> // Используем shopsWithCalculatedDistances
+                items(shopsWithCalculatedDistances) { shop ->
                     ShopItem(
                         shop = shop,
-                        isSelected = false, // Если у вас есть логика selectedShopId, то используйте ее здесь
+                        isSelected = false,
                         onMapClick = { clickedShop ->
                             viewModel.onShopMapClick(clickedShop)
                         },
@@ -285,17 +277,14 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) { // ViewModel инж�
     }
 }
 
-// ---- ShopItem остается без изменений, как вы его предоставили ----
-// Убедитесь, что ShopItem принимает (Shop) -> Unit для onMapClick/onDetailsClick,
-// а не () -> Unit, чтобы передать Shop обратно.
+
 @Composable
 internal fun ShopItem(
     shop: Shop,
     isSelected: Boolean,
-    onMapClick: (Shop) -> Unit, // Принимаем Shop
-    onDetailsClick: (Shop) -> Unit // Принимаем Shop
+    onMapClick: (Shop) -> Unit,
+    onDetailsClick: (Shop) -> Unit
 ) {
-    // Цвет рамки зависит от isSelected
     val borderColor = if (isSelected) Color(0xFFC70039) else Color.Transparent
     val borderWidth = if (isSelected) 1.dp else 0.dp
 
@@ -333,7 +322,6 @@ internal fun ShopItem(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Центральная часть - текст (Название, Адрес, Дистанция, Детали локации)
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -349,12 +337,12 @@ internal fun ShopItem(
                     color = Color.Gray
                 )
                 Text(
-                    text = shop.distance.toString(), // distance уже строка
+                    text = shop.distance.toString(),
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
                 shop.locationDetails.let {
-                    if (it.isNotEmpty()) { // Проверка на непустую строку
+                    if (it.isNotEmpty()) {
                         Text(
                             text = it,
                             fontSize = 12.sp,
@@ -366,15 +354,13 @@ internal fun ShopItem(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Правая часть - Две новые кнопки по вертикали
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceAround,
                 modifier = Modifier.fillMaxHeight()
             ) {
-                // Кнопка: На карту
                 IconButton(
-                    onClick = { onMapClick(shop) }, // Передаем shop обратно
+                    onClick = { onMapClick(shop) },
                     modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
@@ -387,9 +373,8 @@ internal fun ShopItem(
 
                 Spacer(modifier = Modifier.padding(vertical = 18.dp))
 
-                // Кнопка: Детали магазина
                 IconButton(
-                    onClick = { onDetailsClick(shop) }, // Передаем shop обратно
+                    onClick = { onDetailsClick(shop) },
                     modifier = Modifier.size(36.dp)
                 ) {
                     Icon(

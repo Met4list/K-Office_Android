@@ -2,6 +2,7 @@ package com.k_office.presentation.screen.home
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.k_office.domain.base.DataState
 import com.k_office.domain.model.AdsBanner
 import com.k_office.domain.model.CurrentUserModel
 import com.k_office.domain.use_case.GetAdsBannersUseCase
@@ -47,8 +48,8 @@ class HomeViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            logoutUseCase {
-                _logoutAction.value = true
+            launchWithResponseState(block = { logoutUseCase.invoke(Unit) }) {
+                _logoutAction.emit(it)
             }
         }
     }

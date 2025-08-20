@@ -9,6 +9,10 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
+def properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+
 android {
     namespace 'com.k_office.app'
     compileSdk 35
@@ -20,12 +24,22 @@ android {
         minSdk 24
         targetSdk 35
         versionCode 1
-        versionName "1.1.2"
+        versionName "1.1.3"
+
         manifestPlaceholders = [
-                MAPS_API_KEY: "AIzaSyCPGCg4pZ99sr1K9ep2sWM1LyH-Vut8fNo"
+                MAPS_API_KEY: properties.getProperty('MAPS_API_KEY')
         ]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(KOFFICE_RELEASE_STORE_FILE)
+            storePassword KOFFICE_RELEASE_STORE_PASSWORD
+            keyAlias KOFFICE_RELEASE_KEY_ALIAS
+            keyPassword KOFFICE_RELEASE_KEY_PASSWORD
+        }
     }
 
     productFlavors {
@@ -43,8 +57,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -57,6 +72,11 @@ android {
     buildFeatures {
         compose true
         buildConfig true
+    }
+
+    lint {
+        abortOnError true
+        checkDependencies true
     }
 }
 

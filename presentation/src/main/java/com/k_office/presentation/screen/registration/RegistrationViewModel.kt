@@ -37,7 +37,7 @@ class RegistrationViewModel @Inject constructor(
                     }
 
                     DataState.Loading -> _loading.emit(true)
-                    is DataState.Success<*> -> {
+                    is DataState.Success -> {
                         _loading.emit(false)
                         _isSuccessfulyRegistered.emit(true)
                     }

@@ -2,10 +2,12 @@ package com.k_office.presentation.base.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.k_office.domain.base.DataState
 import com.k_office.domain.base.ResponseState
 import com.k_office.domain.base.UIText
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -39,26 +41,22 @@ abstract class BaseViewModel: ViewModel() {
 
     protected fun <T> launchWithResponseState(
         dispatcher: CoroutineContext = Dispatchers.IO,
-        block: suspend () -> ResponseState<T>,
+        block: suspend () -> Flow<DataState<T>>,
         onSuccess: suspend (T) -> Unit
     ) {
         viewModelScope.launch(dispatcher + coroutineExceptionHandler) {
-            _loading.value = true
-
-            when (val result = block()) {
-
-                is ResponseState.Success -> {
-                    onSuccess(result.data)
-                    _loading.value = false
-                }
-
-                is ResponseState.Error -> {
-                    emitError(result.throwable?.message ?: "Unknown error")
-                    _loading.value = false
-                }
-
-                is ResponseState.Loading -> {
-                    _loading.value = true
+            block.invoke().collect {
+                when (it) {
+                    DataState.Default -> _loading.emit(false)
+                    is DataState.Failure -> {
+                        _loading.emit(false)
+                        _uiTextMessage.emit(it.errorInfo)
+                    }
+                    DataState.Loading -> _loading.emit(true)
+                    is DataState.Success<T> -> {
+                        _loading.emit(false)
+                        it.data?.let { result -> onSuccess.invoke(result) }
+                    }
                 }
             }
         }

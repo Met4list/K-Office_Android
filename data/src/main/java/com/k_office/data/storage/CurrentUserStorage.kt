@@ -22,4 +22,5 @@ interface CurrentUserStorage {
 
     fun getCode(): String
 
+    fun isLoggedIn(): Boolean
 }

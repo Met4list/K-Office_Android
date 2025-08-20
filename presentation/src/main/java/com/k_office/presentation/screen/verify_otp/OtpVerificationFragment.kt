@@ -63,6 +63,5 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
             requireActivity().supportFragmentManager,
             R.id.container
         )
-        requireActivity().supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 }

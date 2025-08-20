@@ -50,7 +50,7 @@ class ShopListViewModel @Inject constructor(
     @SuppressLint("TimberArgCount")
     fun onShopDetailsClick(shop: Shop) {
         selectedShopForModal = shop
-        showModalBottomSheet = true // Или другой флаг, если детали в отдельном модале
+        showModalBottomSheet = true
         Timber.d("ShopListViewModel", "Shop ${shop.name} details clicked, opening modal.")
     }
 

@@ -42,9 +42,12 @@ class HomeFragment: BaseFragment() {
     override fun setupClicks() {
         super.setupClicks()
 
+
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (requireActivity().supportFragmentManager.fragments.size == 1) {
+                val currentFragment = requireActivity().supportFragmentManager.findFragmentByTag(FragmentUtil.getFragmentTag(this@HomeFragment))
+                if (requireActivity().supportFragmentManager.fragments.size == 1 || currentFragment == this@HomeFragment) {
                     requireActivity().finishAffinity()
                 } else {
                     requireActivity().supportFragmentManager.popBackStack()

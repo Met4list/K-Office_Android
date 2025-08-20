@@ -1,5 +1,6 @@
 package com.k_office.presentation.screen.login.components
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +59,7 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
     var phoneNumber by remember { mutableStateOf(TextFieldValue("+380")) }
 
     val loading by viewModel.loading.collectAsState()
+    val uiTextMessage by viewModel.uiTextMessage.collectAsState()
 
     val annotatedText = buildAnnotatedString {
         append(stringResource(R.string.by_continuing_you_agree))
@@ -77,6 +80,12 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
             append(stringResource(R.string.offer_agreement))
         }
         pop()
+    }
+
+    LaunchedEffect(uiTextMessage) {
+        if (uiTextMessage != null) {
+            Toast.makeText(context, uiTextMessage?.getString(context), Toast.LENGTH_SHORT).show()
+        }
     }
 
     if (loading) {
