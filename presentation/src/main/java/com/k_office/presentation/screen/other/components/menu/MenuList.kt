@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.fragment.app.FragmentManager
 import com.k_office.presentation.R
 import com.k_office.presentation.base.compose.ConfirmationDialog
 import com.k_office.presentation.base.utils.FragmentUtil
@@ -20,7 +21,8 @@ import com.k_office.presentation.screen.settings.SettingsFragment
 
 @Composable
 internal inline fun MenuList(
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    fragmentManager: FragmentManager
 ) {
 
     val context = LocalContext.current
@@ -31,7 +33,7 @@ internal inline fun MenuList(
     val currentList = listOf(
 //        MenuItem(stringResource(R.string.news), isFirstOption = true),
         MenuItem(stringResource(R.string.we_on_map_title), onClick = {
-            FragmentUtil.setFragmentIfAbsent(AllShopsFragment(), context.findActivity(), R.id.nav_container)
+            FragmentUtil.setFragmentIfAbsent(AllShopsFragment(), fragmentManager, R.id.nav_container)
         }),
 //        MenuItem(stringResource(R.string.settings), onClick = {
 //            FragmentUtil.setFragmentIfAbsent(SettingsFragment(), context.findActivity(), R.id.nav_container)

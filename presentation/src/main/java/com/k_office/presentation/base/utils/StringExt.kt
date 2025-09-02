@@ -15,3 +15,9 @@ fun String.formatPhoneNumber(): String {
 
     return "+38 ($operatorCode) $part1 $part2 $part3"
 }
+
+fun String.parseOtpFromMessage(): String {
+    val regex = "(\\d{4,6})".toRegex()
+    val matchResult = regex.find(this)
+    return matchResult?.value ?: ""
+}

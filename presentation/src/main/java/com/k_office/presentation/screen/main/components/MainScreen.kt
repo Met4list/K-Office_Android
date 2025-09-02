@@ -33,16 +33,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.k_office.presentation.R
-import com.k_office.presentation.base.utils.withFragmentNavigator
+import com.k_office.presentation.base.utils.FragmentUtil
 import com.k_office.presentation.screen.dialogs.BonusCardDialog
 import com.k_office.presentation.screen.home.HomeViewModel
 import com.k_office.presentation.screen.shop_list.ShopListFragment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal inline fun MainScreen(viewModel: HomeViewModel) {
+internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: FragmentManager) {
 
     val context = LocalContext.current
 
@@ -76,10 +77,8 @@ internal inline fun MainScreen(viewModel: HomeViewModel) {
         )
         Spacer(modifier = Modifier.height(6.dp))
 
-        context.withFragmentNavigator(R.id.nav_container) { navigateTo ->
-            StoreLocation(title = "Адреси магазинів") {
-                navigateTo.invoke(ShopListFragment())
-            }
+        StoreLocation(title = "Адреси магазинів") {
+            FragmentUtil.setFragmentIfAbsent(ShopListFragment(), fragmentManager, R.id.nav_container)
         }
 
         Spacer(modifier = Modifier.height(8.dp))

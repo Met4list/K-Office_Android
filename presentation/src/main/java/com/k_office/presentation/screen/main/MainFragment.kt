@@ -33,7 +33,7 @@ class MainFragment : BaseFragment() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MainScreen(viewModel)
+            MainScreen(viewModel, parentFragmentManager)
         }
     }
 }

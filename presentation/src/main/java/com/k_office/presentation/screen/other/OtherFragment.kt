@@ -26,7 +26,7 @@ class OtherFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = setFragmentContent {
-        OtherScreen(viewModel)
+        OtherScreen(viewModel, childFragmentManager)
     }
 
     override fun setupViewModelCallbacks() {

@@ -1,5 +1,7 @@
 package com.k_office.data.provider
 
+import android.content.Context
+
 interface BaseConfigProvider {
 
     fun provideBaseUrl(): String
@@ -7,4 +9,6 @@ interface BaseConfigProvider {
     fun provideIsDevEnv(): Boolean
 
     fun provideIsDebug(): Boolean
+
+    fun provideAppSignature(context: Context): String?
 }

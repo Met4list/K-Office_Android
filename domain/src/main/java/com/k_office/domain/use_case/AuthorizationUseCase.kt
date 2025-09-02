@@ -1,11 +1,11 @@
 package com.k_office.domain.use_case
 
+import android.content.Context
 import com.k_office.data.api.NotificationApiService
 import com.k_office.data.provider.BaseConfigProvider
 import com.k_office.data.request.RegisterTokenRequest
 import com.k_office.domain.base.BaseUseCase
 import com.k_office.domain.base.DataState
-import com.k_office.domain.base.UIText
 import com.k_office.domain.base.toUIText
 import com.k_office.domain.data_source.AuthDataSource
 import com.k_office.domain.model.MessageModel
@@ -14,10 +14,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
 import javax.inject.Inject
 
 class AuthorizationUseCase @Inject constructor(
+    private val context: Context,
     private val authDataSource: AuthDataSource,
     private val receiveFCMTokenUseCase: ReceiveFCMTokenUseCase,
     private val notificationApiService: NotificationApiService,
@@ -35,7 +35,11 @@ class AuthorizationUseCase @Inject constructor(
                     val formatedPhone = telephone.drop(1)
                     val fcmTokenResponse = receiveFCMTokenUseCase()
                     if (baseConfigProvider.provideIsDevEnv()) notificationApiService.registerFcmToken(RegisterTokenRequest(formatedPhone, fcmTokenResponse))
-                    val response = async(Dispatchers.IO) { authDataSource.sendOtp(formatedPhone, fcmTokenResponse) }.await()
+                    val response = async(Dispatchers.IO) { authDataSource.sendOtp(
+                        formatedPhone,
+                        fcmTokenResponse,
+                        baseConfigProvider.provideAppSignature(context)!!
+                    ) }.await()
                     emit(DataState.Success(data = response))
                 }
                 emit(DataState.Default)

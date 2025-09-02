@@ -24,5 +24,9 @@ class ConstUrls @Inject constructor(
         const val REGISTER = "$AUTH_ROUTE/register"
         const val REFRESH = "$AUTH_ROUTE/refresh"
         const val LOGOUT = "$AUTH_ROUTE/logout"
+
+        // User routes
+        private const val USER_ROUTE = "/user"
+        const val REFRESH_USER_INFO = "$USER_ROUTE/refresh"
     }
 }

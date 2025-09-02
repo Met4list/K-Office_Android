@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,7 +14,6 @@ import com.k_office.presentation.base.utils.FragmentUtil
 import com.k_office.presentation.base.utils.args
 import com.k_office.presentation.base.utils.setFragmentContent
 import com.k_office.presentation.screen.home.HomeFragment
-import com.k_office.presentation.screen.main_activity.MainActivity
 import com.k_office.presentation.screen.verify_otp.args.VerifyOtpArgs
 import com.k_office.presentation.screen.verify_otp.components.OtpVerificationScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,6 +38,7 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
                 viewModel.verifyOtp(args.phoneNumber, it)
             }, onRetryClick = {
                 viewModel.retryOtp(args.phoneNumber)
+                viewModel.clearOTP()
             }
         )
     }

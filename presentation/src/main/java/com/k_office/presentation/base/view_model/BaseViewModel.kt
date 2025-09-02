@@ -6,6 +6,7 @@ import com.k_office.domain.base.DataState
 import com.k_office.domain.base.ResponseState
 import com.k_office.domain.base.UIText
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -40,11 +41,12 @@ abstract class BaseViewModel: ViewModel() {
     }
 
     protected fun <T> launchWithResponseState(
+        scope: CoroutineScope = viewModelScope,
         dispatcher: CoroutineContext = Dispatchers.IO,
         block: suspend () -> Flow<DataState<T>>,
         onSuccess: suspend (T) -> Unit
     ) {
-        viewModelScope.launch(dispatcher + coroutineExceptionHandler) {
+        scope.launch(dispatcher + coroutineExceptionHandler) {
             block.invoke().collect {
                 when (it) {
                     DataState.Default -> _loading.emit(false)

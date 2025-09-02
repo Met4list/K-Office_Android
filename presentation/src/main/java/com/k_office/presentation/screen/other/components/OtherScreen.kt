@@ -12,12 +12,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentManager
 import com.k_office.presentation.base.compose.LoadingDialog
 import com.k_office.presentation.screen.home.HomeViewModel
 import com.k_office.presentation.screen.other.components.menu.MenuList
 
 @Composable
-internal fun OtherScreen(viewModel: HomeViewModel) {
+internal fun OtherScreen(viewModel: HomeViewModel, fragmentManager: FragmentManager) {
 
     val context = LocalContext.current
 
@@ -41,7 +42,7 @@ internal fun OtherScreen(viewModel: HomeViewModel) {
                 phone = currentUser.value?.telephone.orEmpty()
             )
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            MenuList(viewModel)
+            MenuList(viewModel, fragmentManager)
         }
     }
 }

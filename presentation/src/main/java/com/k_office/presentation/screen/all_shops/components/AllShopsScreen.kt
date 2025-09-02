@@ -27,7 +27,7 @@ import com.k_office.presentation.screen.shop_list.ShopListViewModel
 internal inline fun AllShopsScreen(viewModel: ShopListViewModel) {
 
     val context = LocalContext.current
-    val shopList = viewModel.shopsInfo.collectAsStateWithLifecycle()
+    val shopList by viewModel.shopsInfo.collectAsStateWithLifecycle()
 
     val uiSettings by remember {
         mutableStateOf(
@@ -85,7 +85,7 @@ internal inline fun AllShopsScreen(viewModel: ShopListViewModel) {
         properties = properties,
         uiSettings = uiSettings
     ) {
-        shopList.value.forEach { shop ->
+        shopList.forEach { shop ->
             Marker(
                 state = MarkerState(position = LatLng(shop.latLng.latitude, shop.latLng.longitude)),
                 title = shop.name,

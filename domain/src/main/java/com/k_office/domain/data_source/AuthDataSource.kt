@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 interface AuthDataSource {
 
-    suspend fun sendOtp(phoneNumber: String, fcmToken: String): MessageModel
+    suspend fun sendOtp(phoneNumber: String, fcmToken: String, hash: String): MessageModel
 
     suspend fun verifyOtp(phoneNumber: String, otp: String): OtpModel
 
@@ -21,10 +21,23 @@ interface AuthDataSource {
 
     suspend fun logout(refreshToken: String): MessageModel
 
-    class Base @Inject constructor(private val kOfficeApi: KOfficeApiService) : AuthDataSource {
-        override suspend fun sendOtp(phoneNumber: String, fcmToken: String): MessageModel {
-            val response = kOfficeApi.sendOtp(SendOtpRequest(phoneNumber, fcmToken))
-            return MessageModel(response.message)
+    class Base @Inject constructor(
+        private val kOfficeApi: KOfficeApiService
+    ) : AuthDataSource {
+        override suspend fun sendOtp(
+            phoneNumber: String,
+            fcmToken: String,
+            hash: String,
+        ): MessageModel {
+            val response = kOfficeApi.sendOtp(
+                    SendOtpRequest(
+                        phoneNumber,
+                        fcmToken,
+                        hash
+                    )
+                )
+
+            return MessageModel(response?.message!!)
         }
 
         override suspend fun verifyOtp(

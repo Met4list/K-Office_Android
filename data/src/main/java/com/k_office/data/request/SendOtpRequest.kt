@@ -6,5 +6,7 @@ data class SendOtpRequest(
     @SerializedName("phone")
     val phone: String,
     @SerializedName("fcmToken")
-    val fcmToken: String
+    val fcmToken: String,
+    @SerializedName("hash")
+    val hash: String
 )

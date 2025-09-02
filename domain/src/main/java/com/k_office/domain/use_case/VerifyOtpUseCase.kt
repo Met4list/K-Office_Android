@@ -28,7 +28,7 @@ class VerifyOtpUseCase @Inject constructor(
                 send(DataState.Loading)
 
                 if (otp.isEmpty()) {
-                    send(DataState.Failure(UIText.StringResource(R.string.type_phone_login)))
+                    send(DataState.Failure(UIText.getDefaultErrorMessage()))
                     return@channelFlow
                 }
                 val response = async {
@@ -46,7 +46,6 @@ class VerifyOtpUseCase @Inject constructor(
                 val currentUserModel = CurrentUserMapper.mapTo(response.user)
 
                 send(DataState.Success(currentUserModel))
-
                 send(DataState.Default)
             } catch (t: Throwable) {
                 send(DataState.Failure(t.toUIText()))

@@ -42,8 +42,6 @@ class HomeFragment: BaseFragment() {
     override fun setupClicks() {
         super.setupClicks()
 
-
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val currentFragment = requireActivity().supportFragmentManager.findFragmentByTag(FragmentUtil.getFragmentTag(this@HomeFragment))
@@ -73,6 +71,10 @@ class HomeFragment: BaseFragment() {
                     else -> null
                 }
                 if (selectedFragment != null && selectedFragment != activeFragment) {
+                    if ((selectedFragment == mainFragment && activeFragment != mainFragment) || (selectedFragment == otherFragment && activeFragment != otherFragment)) {
+                        childFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    }
+
                     activeFragment = FragmentUtil.hideShowOrAdd(
                         activeFragment,
                         selectedFragment,
@@ -81,15 +83,6 @@ class HomeFragment: BaseFragment() {
                     )
                 }
                 true
-            }
-
-            centerFab.setOnClickListener {
-                activeFragment = FragmentUtil.hideShowOrAdd(
-                    activeFragment,
-                    scanBonusFragment,
-                    childFragmentManager,
-                    R.id.nav_container
-                )
             }
         }
     }

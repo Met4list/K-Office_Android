@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class UserResponse(
     @SerializedName("address")
-    val address: String,
+    val address: String?,
     @SerializedName("bonusCard")
     val bonusCard: String?,
     @SerializedName("code")

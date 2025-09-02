@@ -6,34 +6,38 @@ import android.os.Build
 import com.google.gson.Gson
 import com.k_office.domain.R
 import com.k_office.domain.base.BaseUseCase
+import com.k_office.domain.base.DataState
+import com.k_office.domain.base.toUIText
 import com.k_office.domain.model.LatLng
 import com.k_office.domain.model.Shop
 import com.k_office.domain.model.ShopValuesModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.Locale
 
-class GetShopsInfoUseCase : BaseUseCase<Context, List<Shop>> {
+class GetShopsInfoUseCase : BaseUseCase<Context, Flow<DataState<List<Shop>>>> {
 
-    override suspend fun invoke(context: Context): List<Shop> = withContext(Dispatchers.IO) {
+    override suspend fun invoke(context: Context): Flow<DataState<List<Shop>>> = flow {
         try {
+            emit(DataState.Loading)
             val inputStream = context.resources.openRawResource(R.raw.shop_values)
             val jsonString = BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
 
             val shopData = Gson().fromJson(jsonString, ShopValuesModel::class.java)
 
-            shopData.shops.map { shop ->
+            emit(DataState.Success(shopData.shops.map { shop ->
                 shop.copy(latLng = getLatLngFromAddress(context, shop.fullAddress))
-            }
+            }))
+            emit(DataState.Default)
         } catch (e: IOException) {
-            e.printStackTrace()
-            emptyList()
+            emit(DataState.Failure(e.toUIText()))
         } catch (e: Exception) {
-            e.printStackTrace()
-            emptyList()
+            emit(DataState.Failure(e.toUIText()))
         }
     }
 

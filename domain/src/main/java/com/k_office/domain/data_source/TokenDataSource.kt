@@ -10,6 +10,8 @@ interface TokenDataSource {
 
     suspend fun receiveTokens(): TokensModel?
 
+    suspend fun clear()
+
     class Base(private val sharedPreferences: SharedPreferences, private val gson: Gson) :
         TokenDataSource {
 
@@ -22,6 +24,10 @@ interface TokenDataSource {
 
         override suspend fun receiveTokens(): TokensModel? {
             return gson.tokensModel()
+        }
+
+        override suspend fun clear() {
+            sharedPrefsEdit.clear().apply()
         }
 
         private fun Gson.tokensModel(): TokensModel? {

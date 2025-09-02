@@ -67,10 +67,9 @@ class ShopListViewModel @Inject constructor(
 
     @SuppressLint("TimberArgCount")
     fun loadShops(context: Context) {
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            val shops = getShopsInfoUseCase.invoke(context)
-            _shopsInfo.emit(shops)
-            Timber.d("ShopListViewModel", "Shops loaded: ${shops.size}")
+        launchWithResponseState(block = { getShopsInfoUseCase.invoke(context) }) {
+            _shopsInfo.emit(it)
+            Timber.d("ShopListViewModel", "Shops loaded: ${it.size}")
         }
     }
 }

@@ -110,7 +110,6 @@ class TokenRefreshInterceptor @Inject constructor(
     private fun handleRefreshFailure() {
         runBlocking { tokenStorage.clearTokens() }
 
-        // Send broadcast to notify UI about logout
         val intent = Intent("ACTION_TOKEN_EXPIRED")
         localBroadCastManager.sendBroadcast(intent)
     }

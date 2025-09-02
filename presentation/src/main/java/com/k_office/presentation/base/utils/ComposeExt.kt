@@ -5,14 +5,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
-import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -171,7 +168,7 @@ private fun startLocationUpdatesInternal(
 }
 
 @Composable
-fun Context.withFragmentNavigator(
+fun Context.WithFragmentNavigator(
     @IdRes containerId: Int,
     content: @Composable (navigateTo: (Fragment) -> Unit) -> Unit
 ) {

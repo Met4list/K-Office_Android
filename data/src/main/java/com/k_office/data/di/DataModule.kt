@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder
 import com.k_office.data.api.AuthApiService
 import com.k_office.data.api.KOfficeApiService
 import com.k_office.data.api.NotificationApiService
+import com.k_office.data.api.UserApiService
 import com.k_office.data.provider.BaseConfigProvider
 import com.k_office.data.storage.CurrentUserStorage
 import com.k_office.data.storage.CurrentUserStorageImpl
@@ -38,8 +39,8 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideConstUrls(baseConfigProvider: BaseConfigProvider): ConstUrls
-        = ConstUrls(baseConfigProvider)
+    fun provideConstUrls(baseConfigProvider: BaseConfigProvider): ConstUrls =
+        ConstUrls(baseConfigProvider)
 
     @Provides
     @Singleton
@@ -53,7 +54,11 @@ class DataModule {
     @Provides
     @Singleton
     @Named("auth")
-    fun provideAuthRetrofit(@Named("auth") okHttpClient: OkHttpClient, gson: Gson, constUrls: ConstUrls): Retrofit =
+    fun provideAuthRetrofit(
+        @Named("auth") okHttpClient: OkHttpClient,
+        gson: Gson,
+        constUrls: ConstUrls,
+    ): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(constUrls.BASE_URL)
@@ -69,6 +74,11 @@ class DataModule {
     @Singleton
     fun provideAuthApiService(@Named("auth") retrofit: Retrofit): AuthApiService =
         retrofit.create(AuthApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUserApiService(@Named("auth") retrofit: Retrofit): UserApiService =
+        retrofit.create(UserApiService::class.java)
 
     @Provides
     @Singleton
@@ -90,36 +100,41 @@ class DataModule {
         return CurrentUserStorageImpl(sharedPreferences)
     }
 
-    // Main OkHttpClient with all interceptors including TokenRefreshInterceptor
     @Provides
     @Singleton
     fun provideOkHttpClient(
         @ApplicationContext context: Context,
+        baseConfigProvider: BaseConfigProvider,
         tokenStorage: TokenStorage,
-    ): OkHttpClient =
+        tokenRefreshInterceptor: TokenRefreshInterceptor,
+    ): OkHttpClient {
+        val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
+        val okHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(ChuckerInterceptor.Builder(context).build())
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(AuthInterceptor(tokenStorage))
             .addDefaultInterceptor()
+            .addInterceptor(tokenRefreshInterceptor)
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .connectTimeout(120, TimeUnit.SECONDS)
-            .build()
 
-    // Separate OkHttpClient for AuthApiService without TokenRefreshInterceptor
+        if (baseConfigProvider.provideIsDevEnv()) {
+            okHttpClient.addInterceptor(chuckerInterceptor)
+        }
+
+        return okHttpClient.build()
+    }
+
     @Provides
     @Singleton
     @Named("auth")
     fun provideAuthOkHttpClient(
-        @ApplicationContext context: Context,
         tokenStorage: TokenStorage,
     ): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(ChuckerInterceptor.Builder(context).build())
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(AuthInterceptor(tokenStorage))
-            // NOTE: No TokenRefreshInterceptor here to break circular dependency
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .connectTimeout(120, TimeUnit.SECONDS)
@@ -131,4 +146,16 @@ class DataModule {
         GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create()
+
+    @Provides
+    @Singleton
+    fun provideTokenRefreshInterceptor(
+        @ApplicationContext context: Context,
+        tokenStorage: TokenStorage,
+        authApiService: AuthApiService,
+    ): TokenRefreshInterceptor = TokenRefreshInterceptor(
+        tokenStorage,
+        authApiService,
+        localBroadCastManager = LocalBroadcastManager.getInstance(context)
+    )
 }
