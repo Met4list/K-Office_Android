@@ -1,5 +1,6 @@
 package com.k_office.data.utils
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.k_office.data.api.AuthApiService
@@ -12,6 +13,7 @@ import kotlinx.coroutines.sync.withLock
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import timber.log.Timber
 import javax.inject.Inject
 
 class TokenRefreshInterceptor @Inject constructor(
@@ -22,12 +24,14 @@ class TokenRefreshInterceptor @Inject constructor(
 
     private val mutex = Mutex()
 
+    @SuppressLint("TimberArgCount")
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val response = chain.proceed(originalRequest)
 
         // If response is 401 and it's not an auth endpoint, try to refresh token
-        if (response.code == 401 && !originalRequest.url.encodedPath.contains("/auth/")) {
+        if (response.code == 401) {
+            Timber.d("Received 401 for %s, attempting refresh", originalRequest.url.encodedPath)
             return handleUnauthorized(chain, originalRequest, response)
         }
 
@@ -78,6 +82,7 @@ class TokenRefreshInterceptor @Inject constructor(
             val refreshToken = tokenStorage.getRefreshToken()
                 ?: return Result.failure(Exception("No refresh token available"))
 
+            Timber.d("Attempting to refresh token with refresh token: %s...", refreshToken.take(10))
             val response = authApiService.refreshToken(RefreshTokenRequest(refreshToken))
 
             if (response.isSuccessful) {
@@ -85,12 +90,15 @@ class TokenRefreshInterceptor @Inject constructor(
                     val authTokens = AuthTokens(dto.accessToken, dto.refreshToken, dto.expiresIn)
                     val expiryTime = System.currentTimeMillis() + (dto.expiresIn * 60 * 1000)
                     tokenStorage.saveTokens(dto.accessToken, dto.refreshToken, expiryTime)
+                    Timber.d("Token refresh successful, new access token: %s...", dto.accessToken.take(10))
                     Result.success(authTokens)
                 } ?: Result.failure(Exception("Empty response body"))
             } else {
+                Timber.e("Token refresh failed: %d, body: %s", response.code(), response.errorBody()?.string())
                 Result.failure(Exception("Token refresh failed: ${response.code()}"))
             }
         } catch (e: Exception) {
+            Timber.e(e, "Exception during token refresh: %s", e.message)
             Result.failure(e)
         }
     }

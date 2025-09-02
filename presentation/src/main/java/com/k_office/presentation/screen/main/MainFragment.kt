@@ -26,7 +26,7 @@ class MainFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = setFragmentContent {
         Column(
             modifier = Modifier.fillMaxSize(),

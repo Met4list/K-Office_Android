@@ -35,6 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.FragmentUtil
 import com.k_office.presentation.screen.dialogs.BonusCardDialog
@@ -54,6 +56,10 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
         mutableStateOf(false)
     }
 
+    val loading by viewModel.loading.collectAsState()
+
+    val refreshState = rememberSwipeRefreshState(loading)
+
     LaunchedEffect(Unit) {
         viewModel.loadBanners(context)
     }
@@ -64,31 +70,35 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceAround
-    ) {
-        HeaderGreeting(
-            name = currentUser.value?.name.orEmpty(),
-            balance = "${currentUser.value?.sum} бонусів"
-        )
-        Spacer(modifier = Modifier.height(6.dp))
+    SwipeRefresh(state = refreshState, onRefresh = {
+        viewModel.updateUserInfo()
+    }) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceAround
+        ) {
+            HeaderGreeting(
+                name = currentUser.value?.name.orEmpty(),
+                balance = "${currentUser.value?.sum ?: 0} бонусів"
+            )
+            Spacer(modifier = Modifier.height(6.dp))
 
-        StoreLocation(title = "Адреси магазинів") {
-            FragmentUtil.setFragmentIfAbsent(ShopListFragment(), fragmentManager, R.id.nav_container)
+            StoreLocation(title = "Адреси магазинів") {
+                FragmentUtil.setFragmentIfAbsent(ShopListFragment(), fragmentManager, R.id.nav_container)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            BarCode(currentUser.value) {
+                showBonusCard = true
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            AdsBanners(banners = banners.value)
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        BarCode(currentUser.value) {
-            showBonusCard = true
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-        AdsBanners(banners = banners.value)
     }
 }
 
@@ -109,7 +119,8 @@ internal inline fun HeaderGreeting(name: String, balance: String) {
             Text(
                 text = name,
                 color = colorResource(R.color.blue_primary),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1
             )
         }
         Column(horizontalAlignment = Alignment.End) {
@@ -117,7 +128,8 @@ internal inline fun HeaderGreeting(name: String, balance: String) {
             Text(
                 text = balance,
                 color = colorResource(R.color.blue_primary),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
             )
         }
     }

@@ -32,15 +32,6 @@ class MainViewModel @Inject constructor(
     private fun checkUserLoggedIn() {
         viewModelScope.launch {
             try {
-                val accessToken = tokenDataSource.receiveTokens()?.accessToken
-                val refreshToken = tokenDataSource.receiveTokens()?.refreshToken
-
-                if (accessToken == null || refreshToken == null) {
-                    Timber.d("No tokens found, user not logged in")
-                    _isLoggedIn.emit(false)
-                    return@launch
-                }
-
                 launchWithResponseState(block = { getCurrentUserUseCase.invoke(Unit) }) { currentUser ->
                     val isLoggedIn = currentUser != null
                     Timber.d("Current user check result: $isLoggedIn")

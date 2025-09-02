@@ -110,6 +110,6 @@ class DomainModule {
     @Singleton
     fun provideUpdateUserInfoUseCase(
         userDataSource: UserDataSource,
-        currentUserStorage: CurrentUserStorage,
+        currentUserStorage: CurrentUserStorage
     ): UpdateUserInfoUseCase = UpdateUserInfoUseCase(userDataSource, currentUserStorage)
 }

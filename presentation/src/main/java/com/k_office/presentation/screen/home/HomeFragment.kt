@@ -84,6 +84,26 @@ class HomeFragment: BaseFragment() {
                 }
                 true
             }
+
+            // When reselecting the same tab, pop that tab's back stack to root.
+            bottomNav.setOnItemReselectedListener { item ->
+                when (item.itemId) {
+                    R.id.nav_main, R.id.nav_profile -> {
+                        childFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        // Ensure the root fragment of the tab is visible after pop
+                        val target = if (item.itemId == R.id.nav_main) mainFragment else otherFragment
+                        if (activeFragment != target) {
+                            activeFragment = FragmentUtil.hideShowOrAdd(
+                                activeFragment,
+                                target,
+                                childFragmentManager,
+                                R.id.nav_container
+                            )
+                        }
+                    }
+                    else -> Unit
+                }
+            }
         }
     }
 }

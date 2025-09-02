@@ -24,6 +24,8 @@ class UpdateUserInfoUseCase @Inject constructor(
             emit(DataState.Success(data = mappedModel))
             emit(DataState.Default)
         } catch (t: Throwable) {
+            // Let the TokenRefreshInterceptor handle token refresh failures
+            // It will send ACTION_TOKEN_EXPIRED broadcast which triggers logout
             emit(DataState.Failure(t.toUIText()))
             emit(DataState.Default)
         }

@@ -35,7 +35,6 @@ class OtpVerificationViewModel @Inject constructor(
     private val _otpState = MutableStateFlow<String?>(null)
     val otpState = _otpState.asStateFlow()
 
-    // SMS-related state
     private val _smsPermissionGranted = MutableStateFlow(false)
     val smsPermissionGranted = _smsPermissionGranted.asStateFlow()
 

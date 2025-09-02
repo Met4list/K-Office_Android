@@ -77,7 +77,7 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideUserApiService(@Named("auth") retrofit: Retrofit): UserApiService =
+    fun provideUserApiService(retrofit: Retrofit): UserApiService =
         retrofit.create(UserApiService::class.java)
 
     @Provides
@@ -119,7 +119,7 @@ class DataModule {
             .writeTimeout(120, TimeUnit.SECONDS)
             .connectTimeout(120, TimeUnit.SECONDS)
 
-        if (baseConfigProvider.provideIsDevEnv()) {
+        if (baseConfigProvider.provideIsDevEnv() || baseConfigProvider.provideIsDebug()) {
             okHttpClient.addInterceptor(chuckerInterceptor)
         }
 

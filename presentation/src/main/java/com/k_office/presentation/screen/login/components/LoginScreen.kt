@@ -188,7 +188,7 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
             // Login button
             Button(
                 onClick = { viewModel.login(phoneNumber.text) },
-                enabled = phoneNumber.text.isNotBlank() || phoneNumber.text.length >= 4,
+                enabled = phoneNumber.text.isNotBlank() && viewModel.isValidPhoneNumber(phoneNumber.text),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),

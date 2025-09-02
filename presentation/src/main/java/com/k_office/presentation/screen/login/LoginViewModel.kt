@@ -20,4 +20,9 @@ class LoginViewModel @Inject constructor(
             _phoneNumber.emit(telephoneNumber)
         }
     }
+
+    fun isValidPhoneNumber(phoneNumber: String): Boolean {
+        val phoneRegex = Regex("^\\+380\\d{9}$")
+        return phoneNumber.matches(phoneRegex) && phoneNumber.length == 13
+    }
 }
