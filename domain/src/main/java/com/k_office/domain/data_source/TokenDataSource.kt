@@ -3,6 +3,7 @@ package com.k_office.domain.data_source
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.k_office.domain.model.TokensModel
+import timber.log.Timber
 
 interface TokenDataSource {
 
@@ -35,7 +36,9 @@ interface TokenDataSource {
             if (tokensModel.isNullOrBlank()) {
                 return null
             } else {
-                return fromJson(tokensModel, TokensModel::class.java)
+                val model = fromJson(tokensModel, TokensModel::class.java)
+                Timber.d("Received tokens from :${this::class.java.name}", model.accessToken, model.refreshToken)
+                return model
             }
         }
 

@@ -1,15 +1,16 @@
 package com.k_office.presentation.screen.home
 
-import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
 import com.k_office.presentation.base.utils.FragmentUtil
@@ -19,10 +20,10 @@ import com.k_office.presentation.screen.main.MainFragment
 import com.k_office.presentation.screen.other.OtherFragment
 import com.k_office.presentation.screen.scan_bonus.ScanBonusFragment
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment: BaseFragment() {
+class HomeFragment : BaseFragment() {
 
     private val binding by viewBinding(FragmentHomeBinding::inflate)
     private val viewModel: HomeViewModel by viewModels()
@@ -36,22 +37,27 @@ class HomeFragment: BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = binding.root
 
     override fun setupClicks() {
         super.setupClicks()
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object: OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val currentFragment = requireActivity().supportFragmentManager.findFragmentByTag(FragmentUtil.getFragmentTag(this@HomeFragment))
-                if (requireActivity().supportFragmentManager.fragments.size == 1 || currentFragment == this@HomeFragment) {
-                    requireActivity().finishAffinity()
-                } else {
-                    requireActivity().supportFragmentManager.popBackStack()
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val currentFragment =
+                        requireActivity().supportFragmentManager.findFragmentByTag(
+                            FragmentUtil.getFragmentTag(this@HomeFragment)
+                        )
+                    if (requireActivity().supportFragmentManager.fragments.size == 1 || currentFragment == this@HomeFragment) {
+                        requireActivity().finishAffinity()
+                    } else {
+                        requireActivity().supportFragmentManager.popBackStack()
+                    }
                 }
-            }
-        })
+            })
 
         mainFragment = MainFragment()
         otherFragment = OtherFragment()
@@ -72,7 +78,10 @@ class HomeFragment: BaseFragment() {
                 }
                 if (selectedFragment != null && selectedFragment != activeFragment) {
                     if ((selectedFragment == mainFragment && activeFragment != mainFragment) || (selectedFragment == otherFragment && activeFragment != otherFragment)) {
-                        childFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        childFragmentManager.popBackStack(
+                            null,
+                            FragmentManager.POP_BACK_STACK_INCLUSIVE
+                        )
                     }
 
                     activeFragment = FragmentUtil.hideShowOrAdd(
@@ -89,9 +98,13 @@ class HomeFragment: BaseFragment() {
             bottomNav.setOnItemReselectedListener { item ->
                 when (item.itemId) {
                     R.id.nav_main, R.id.nav_profile -> {
-                        childFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                        childFragmentManager.popBackStack(
+                            null,
+                            FragmentManager.POP_BACK_STACK_INCLUSIVE
+                        )
                         // Ensure the root fragment of the tab is visible after pop
-                        val target = if (item.itemId == R.id.nav_main) mainFragment else otherFragment
+                        val target =
+                            if (item.itemId == R.id.nav_main) mainFragment else otherFragment
                         if (activeFragment != target) {
                             activeFragment = FragmentUtil.hideShowOrAdd(
                                 activeFragment,
@@ -101,9 +114,21 @@ class HomeFragment: BaseFragment() {
                             )
                         }
                     }
+
                     else -> Unit
                 }
             }
+        }
+    }
+
+    override fun setupViewModelCallbacks() {
+        super.setupViewModelCallbacks()
+
+        lifecycleScope.launch {
+            viewModel
+                .uiTextMessage
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect(::showMessage)
         }
     }
 }

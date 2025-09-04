@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.k_office.domain.base.DataState
 import com.k_office.domain.base.ResponseState
 import com.k_office.domain.base.UIText
+import com.k_office.domain.base.toUIText
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,24 +22,15 @@ abstract class BaseViewModel: ViewModel() {
 
     protected val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Timber.e(throwable)
-        emitError(throwable.message ?: "Unknown error")
+        _uiTextMessage.value = throwable.toUIText()
         _loading.value = false
     }
 
     protected val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
 
-    protected val _errorMessage = MutableSharedFlow<String>()
-    val errorMessage = _errorMessage.asSharedFlow()
-
     protected val _uiTextMessage = MutableStateFlow<UIText?>(null)
     val uiTextMessage = _uiTextMessage.asStateFlow()
-
-    private fun emitError(message: String) {
-        viewModelScope.launch {
-            _errorMessage.emit(message)
-        }
-    }
 
     protected fun <T> launchWithResponseState(
         scope: CoroutineScope = viewModelScope,

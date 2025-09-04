@@ -25,16 +25,15 @@ class RegistrationUseCase @Inject constructor(
                 send(DataState.Loading)
                 val fullName = request["fullName"].toString()
                 val phoneNumber = request["telephoneNumber"].toString()
-                val address = request["address"].toString()
 
-                if (fullName.isNullOrEmpty() || phoneNumber.isNullOrEmpty() || address.isNullOrEmpty()) {
+                if (fullName.isNullOrEmpty() || phoneNumber.isNullOrEmpty()) {
                     send(DataState.Failure(UIText.getDefaultErrorMessage()))
                     return@channelFlow
                 }
 
                 val response = async {
                     authDataSource.register(
-                        RegistrationModel(phoneNumber, fullName, address)
+                        RegistrationModel(phoneNumber, fullName)
                     )
                 }.await()
 

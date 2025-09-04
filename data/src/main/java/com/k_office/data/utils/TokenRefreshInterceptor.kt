@@ -31,7 +31,14 @@ class TokenRefreshInterceptor @Inject constructor(
 
         // If response is 401 and it's not an auth endpoint, try to refresh token
         if (response.code == 401) {
-            Timber.d("Received 401 for %s, attempting refresh", originalRequest.url.encodedPath)
+            // Skip if this is already a retried request post-refresh to avoid loops
+            if (originalRequest.header("X-Retry-After-Refresh") == "true") {
+                return response
+            }
+
+            // Attempt refresh if we have a refresh token available, even when the
+            // original request had no Authorization header (e.g., token was missing/expired)
+            Timber.d("Received 401 for %s, attempting refresh (if refresh token exists)", originalRequest.url.encodedPath)
             return handleUnauthorized(chain, originalRequest, response)
         }
 
@@ -110,6 +117,7 @@ class TokenRefreshInterceptor @Inject constructor(
     ): Response {
         val newRequest = originalRequest.newBuilder()
             .header("Authorization", "Bearer $newAccessToken")
+            .header("X-Retry-After-Refresh", "true")
             .build()
 
         return chain.proceed(newRequest)

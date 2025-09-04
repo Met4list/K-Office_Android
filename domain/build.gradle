@@ -48,5 +48,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.6.2'
     implementation 'com.google.firebase:firebase-messaging-ktx:24.1.2'
 
+    // Timber
+    implementation(libs.timber)
+
     implementation project(":data")
 }

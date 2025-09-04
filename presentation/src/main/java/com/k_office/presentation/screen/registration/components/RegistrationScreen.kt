@@ -102,20 +102,6 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Address input
-            OutlinedTextField(
-                value = address,
-                onValueChange = { address = it },
-                label = { Text("Адреса") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = colorResource(R.color.blue_primary))
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             // Phone number input
             OutlinedTextField(
                 value = phoneNumber,
@@ -178,7 +164,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
 
             // Continue button
             Button(
-                onClick = { viewModel.registrationBonus(phoneNumber.text, name, address) },
+                onClick = { viewModel.registrationBonus(phoneNumber.text, name) },
                 enabled = name.isNotBlank() && address.isNotBlank() && phoneNumber.text.isNotBlank(), // Enable based on validation
                 modifier = Modifier
                     .fillMaxWidth()

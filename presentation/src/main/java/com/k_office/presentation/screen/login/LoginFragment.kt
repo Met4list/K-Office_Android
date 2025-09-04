@@ -59,15 +59,7 @@ class LoginFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel.uiTextMessage
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
-                .collect {
-                    if (it != null) {
-                        Toast.makeText(
-                            requireContext(),
-                            it.getString(requireContext()),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+                .collect(::showMessage)
         }
     }
 }

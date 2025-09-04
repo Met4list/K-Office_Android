@@ -19,12 +19,11 @@ class RegistrationViewModel @Inject constructor(
     private val _isSuccessfulyRegistered = MutableStateFlow(false)
     val isSuccessfulyRegistered = _isSuccessfulyRegistered.asStateFlow()
 
-    fun registrationBonus(telephone: String, name: String, address: String) {
+    fun registrationBonus(telephone: String, name: String) {
 
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             val requestParams = mapOf(
                 "telephoneNumber" to telephone,
-                "address" to address,
                 "fullName" to name
             )
             registrationUseCase.invoke(requestParams).collect {

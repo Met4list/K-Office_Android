@@ -30,6 +30,7 @@ class RegistrationFragment : BaseFragment() {
 
     override fun setupViewModelCallbacks() {
         super.setupViewModelCallbacks()
+
         lifecycleScope.launch {
             viewModel.isSuccessfulyRegistered.collect {
                 if (it) {
@@ -37,18 +38,12 @@ class RegistrationFragment : BaseFragment() {
                 }
             }
         }
+
         lifecycleScope.launch {
             viewModel
                 .uiTextMessage
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle).collect {
-                    if (it != null) {
-                        Toast.makeText(
-                            requireContext(),
-                            it.getString(requireContext()),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect(::showMessage)
         }
     }
 }

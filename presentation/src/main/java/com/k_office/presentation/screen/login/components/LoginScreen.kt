@@ -59,7 +59,6 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
     var phoneNumber by remember { mutableStateOf(TextFieldValue("+380")) }
 
     val loading by viewModel.loading.collectAsState()
-    val uiTextMessage by viewModel.uiTextMessage.collectAsState()
 
     val annotatedText = buildAnnotatedString {
         append(stringResource(R.string.by_continuing_you_agree))
@@ -80,12 +79,6 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
             append(stringResource(R.string.offer_agreement))
         }
         pop()
-    }
-
-    LaunchedEffect(uiTextMessage) {
-        if (uiTextMessage != null) {
-            Toast.makeText(context, uiTextMessage?.getString(context), Toast.LENGTH_SHORT).show()
-        }
     }
 
     if (loading) {

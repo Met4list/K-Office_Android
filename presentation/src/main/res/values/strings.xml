@@ -17,7 +17,7 @@
     <string name="and">та</string>
     <string name="offer_agreement">Угодою про оферту</string>
     <string name="register_now">Зареєструватись зараз</string>
-    <string name="login">Логін</string>
+    <string name="login">Увійти</string>
     <string name="auth">Авторизація</string>
     <string name="phone_number">Номер телефону</string>
     <string name="scan_in_shop">Скануйте у магазині</string>
@@ -41,4 +41,5 @@
     <string name="retry">Повторити</string>
 
     <string name="enter_otp">Введіть код підтвердження</string>
+    <string name="loading">Завантаження</string>
 </resources>

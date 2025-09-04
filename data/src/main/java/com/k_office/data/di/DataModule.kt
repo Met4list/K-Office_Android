@@ -44,7 +44,8 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson, constUrls: ConstUrls): Retrofit =
+    @Named("default")
+    fun provideRetrofit(@Named("default") okHttpClient: OkHttpClient, gson: Gson, constUrls: ConstUrls): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(constUrls.BASE_URL)
@@ -67,7 +68,7 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideKOfficeApiService(retrofit: Retrofit): KOfficeApiService =
+    fun provideKOfficeApiService(@Named("auth") retrofit: Retrofit): KOfficeApiService =
         retrofit.create(KOfficeApiService::class.java)
 
     @Provides
@@ -77,12 +78,12 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideUserApiService(retrofit: Retrofit): UserApiService =
+    fun provideUserApiService(@Named("default") retrofit: Retrofit): UserApiService =
         retrofit.create(UserApiService::class.java)
 
     @Provides
     @Singleton
-    fun provideNotificationApiService(retrofit: Retrofit): NotificationApiService =
+    fun provideNotificationApiService(@Named("default") retrofit: Retrofit): NotificationApiService =
         retrofit.create(NotificationApiService::class.java)
 
     @Provides
@@ -102,6 +103,7 @@ class DataModule {
 
     @Provides
     @Singleton
+    @Named("default")
     fun provideOkHttpClient(
         @ApplicationContext context: Context,
         baseConfigProvider: BaseConfigProvider,
@@ -130,16 +132,23 @@ class DataModule {
     @Singleton
     @Named("auth")
     fun provideAuthOkHttpClient(
-        tokenStorage: TokenStorage,
-    ): OkHttpClient =
-        OkHttpClient.Builder()
+        @ApplicationContext context: Context,
+        baseConfigProvider: BaseConfigProvider,
+    ): OkHttpClient {
+        val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
+        val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .addInterceptor(AuthInterceptor(tokenStorage))
+            .addDefaultInterceptor()
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .connectTimeout(120, TimeUnit.SECONDS)
-            .build()
 
+        if (baseConfigProvider.provideIsDevEnv() || baseConfigProvider.provideIsDebug()) {
+            okHttpClient.addInterceptor(chuckerInterceptor)
+        }
+
+        return okHttpClient.build()
+    }
     @Provides
     @Singleton
     fun provideGson(): Gson =

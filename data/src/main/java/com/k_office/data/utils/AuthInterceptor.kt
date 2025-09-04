@@ -13,13 +13,11 @@ class AuthInterceptor @Inject constructor(private val tokenStorage: TokenStorage
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        // Skip adding token for auth endpoints
         if (originalRequest.url.encodedPath.contains("/auth/")) {
             Timber.d("Skipping auth for auth endpoint: %s", originalRequest.url.encodedPath)
             return chain.proceed(originalRequest)
         }
 
-        // Get token synchronously (we're already on a background thread)
         val accessToken = runBlocking { tokenStorage.getAccessToken() }
         
         Timber.d("Request to: %s, Access token: %s", originalRequest.url.encodedPath, if (accessToken != null) "present" else "null")

@@ -7,7 +7,7 @@ import com.k_office.domain.model.RegistrationModel
 object RegisterMapper : Mapper<RegistrationModel, RegisterUserRequest> {
     override fun mapTo(response: RegistrationModel): RegisterUserRequest = with(response) {
         RegisterUserRequest(
-            telephone, name, address
+            telephone, name
         )
     }
 }
