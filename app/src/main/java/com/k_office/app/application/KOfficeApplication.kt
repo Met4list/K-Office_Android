@@ -1,6 +1,9 @@
 package com.k_office.app.application
 
 import android.app.Application
+import android.util.Log
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
@@ -14,10 +17,13 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
-class KOfficeApplication : Application(), ImageLoaderFactory {
+class KOfficeApplication : Application(), ImageLoaderFactory, Configuration.Provider {
 
     @Inject
     lateinit var currentUserStorage: CurrentUserStorage
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {
         super.onCreate()
@@ -64,4 +70,10 @@ class KOfficeApplication : Application(), ImageLoaderFactory {
             .logger(DebugLogger())
             .build()
     }
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .setMinimumLoggingLevel(Log.DEBUG)
+            .build()
 }

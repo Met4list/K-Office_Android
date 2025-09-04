@@ -1,6 +1,8 @@
 package com.k_office.domain.mapper
 
 import com.k_office.data.model.UserModel
+import com.k_office.data.model.UserRefreshModel
+import com.k_office.data.response.UserRefreshResponse
 import com.k_office.data.response.UserResponse
 import com.k_office.domain.base.Mapper
 import com.k_office.domain.model.CurrentUserModel
@@ -30,6 +32,25 @@ object CurrentUserMapper: Mapper<UserModel, CurrentUserModel> {
             name,
             telephone,
             sum = null
+        )
+    }
+
+    fun mapTo(response: UserRefreshResponse): UserRefreshModel = with(response.user) {
+        UserRefreshModel(
+            message = response.message,
+            accessToken = response.accessToken,
+            refreshToken = response.refreshToken,
+            expiresIn = response.expiresIn,
+            user = UserModel(
+                address = null,
+                bonusCard,
+                code,
+                createdAt = "",
+                id,
+                name,
+                telephone,
+                sum.toFloat()
+            )
         )
     }
 }

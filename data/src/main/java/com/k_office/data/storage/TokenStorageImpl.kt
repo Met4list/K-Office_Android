@@ -44,4 +44,8 @@ class TokenStorageImpl(private val sharedPreferences: SharedPreferences): TokenS
         val expiryTime = sharedPreferences.getLong(TOKEN_EXPIRY_KEY, 0)
         System.currentTimeMillis() >= expiryTime
     }
+
+    override suspend fun getExpiryTimeMillis(): Long = withContext(Dispatchers.IO) {
+        sharedPreferences.getLong(TOKEN_EXPIRY_KEY, 0L)
+    }
 }

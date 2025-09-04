@@ -11,4 +11,6 @@ interface TokenStorage {
     suspend fun clearTokens()
 
     suspend fun isTokenExpired(): Boolean
+
+    suspend fun getExpiryTimeMillis(): Long
 }

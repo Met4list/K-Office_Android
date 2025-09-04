@@ -11,9 +11,8 @@ import com.k_office.domain.data_source.AuthDataSource
 import com.k_office.domain.model.MessageModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.channelFlow
 import javax.inject.Inject
 
 class AuthorizationUseCase @Inject constructor(
@@ -21,30 +20,32 @@ class AuthorizationUseCase @Inject constructor(
     private val authDataSource: AuthDataSource,
     private val receiveFCMTokenUseCase: ReceiveFCMTokenUseCase,
     private val notificationApiService: NotificationApiService,
-    private val baseConfigProvider: BaseConfigProvider
+    private val baseConfigProvider: BaseConfigProvider,
 ) : BaseUseCase<String, Flow<DataState<MessageModel>>> {
     override suspend fun invoke(telephone: String): Flow<DataState<MessageModel>> =
-        flow {
+        channelFlow {
             try {
-                emit(DataState.Loading)
+                send(DataState.Loading)
                 if (telephone.isNullOrBlank()) {
-                    emit(DataState.Failure())
-                    return@flow
+                    send(DataState.Failure())
+                    return@channelFlow
                 }
-                coroutineScope {
-                    val formatedPhone = telephone.drop(1)
-                    val fcmTokenResponse = receiveFCMTokenUseCase()
-                    if (baseConfigProvider.provideIsDevEnv()) notificationApiService.registerFcmToken(RegisterTokenRequest(formatedPhone, fcmTokenResponse))
-                    val response = async(Dispatchers.IO) { authDataSource.sendOtp(
-                        formatedPhone,
+                val fcmTokenResponse = receiveFCMTokenUseCase()
+                if (baseConfigProvider.provideIsDevEnv()) notificationApiService.registerFcmToken(
+                    RegisterTokenRequest(telephone.drop(1), fcmTokenResponse)
+                )
+                val response = async(Dispatchers.IO) {
+                    authDataSource.sendOtp(
+                        telephone,
                         fcmTokenResponse,
                         baseConfigProvider.provideAppSignature(context)!!
-                    ) }.await()
-                    emit(DataState.Success(data = response))
-                }
-                emit(DataState.Default)
+                    )
+                }.await()
+                send(DataState.Success(data = response))
+
+                send(DataState.Default)
             } catch (t: Throwable) {
-                emit(DataState.Failure(t.toUIText()))
+                send(DataState.Failure(t.toUIText()))
             }
         }
 }

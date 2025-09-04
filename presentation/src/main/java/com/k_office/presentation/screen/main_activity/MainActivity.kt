@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.k_office.presentation.utils.UserDataServiceManager
 import com.k_office.domain.data_source.TokenDataSource
 import com.k_office.presentation.R
 import com.k_office.presentation.base.activity.BaseActivity
@@ -29,6 +30,9 @@ class MainActivity : BaseActivity() {
 
     @Inject
     lateinit var tokenStorage: TokenDataSource
+
+    @Inject
+    lateinit var userDataServiceManager: UserDataServiceManager
 
     private val tokenExpiredReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -52,12 +56,16 @@ class MainActivity : BaseActivity() {
                         this@MainActivity,
                         R.id.container
                     )
+                    // Start background service when user is logged in
+                    userDataServiceManager.startPeriodicWork(lifecycleScope,this@MainActivity)
                 } else {
                     FragmentUtil.setFragmentIfAbsent(
                         LoginFragment(),
                         this@MainActivity,
                         R.id.container
                     )
+                    // Stop background service when user is logged out
+                    userDataServiceManager.stopPeriodicWork(this@MainActivity)
                 }
             }
         }
@@ -121,6 +129,7 @@ class MainActivity : BaseActivity() {
     private fun handleTokenExpired() {
         lifecycleScope.launch {
             viewModel.onTokenExpired()
+            userDataServiceManager.stopPeriodicWork(this@MainActivity)
         }
     }
 

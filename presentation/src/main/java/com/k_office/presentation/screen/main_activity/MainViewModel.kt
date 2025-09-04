@@ -1,6 +1,8 @@
 package com.k_office.presentation.screen.main_activity
 
+import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.k_office.presentation.utils.UserDataServiceManager
 import com.k_office.domain.data_source.TokenDataSource
 import com.k_office.domain.use_case.GetCurrentUserUseCase
 import com.k_office.presentation.base.view_model.BaseViewModel
@@ -16,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val tokenDataSource: TokenDataSource
+    private val tokenDataSource: TokenDataSource,
+    private val userDataServiceManager: UserDataServiceManager
 ) : BaseViewModel() {
 
     private val _isLoggedIn = MutableStateFlow(false)
@@ -65,9 +68,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onUserLoggedOut(context: Context) {
+        userDataServiceManager.stopPeriodicWork(context)
+    }
+
     private suspend fun clearTokens() {
         try {
-            tokenDataSource.clear()
+            tokenDataSource.clearTokens()
             Timber.d("Tokens cleared")
         } catch (e: Exception) {
             Timber.e(e, "Error clearing tokens")

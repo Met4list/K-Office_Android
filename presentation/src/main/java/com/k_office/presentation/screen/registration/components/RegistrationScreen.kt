@@ -44,12 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.k_office.presentation.R
 import com.k_office.presentation.base.compose.LoadingDialog
+import com.k_office.presentation.base.utils.isValidPhoneNumber
 import com.k_office.presentation.screen.registration.RegistrationViewModel
 
 @Composable
 internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
     var name by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
 
     var phoneNumber by remember { mutableStateOf(TextFieldValue("+380")) }
 
@@ -165,7 +165,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
             // Continue button
             Button(
                 onClick = { viewModel.registrationBonus(phoneNumber.text, name) },
-                enabled = name.isNotBlank() && address.isNotBlank() && phoneNumber.text.isNotBlank(), // Enable based on validation
+                enabled = name.isNotBlank() && phoneNumber.text.isValidPhoneNumber(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),

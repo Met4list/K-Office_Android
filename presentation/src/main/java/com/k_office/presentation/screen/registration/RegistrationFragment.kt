@@ -8,8 +8,11 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
+import com.k_office.presentation.base.utils.FragmentUtil
 import com.k_office.presentation.base.utils.setFragmentContent
+import com.k_office.presentation.screen.home.HomeFragment
 import com.k_office.presentation.screen.registration.components.RegistrationScreen
 import com.k_office.presentation.screen.main_activity.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +37,12 @@ class RegistrationFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel.isSuccessfulyRegistered.collect {
                 if (it) {
-                    (requireActivity() as MainActivity).clearLogin(this@RegistrationFragment)
+                    FragmentUtil.hideShowOrAdd(
+                        this@RegistrationFragment,
+                        HomeFragment(),
+                        requireActivity().supportFragmentManager,
+                        R.id.container
+                    )
                 }
             }
         }

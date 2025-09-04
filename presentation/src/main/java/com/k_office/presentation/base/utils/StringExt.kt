@@ -21,3 +21,8 @@ fun String.parseOtpFromMessage(): String {
     val matchResult = regex.find(this)
     return matchResult?.value ?: ""
 }
+
+fun String.isValidPhoneNumber(): Boolean {
+    val phoneRegex = Regex("^\\+380\\d{9}$")
+    return matches(phoneRegex) && length == 13
+}

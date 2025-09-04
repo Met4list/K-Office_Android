@@ -2,7 +2,6 @@ package com.k_office.domain.use_case
 
 import com.k_office.data.storage.CurrentUserStorage
 import com.k_office.data.storage.TokenStorage
-import com.k_office.domain.R
 import com.k_office.domain.base.BaseUseCase
 import com.k_office.domain.base.DataState
 import com.k_office.domain.base.UIText
@@ -23,7 +22,7 @@ class VerifyOtpUseCase @Inject constructor(
     override suspend fun invoke(request: Pair<String, String>): Flow<DataState<CurrentUserModel>> =
         channelFlow {
             try {
-                val telephoneNumber = request.first.drop(1)
+                val telephoneNumber = request.first
                 val otp = request.second
                 send(DataState.Loading)
 

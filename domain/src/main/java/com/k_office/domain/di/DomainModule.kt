@@ -2,7 +2,6 @@ package com.k_office.domain.di
 
 import android.content.Context
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.gson.Gson
 import com.k_office.data.api.KOfficeApiService
 import com.k_office.data.api.NotificationApiService
 import com.k_office.data.api.UserApiService
@@ -47,9 +46,8 @@ class DomainModule {
 
     @Provides
     @Singleton
-    fun provideTokenDataSource(@ApplicationContext context: Context, gson: Gson): TokenDataSource {
-        val sharedPreferences = context.getSharedPreferences("tokens_config", Context.MODE_PRIVATE)
-        return TokenDataSource.Base(sharedPreferences, gson)
+    fun provideTokenDataSource(tokenStorage: TokenStorage): TokenDataSource {
+        return TokenDataSource.Base(tokenStorage)
     }
 
     @Provides
@@ -110,6 +108,7 @@ class DomainModule {
     @Singleton
     fun provideUpdateUserInfoUseCase(
         userDataSource: UserDataSource,
-        currentUserStorage: CurrentUserStorage
-    ): UpdateUserInfoUseCase = UpdateUserInfoUseCase(userDataSource, currentUserStorage)
+        currentUserStorage: CurrentUserStorage,
+        tokenStorage: TokenStorage
+    ): UpdateUserInfoUseCase = UpdateUserInfoUseCase(userDataSource, currentUserStorage, tokenStorage)
 }
