@@ -38,7 +38,6 @@ class VerifyOtpUseCase @Inject constructor(
 
                 tokenStorage.saveTokens(
                     response.tokens.accessToken,
-                    response.tokens.refreshToken,
                     response.expiresIn
                 )
 

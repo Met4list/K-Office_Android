@@ -1,7 +1,6 @@
 package com.k_office.domain.data_source
 
 import com.k_office.data.api.KOfficeApiService
-import com.k_office.data.request.RefreshTokenRequest
 import com.k_office.data.request.SendOtpRequest
 import com.k_office.data.request.VerifyOtpRequest
 import com.k_office.domain.mapper.OtpMapper
@@ -19,7 +18,7 @@ interface AuthDataSource {
 
     suspend fun register(request: RegistrationModel): OtpModel
 
-    suspend fun logout(refreshToken: String): MessageModel
+    suspend fun logout(): MessageModel
 
     class Base @Inject constructor(
         private val kOfficeApi: KOfficeApiService
@@ -59,8 +58,8 @@ interface AuthDataSource {
             return OtpMapper.mapTo(response)
         }
 
-        override suspend fun logout(refreshToken: String): MessageModel {
-            val response = kOfficeApi.logout(RefreshTokenRequest(refreshToken))
+        override suspend fun logout(): MessageModel {
+            val response = kOfficeApi.logout()
             return MessageModel(response.message)
         }
     }

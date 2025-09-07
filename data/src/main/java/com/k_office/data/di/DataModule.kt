@@ -3,7 +3,12 @@ package com.k_office.data.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.franmontiel.persistentcookiejar.PersistentCookieJar
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -25,6 +30,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.CookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -32,6 +38,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -112,8 +119,16 @@ class DataModule {
     @Provides
     @Singleton
     fun provideTokenStorage(@ApplicationContext context: Context): TokenStorage {
-        val sharedPrefs = context.getSharedPreferences("tokens_config", Context.MODE_PRIVATE)
-        return TokenStorageImpl(sharedPrefs)
+        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        val sharedPreferences = EncryptedSharedPreferences.create(
+            "tokens_config",
+            masterKeyAlias,
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+        return TokenStorageImpl(sharedPreferences)
     }
 
     @Provides
@@ -154,6 +169,7 @@ class DataModule {
         tokenStorage: TokenStorage,
         tokenRefreshInterceptor: TokenRefreshInterceptor,
     ): OkHttpClient {
+
         val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
@@ -179,8 +195,15 @@ class DataModule {
         baseConfigProvider: BaseConfigProvider,
         tokenStorage: TokenStorage,
     ): OkHttpClient {
+
+        val cookieJar: CookieJar = PersistentCookieJar(
+            SetCookieCache(),
+            SharedPrefsCookiePersistor(context)
+        )
+
         val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
         val okHttpClient = OkHttpClient.Builder()
+            .cookieJar(cookieJar)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(AuthInterceptor(tokenStorage))
             .addDefaultInterceptor()

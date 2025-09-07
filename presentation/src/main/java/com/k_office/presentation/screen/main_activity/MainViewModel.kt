@@ -1,15 +1,11 @@
 package com.k_office.presentation.screen.main_activity
 
-import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.k_office.presentation.utils.UserDataServiceManager
 import com.k_office.domain.data_source.TokenDataSource
 import com.k_office.domain.use_case.GetCurrentUserUseCase
 import com.k_office.presentation.base.view_model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -19,7 +15,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val tokenDataSource: TokenDataSource,
-    private val userDataServiceManager: UserDataServiceManager
 ) : BaseViewModel() {
 
     private val _isLoggedIn = MutableStateFlow(false)
@@ -39,15 +34,10 @@ class MainViewModel @Inject constructor(
                     val isLoggedIn = currentUser != null
                     Timber.d("Current user check result: $isLoggedIn")
                     _isLoggedIn.emit(isLoggedIn)
-
-                    if (!isLoggedIn) {
-                        clearTokens()
-                    }
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error checking user login status")
                 _isLoggedIn.emit(false)
-                clearTokens()
             }
         }
     }
@@ -55,29 +45,8 @@ class MainViewModel @Inject constructor(
     fun onTokenExpired() {
         viewModelScope.launch {
             Timber.d("Token expired event received")
-            clearTokens()
             _isLoggedIn.emit(false)
             _tokenExpiredEvent.emit(Unit)
-        }
-    }
-
-    fun logout() {
-        viewModelScope.launch {
-            clearTokens()
-            _isLoggedIn.emit(false)
-        }
-    }
-
-    fun onUserLoggedOut(context: Context) {
-        userDataServiceManager.stopPeriodicWork(context)
-    }
-
-    private suspend fun clearTokens() {
-        try {
-            tokenDataSource.clearTokens()
-            Timber.d("Tokens cleared")
-        } catch (e: Exception) {
-            Timber.e(e, "Error clearing tokens")
         }
     }
 }

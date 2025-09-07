@@ -7,8 +7,6 @@ interface TokenDataSource {
 
     suspend fun getAccessToken(): String?
 
-    suspend fun getRefreshToken(): String?
-
     suspend fun isTokenExpired(): Boolean
 
     suspend fun insertTokens(tokens: TokensModel)
@@ -22,10 +20,6 @@ interface TokenDataSource {
             return tokenStorage.getAccessToken()
         }
 
-        override suspend fun getRefreshToken(): String? {
-            return tokenStorage.getRefreshToken()
-        }
-
         override suspend fun clearTokens() {
             tokenStorage.clearTokens()
         }
@@ -35,7 +29,7 @@ interface TokenDataSource {
         }
 
         override suspend fun insertTokens(tokens: TokensModel) {
-            tokenStorage.saveTokens(tokens.accessToken, tokens.refreshToken, tokenStorage.getExpiryTimeMillis())
+            tokenStorage.saveTokens(tokens.accessToken, tokenStorage.getExpiryTimeMillis())
         }
     }
 }

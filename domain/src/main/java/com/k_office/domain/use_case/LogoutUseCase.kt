@@ -8,29 +8,26 @@ import com.k_office.domain.base.DataState
 import com.k_office.domain.base.toUIText
 import com.k_office.domain.data_source.AuthDataSource
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class LogoutUseCase @Inject constructor(
     private val currentUserStorage: CurrentUserStorage,
     private val tokenStorage: TokenStorage,
     private val authDataSource: AuthDataSource,
-    private val firebaseMessaging: FirebaseMessaging
-): BaseUseCase<Unit, Flow<DataState<Boolean>>> {
-    override suspend fun invoke(request: Unit): Flow<DataState<Boolean>> = channelFlow {
+    private val firebaseMessaging: FirebaseMessaging,
+) : BaseUseCase<Unit, Flow<DataState<Boolean>>> {
+    override suspend fun invoke(request: Unit): Flow<DataState<Boolean>> = flow {
         try {
-            send(DataState.Loading)
+            emit(DataState.Loading)
             currentUserStorage.clear()
-            val refreshToken = tokenStorage.getRefreshToken()
-            if (!refreshToken.isNullOrEmpty()) {
-                authDataSource.logout(refreshToken)
-            }
+            authDataSource.logout()
             tokenStorage.clearTokens()
             firebaseMessaging.deleteToken()
-            send(DataState.Success(true))
-            send(DataState.Default)
+            emit(DataState.Success(true))
+            emit(DataState.Default)
         } catch (t: Throwable) {
-            send(DataState.Failure(t.toUIText()))
+            emit(DataState.Failure(t.toUIText()))
         }
     }
 }

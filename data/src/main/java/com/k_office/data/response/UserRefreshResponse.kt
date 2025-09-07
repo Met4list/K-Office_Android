@@ -7,8 +7,6 @@ data class UserRefreshResponse(
     val message: String,
     @SerializedName("accessToken")
     val accessToken: String,
-    @SerializedName("refreshToken")
-    val refreshToken: String,
     @SerializedName("expiresIn")
     val expiresIn: Int,
     @SerializedName("user")

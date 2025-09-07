@@ -39,7 +39,6 @@ object CurrentUserMapper: Mapper<UserModel, CurrentUserModel> {
         UserRefreshModel(
             message = response.message,
             accessToken = response.accessToken,
-            refreshToken = response.refreshToken,
             expiresIn = response.expiresIn,
             user = UserModel(
                 address = null,

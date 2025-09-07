@@ -1,6 +1,5 @@
 package com.k_office.data.api
 
-import com.k_office.data.request.RefreshTokenRequest
 import com.k_office.data.request.RegisterUserRequest
 import com.k_office.data.request.SendOtpRequest
 import com.k_office.data.request.VerifyOtpRequest
@@ -22,5 +21,5 @@ interface KOfficeApiService {
     suspend fun register(@Body request: RegisterUserRequest): OtpResponse
 
     @POST(ConstUrls.LOGOUT)
-    suspend fun logout(@Body request: RefreshTokenRequest): MessageResponse
+    suspend fun logout(): MessageResponse
 }

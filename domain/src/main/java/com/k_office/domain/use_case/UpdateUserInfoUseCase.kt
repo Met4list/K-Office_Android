@@ -23,7 +23,7 @@ class UpdateUserInfoUseCase @Inject constructor(
             val response = userDataSource.updateUserInfo()
             val mappedModel = CurrentUserMapper.mapTo(response.user)
             currentUserStorage.insertUser(response.user)
-            tokenStorage.saveTokens(response.accessToken, response.refreshToken, response.expiresIn.toLong())
+            tokenStorage.saveTokens(response.accessToken, response.expiresIn.toLong())
             emit(DataState.Success(data = mappedModel))
             emit(DataState.Default)
         } catch (t: Throwable) {

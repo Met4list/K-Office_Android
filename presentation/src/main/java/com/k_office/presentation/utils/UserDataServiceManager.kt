@@ -24,8 +24,7 @@ class UserDataServiceManager @Inject constructor(
     fun startPeriodicWork(scope: CoroutineScope, context: Context) {
         scope.launch(Dispatchers.IO) {
             val accessToken = tokenDataSource.getAccessToken()
-            val refreshToken = tokenDataSource.getRefreshToken()
-            val hasValidTokens = accessToken != null && refreshToken != null
+            val hasValidTokens = accessToken != null
             if (hasValidTokens) {
                 Timber.d("Starting UserDataUpdateWorker - user is authenticated")
                 schedulePeriodicWork(context)
@@ -43,8 +42,7 @@ class UserDataServiceManager @Inject constructor(
     fun restartPeriodicWork(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             val accessToken = tokenDataSource.getAccessToken()
-            val refreshToken = tokenDataSource.getRefreshToken()
-            val hasValidTokens = accessToken != null && refreshToken != null
+            val hasValidTokens = accessToken != null
             if (hasValidTokens) {
                 Timber.d("Restarting UserDataUpdateWorker - user is authenticated")
                 stopPeriodicWork(context)

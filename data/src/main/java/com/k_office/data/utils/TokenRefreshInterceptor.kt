@@ -1,12 +1,9 @@
 package com.k_office.data.utils
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.k_office.data.api.AuthApiService
 import com.k_office.data.api.UserApiService
-import com.k_office.data.model.AuthTokens
-import com.k_office.data.request.RefreshTokenRequest
 import com.k_office.data.storage.TokenStorage
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -77,18 +74,18 @@ class TokenRefreshInterceptor @Inject constructor(
         }
     }
 
-    private suspend fun refreshTokenInternal(): Result<Triple<String, String, Long>> {
+    private suspend fun refreshTokenInternal(): Result<Pair<String, Long>> {
         return try {
-            val refreshToken = tokenStorage.getRefreshToken()
-                ?: return Result.failure(Exception("No refresh token available"))
+//            val refreshToken = tokenStorage.getRefreshToken()
+//                ?: return Result.failure(Exception("No refresh token available"))
 
-            val authResponse = authApiService.refreshToken(RefreshTokenRequest(refreshToken))
+            val authResponse = authApiService.refreshToken()
             if (authResponse.isSuccessful) {
                 authResponse.body()?.let { dto ->
                     val expiryTime = System.currentTimeMillis() + (dto.expiresIn * 60 * 1000)
-                    tokenStorage.saveTokens(dto.accessToken, dto.refreshToken, expiryTime)
+                    tokenStorage.saveTokens(dto.accessToken,expiryTime)
                     Timber.d("Token refresh successful via /auth/refresh, new access token: %s...", dto.accessToken.take(10))
-                    return Result.success(Triple(dto.accessToken, dto.refreshToken, dto.expiresIn))
+                    return Result.success(Pair(dto.accessToken,dto.expiresIn))
                 }
             }
 
@@ -96,9 +93,9 @@ class TokenRefreshInterceptor @Inject constructor(
             val userResponse = userApiService.refreshUserInfo()
 
             val expiryTime = System.currentTimeMillis() + (userResponse.expiresIn * 60 * 1000)
-            tokenStorage.saveTokens(userResponse.accessToken, userResponse.refreshToken, expiryTime)
+            tokenStorage.saveTokens(userResponse.accessToken, expiryTime)
             Timber.d("Token refresh successful via /user/refresh, new access token: %s...", userResponse.accessToken.take(10))
-            Result.success(Triple(userResponse.accessToken, userResponse.refreshToken, userResponse.expiresIn.toLong()))
+            Result.success(Pair(userResponse.accessToken,userResponse.expiresIn.toLong()))
 
         } catch (e: Exception) {
             Timber.e(e, "Exception during token refresh: %s", e.message)

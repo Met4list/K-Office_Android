@@ -106,10 +106,7 @@ class MainActivity : BaseActivity() {
     }
 
     fun logout(oldFragment: Fragment?) {
-        lifecycleScope.launch {
-            viewModel.logout()
-        }
-
+        userDataServiceManager.stopPeriodicWork(this)
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
         FragmentUtil.hideShowOrAdd(

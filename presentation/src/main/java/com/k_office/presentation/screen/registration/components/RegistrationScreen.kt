@@ -81,7 +81,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Enter your details",
+                text = stringResource(R.string.fill_your_data),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
             )

@@ -42,4 +42,6 @@
 
     <string name="enter_otp">Введіть код підтвердження</string>
     <string name="loading">Завантаження</string>
+
+    <string name="fill_your_data">Введіть ваші дані</string>
 </resources>

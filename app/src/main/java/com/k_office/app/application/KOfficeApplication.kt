@@ -30,7 +30,6 @@ class KOfficeApplication : Application(), ImageLoaderFactory, Configuration.Prov
         Timber.plant(Timber.DebugTree(), logCrashlytics())
         FirebaseApp.initializeApp(this)
 
-
         val userId = currentUserStorage.getUserId()
         if (!userId.isNullOrBlank()) {
             FirebaseCrashlytics.getInstance().setUserId(userId)

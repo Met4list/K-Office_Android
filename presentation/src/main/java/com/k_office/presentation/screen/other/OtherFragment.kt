@@ -24,7 +24,7 @@ class OtherFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = setFragmentContent {
         OtherScreen(viewModel, requireParentFragment().childFragmentManager)
     }
