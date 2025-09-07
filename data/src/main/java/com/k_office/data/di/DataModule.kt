@@ -168,10 +168,11 @@ class DataModule {
         baseConfigProvider: BaseConfigProvider,
         tokenStorage: TokenStorage,
         tokenRefreshInterceptor: TokenRefreshInterceptor,
+        cookieJar: CookieJar
     ): OkHttpClient {
-
         val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
         val okHttpClient = OkHttpClient.Builder()
+            .cookieJar(cookieJar)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(AuthInterceptor(tokenStorage))
             .addDefaultInterceptor()
@@ -194,13 +195,8 @@ class DataModule {
         @ApplicationContext context: Context,
         baseConfigProvider: BaseConfigProvider,
         tokenStorage: TokenStorage,
+        cookieJar: CookieJar
     ): OkHttpClient {
-
-        val cookieJar: CookieJar = PersistentCookieJar(
-            SetCookieCache(),
-            SharedPrefsCookiePersistor(context)
-        )
-
         val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
         val okHttpClient = OkHttpClient.Builder()
             .cookieJar(cookieJar)
@@ -238,4 +234,12 @@ class DataModule {
         userApiService,
         localBroadCastManager = LocalBroadcastManager.getInstance(context)
     )
+
+    @Provides
+    @Singleton
+    fun provideCookieJar(@ApplicationContext context: Context): CookieJar =
+        PersistentCookieJar(
+            SetCookieCache(),
+            SharedPrefsCookiePersistor(context)
+        )
 }

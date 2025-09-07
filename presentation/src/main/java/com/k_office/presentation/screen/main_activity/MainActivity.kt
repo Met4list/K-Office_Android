@@ -6,17 +6,16 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.k_office.presentation.utils.UserDataServiceManager
 import com.k_office.domain.data_source.TokenDataSource
 import com.k_office.presentation.R
 import com.k_office.presentation.base.activity.BaseActivity
 import com.k_office.presentation.base.utils.FragmentUtil
 import com.k_office.presentation.screen.home.HomeFragment
 import com.k_office.presentation.screen.login.LoginFragment
+import com.k_office.presentation.utils.UserDataServiceManager
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -57,7 +56,7 @@ class MainActivity : BaseActivity() {
                         R.id.container
                     )
                     // Start background service when user is logged in
-                    userDataServiceManager.startPeriodicWork(lifecycleScope,this@MainActivity)
+                    userDataServiceManager.startPeriodicWork(lifecycleScope, this@MainActivity)
                 } else {
                     FragmentUtil.setFragmentIfAbsent(
                         LoginFragment(),
@@ -95,17 +94,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    fun clearLogin(oldFragment: Fragment?) {
-        FragmentUtil.hideShowOrAdd(
-            oldFragment,
-            HomeFragment(),
-            supportFragmentManager,
-            R.id.container
-        )
-        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-    }
-
-    fun logout(oldFragment: Fragment?) {
+    fun logout() {
         userDataServiceManager.stopPeriodicWork(this)
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
@@ -128,6 +117,10 @@ class MainActivity : BaseActivity() {
             viewModel.onTokenExpired()
             userDataServiceManager.stopPeriodicWork(this@MainActivity)
         }
+    }
+
+    fun onUserUpdateStart() {
+        userDataServiceManager.startPeriodicWork(lifecycleScope, this)
     }
 
     override fun onDestroy() {

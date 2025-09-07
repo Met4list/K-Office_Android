@@ -41,7 +41,7 @@ class DomainModule {
 
     @Provides
     @Singleton
-    fun provideAuthDataSource(kOfficeApi: KOfficeApiService, baseConfigProvider: BaseConfigProvider): AuthDataSource =
+    fun provideAuthDataSource(kOfficeApi: KOfficeApiService): AuthDataSource =
         AuthDataSource.Base(kOfficeApi)
 
     @Provides
@@ -79,12 +79,10 @@ class DomainModule {
     @Singleton
     fun provideLogoutUseCase(
         currentUserStorage: CurrentUserStorage,
-        tokenStorage: TokenStorage,
-        authDataSource: AuthDataSource,
+        tokenStorage: TokenStorage
     ): LogoutUseCase = LogoutUseCase(
         currentUserStorage,
         tokenStorage,
-        authDataSource,
         FirebaseMessaging.getInstance()
     )
 

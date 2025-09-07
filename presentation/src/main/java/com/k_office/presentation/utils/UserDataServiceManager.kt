@@ -60,7 +60,7 @@ class UserDataServiceManager @Inject constructor(
             .build()
 
         val periodicWorkRequest = PeriodicWorkRequestBuilder<UserDataUpdateWorker>(
-            5,
+            10,
             TimeUnit.MINUTES
         )
             .setConstraints(constraints)

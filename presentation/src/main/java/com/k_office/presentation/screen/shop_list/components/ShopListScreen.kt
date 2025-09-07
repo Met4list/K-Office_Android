@@ -114,8 +114,7 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) {
         if (granted) {
             startLocationUpdates(
                 context,
-                userLocation,
-                isLoadingLocation
+                userLocation
             ) { loc, loading ->
                 userLocation = loc
                 isLoadingLocation = loading
@@ -157,7 +156,7 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) {
 
         if (!hasLocationPermissionBeenAsked) {
             if (hasFineLocationPermission || hasCoarseLocationPermission) {
-                startLocationUpdates(context, userLocation, isLoadingLocation) { loc, loading ->
+                startLocationUpdates(context, userLocation) { loc, loading ->
                     userLocation = loc
                     isLoadingLocation = loading
                 }
@@ -189,7 +188,7 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) {
             scope.launch { sheetState.hide() }
         }
     }
-    // Отслеживаем скрытие BottomSheet через UI (смахивание)
+
     LaunchedEffect(sheetState.isVisible) {
         if (!sheetState.isVisible && showModalBottomSheet) {
             viewModel.hideShopInfoModal()
@@ -390,20 +389,19 @@ internal fun ShopItem(
 }
 
 
-@SuppressLint("MissingPermission") // Разрешение будет запрошено ранее
+@SuppressLint("MissingPermission")
 private fun startLocationUpdates(
     context: Context,
     userLocation: Location?,
-    isLoadingLocation: Boolean,
     onLocationUpdate: (Location?, Boolean) -> Unit
 ) {
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             locationResult.lastLocation?.let { location ->
-                onLocationUpdate(location, false) // Местоположение получено, загрузка завершена
+                onLocationUpdate(location, false)
             } ?: run {
-                onLocationUpdate(null, true) // Местоположение null, продолжаем загрузку
+                onLocationUpdate(null, true)
             }
         }
     }
@@ -423,15 +421,14 @@ private fun startLocationUpdates(
     if (hasFineLocationPermission || hasCoarseLocationPermission) {
         try {
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, context.mainLooper)
-            // Если userLocation еще не установлен, показываем загрузку
             if (userLocation == null) {
                 onLocationUpdate(null, true)
             }
         } catch (e: SecurityException) {
             Toast.makeText(context, "Location permission not truly granted for updates: ${e.message}", Toast.LENGTH_LONG).show()
-            onLocationUpdate(null, false) // Ошибка, загрузка завершена, местоположение не получено
+            onLocationUpdate(null, false)
         }
     } else {
-        onLocationUpdate(null, false) // Нет разрешений, загрузка завершена, местоположение не получено
+        onLocationUpdate(null, false)
     }
 }

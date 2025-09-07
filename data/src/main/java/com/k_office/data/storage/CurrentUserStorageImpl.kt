@@ -1,12 +1,11 @@
 package com.k_office.data.storage
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.k_office.data.model.UserModel
-import kotlin.text.orEmpty
 
-class CurrentUserStorageImpl(private val sharedPreferences: SharedPreferences): CurrentUserStorage {
+class CurrentUserStorageImpl(private val sharedPreferences: SharedPreferences) :
+    CurrentUserStorage {
 
     private val sharedPrefEdit = sharedPreferences.edit()
     private val gson: Gson = Gson()
@@ -17,7 +16,7 @@ class CurrentUserStorageImpl(private val sharedPreferences: SharedPreferences): 
     }
 
     override fun clear() {
-        sharedPrefEdit.clear().apply()
+        sharedPrefEdit.remove(CURRENT_USER_MODEL_KEY).commit()
     }
 
     override fun getUser(): UserModel? {

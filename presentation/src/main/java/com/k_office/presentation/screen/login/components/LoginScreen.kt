@@ -1,6 +1,5 @@
 package com.k_office.presentation.screen.login.components
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,8 +24,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.k_office.presentation.R
 import com.k_office.presentation.base.compose.LoadingDialog
 import com.k_office.presentation.base.utils.openBrowserPage
@@ -58,7 +56,7 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
 
     var phoneNumber by remember { mutableStateOf(TextFieldValue("+380")) }
 
-    val loading by viewModel.loading.collectAsState()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
 
     val annotatedText = buildAnnotatedString {
         append(stringResource(R.string.by_continuing_you_agree))
@@ -66,7 +64,12 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
         append(" ")
 
         pushStringAnnotation(tag = "PRIVACY", annotation = "privacy")
-        withStyle(style = SpanStyle(color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Medium)) {
+        withStyle(
+            style = SpanStyle(
+                color = colorResource(R.color.blue_primary),
+                fontWeight = FontWeight.Medium
+            )
+        ) {
             append(stringResource(R.string.login_privacy_policy))
         }
         pop()
@@ -75,7 +78,12 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
         append(" " + stringResource(R.string.and) + " ")
 
         pushStringAnnotation(tag = "OFFER", annotation = "offer")
-        withStyle(style = SpanStyle(color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Medium)) {
+        withStyle(
+            style = SpanStyle(
+                color = colorResource(R.color.blue_primary),
+                fontWeight = FontWeight.Medium
+            )
+        ) {
             append(stringResource(R.string.offer_agreement))
         }
         pop()
@@ -156,7 +164,11 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
                 ),
                 modifier = Modifier.padding(horizontal = 8.dp),
                 onClick = { offset ->
-                    annotatedText.getStringAnnotations(tag = "PRIVACY", start = offset, end = offset)
+                    annotatedText.getStringAnnotations(
+                        tag = "PRIVACY",
+                        start = offset,
+                        end = offset
+                    )
                         .firstOrNull()?.let {
                             context.openBrowserPage(PRIVACY_POLICY_LINK)
                             return@ClickableText

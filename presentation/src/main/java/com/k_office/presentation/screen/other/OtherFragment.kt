@@ -35,7 +35,7 @@ class OtherFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel.logoutAction.collect {
                 if (it) {
-                    (requireActivity() as MainActivity).logout(this@OtherFragment)
+                    (requireActivity() as MainActivity).logout()
                 }
             }
         }

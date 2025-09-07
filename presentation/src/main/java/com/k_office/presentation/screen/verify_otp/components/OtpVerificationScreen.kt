@@ -30,7 +30,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
@@ -66,14 +66,14 @@ internal fun OtpVerificationScreen(
     onRetryClick: () -> Unit,
 ) {
     val context = LocalContext.current
-    val otpValue by viewModel.otpState.collectAsState()
+    val otpValue by viewModel.otpState.collectAsStateWithLifecycle()
     var remainingSeconds by remember { mutableStateOf(60) }
     var isTimerRunning by remember { mutableStateOf(true) }
 
-    val loading by viewModel.loading.collectAsState()
-    val retryOtp by viewModel.retryOtp.collectAsState(false)
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val retryOtp by viewModel.retryOtp.collectAsStateWithLifecycle(false)
 
-    val smsPermissionGranted by viewModel.smsPermissionGranted.collectAsState()
+    val smsPermissionGranted by viewModel.smsPermissionGranted.collectAsStateWithLifecycle()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -147,7 +147,8 @@ internal fun OtpVerificationScreen(
                     when (status?.statusCode) {
                         CommonStatusCodes.SUCCESS -> {
                             Timber.d("OtpScreen", "SMS_RETRIEVED_ACTION: SUCCESS")
-                            val consentIntent = extras.getParcelable<Intent>(SmsRetriever.EXTRA_CONSENT_INTENT)
+                            val consentIntent =
+                                extras.getParcelable<Intent>(SmsRetriever.EXTRA_CONSENT_INTENT)
                             if (consentIntent != null) {
                                 Timber.d("OtpScreen", "Launching consent intent")
                                 consentLauncher.launch(consentIntent)
@@ -155,12 +156,20 @@ internal fun OtpVerificationScreen(
                                 Timber.w("OtpScreen", "Consent intent is null")
                             }
                         }
+
                         CommonStatusCodes.TIMEOUT -> {
-                            Timber.w("OtpScreen", "SMS_RETRIEVED_ACTION: TIMEOUT - restarting user consent")
+                            Timber.w(
+                                "OtpScreen",
+                                "SMS_RETRIEVED_ACTION: TIMEOUT - restarting user consent"
+                            )
                             context?.startSmsRetriever()
                         }
+
                         else -> {
-                            Timber.w("OtpScreen", "SMS_RETRIEVED_ACTION: Unknown status ${status?.statusCode}")
+                            Timber.w(
+                                "OtpScreen",
+                                "SMS_RETRIEVED_ACTION: Unknown status ${status?.statusCode}"
+                            )
                         }
                     }
                 }
@@ -299,7 +308,13 @@ private fun Context.startSmsRetriever() {
         val client = SmsRetriever.getClient(this)
         client.startSmsUserConsent(null)
             .addOnSuccessListener { Timber.d("OtpViewModel", "SMS Retriever started successfully") }
-            .addOnFailureListener { e -> Timber.e("OtpViewModel", "Failed to start SMS Retriever", e) }
+            .addOnFailureListener { e ->
+                Timber.e(
+                    "OtpViewModel",
+                    "Failed to start SMS Retriever",
+                    e
+                )
+            }
     } catch (e: Exception) {
         Timber.e("OtpViewModel", "Exception starting SMS Retriever: ${e.message}", e)
     }

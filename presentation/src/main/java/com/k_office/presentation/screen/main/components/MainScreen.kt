@@ -56,7 +56,7 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
         mutableStateOf(false)
     }
 
-    val loading by viewModel.loading.collectAsState()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
 
     val refreshState = rememberSwipeRefreshState(loading)
 

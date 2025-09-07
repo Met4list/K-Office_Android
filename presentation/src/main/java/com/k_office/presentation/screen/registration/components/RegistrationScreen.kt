@@ -22,7 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.k_office.presentation.R
 import com.k_office.presentation.base.compose.LoadingDialog
 import com.k_office.presentation.base.utils.isValidPhoneNumber
@@ -53,7 +53,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
 
     var phoneNumber by remember { mutableStateOf(TextFieldValue("+380")) }
 
-    val loading by viewModel.loading.collectAsState()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
 
     if (loading) {
         LoadingDialog()
@@ -142,7 +142,12 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
                     append(" ")
 
                     pushStringAnnotation(tag = "PRIVACY", annotation = "privacy")
-                    withStyle(style = SpanStyle(color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Medium)) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorResource(R.color.blue_primary),
+                            fontWeight = FontWeight.Medium
+                        )
+                    ) {
                         append(stringResource(R.string.login_privacy_policy))
                     }
                     pop()
@@ -150,7 +155,12 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
                     append(" " + stringResource(R.string.and) + " ")
 
                     pushStringAnnotation(tag = "OFFER", annotation = "offer")
-                    withStyle(style = SpanStyle(color = colorResource(R.color.blue_primary), fontWeight = FontWeight.Medium)) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorResource(R.color.blue_primary),
+                            fontWeight = FontWeight.Medium
+                        )
+                    ) {
                         append(stringResource(R.string.offer_agreement))
                     }
                     pop()

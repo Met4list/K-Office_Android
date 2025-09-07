@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +14,7 @@ import com.k_office.presentation.base.utils.FragmentUtil
 import com.k_office.presentation.base.utils.args
 import com.k_office.presentation.base.utils.setFragmentContent
 import com.k_office.presentation.screen.home.HomeFragment
+import com.k_office.presentation.screen.main_activity.MainActivity
 import com.k_office.presentation.screen.verify_otp.args.VerifyOtpArgs
 import com.k_office.presentation.screen.verify_otp.components.OtpVerificationScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -50,7 +50,10 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
             viewModel.onSuccess
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
-                    if (it) clearLogin()
+                    if (it) {
+                        (requireActivity() as MainActivity).onUserUpdateStart()
+                        clearLogin()
+                    }
                 }
         }
 

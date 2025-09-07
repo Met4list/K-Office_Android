@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import timber.log.Timber
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -23,6 +22,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.k_office.presentation.screen.shop_list.ShopListViewModel
+import timber.log.Timber
 
 @Composable
 internal inline fun AllShopsScreen(viewModel: ShopListViewModel) {
@@ -60,9 +60,8 @@ internal inline fun AllShopsScreen(viewModel: ShopListViewModel) {
     }
 
     LaunchedEffect(Unit) {
-        // Загружаем магазины независимо от разрешений на местоположение
         viewModel.loadShops(context)
-        
+
         if (!hasLocationPermission.value) {
             permissionLauncher.launch(
                 arrayOf(
@@ -91,7 +90,10 @@ internal inline fun AllShopsScreen(viewModel: ShopListViewModel) {
     ) {
         Timber.d("AllShopsScreen", "Rendering ${shopList.size} shops on map")
         shopList.forEach { shop ->
-            Timber.d("AllShopsScreen", "Adding marker for shop: ${shop.name} at ${shop.latLng.latitude}, ${shop.latLng.longitude}")
+            Timber.d(
+                "AllShopsScreen",
+                "Adding marker for shop: ${shop.name} at ${shop.latLng.latitude}, ${shop.latLng.longitude}"
+            )
             Marker(
                 state = MarkerState(position = LatLng(shop.latLng.latitude, shop.latLng.longitude)),
                 title = shop.name,
