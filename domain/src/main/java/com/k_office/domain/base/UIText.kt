@@ -2,7 +2,10 @@ package com.k_office.domain.base
 
 import android.content.Context
 import androidx.annotation.StringRes
+import com.google.gson.Gson
 import com.k_office.data.R
+import com.k_office.data.response.MessageResponse
+import retrofit2.HttpException
 
 sealed class UIText {
     data class DynamicString(val value: String) : UIText()
@@ -30,3 +33,28 @@ fun Throwable?.toUIText(): UIText =
     this?.message?.let {
         UIText.DynamicString(it)
     } ?: UIText.getDefaultErrorMessage()
+
+fun Throwable.extractServerErrorMessage(): UIText {
+    return try {
+        if (this is HttpException) {
+            val exception = this as HttpException
+            val errorBody = exception.response()?.errorBody()?.string()
+            if (errorBody != null) {
+                val gson = Gson()
+                val errorResponse = gson.fromJson(errorBody, MessageResponse::class.java)
+                val message = errorResponse.message
+                if (!message.isNullOrEmpty()) {
+                    UIText.DynamicString(message)
+                } else {
+                    toUIText()
+                }
+            } else {
+                toUIText()
+            }
+        } else {
+            toUIText()
+        }
+    } catch (e: Exception) {
+        e.toUIText()
+    }
+}

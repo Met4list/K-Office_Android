@@ -6,6 +6,7 @@ import com.k_office.data.provider.BaseConfigProvider
 import com.k_office.data.request.RegisterTokenRequest
 import com.k_office.domain.base.BaseUseCase
 import com.k_office.domain.base.DataState
+import com.k_office.domain.base.extractServerErrorMessage
 import com.k_office.domain.base.toUIText
 import com.k_office.domain.data_source.AuthDataSource
 import com.k_office.domain.model.MessageModel
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class AuthorizationUseCase @Inject constructor(
@@ -44,8 +46,8 @@ class AuthorizationUseCase @Inject constructor(
                 send(DataState.Success(data = response))
 
                 send(DataState.Default)
-            } catch (t: Throwable) {
-                send(DataState.Failure(t.toUIText()))
+            } catch (t: HttpException) {
+                send(DataState.Failure(t.extractServerErrorMessage()))
             }
         }
 }

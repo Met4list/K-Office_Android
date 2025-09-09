@@ -37,10 +37,10 @@ class RegistrationFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel.isSuccessfulyRegistered.collect {
                 if (it) {
-                    FragmentUtil.hideShowOrAdd(
-                        this@RegistrationFragment,
+                    showMessage(id = R.string.successfully_registered)
+                    FragmentUtil.setFragmentIfAbsent(
                         HomeFragment(),
-                        requireActivity().supportFragmentManager,
+                        requireActivity() as MainActivity,
                         R.id.container
                     )
                 }

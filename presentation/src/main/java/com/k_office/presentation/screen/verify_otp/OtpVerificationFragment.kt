@@ -51,8 +51,13 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
                     if (it) {
+                        showMessage(id = R.string.successfully_auth)
                         (requireActivity() as MainActivity).onUserUpdateStart()
-                        clearLogin()
+                        FragmentUtil.setFragmentIfAbsent(
+                            HomeFragment(),
+                            requireActivity() as MainActivity,
+                            R.id.container
+                        )
                     }
                 }
         }
