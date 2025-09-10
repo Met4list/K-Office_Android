@@ -3,8 +3,10 @@ package com.k_office.domain.data_source
 import com.k_office.data.api.KOfficeApiService
 import com.k_office.data.request.SendOtpRequest
 import com.k_office.data.request.VerifyOtpRequest
+import com.k_office.data.utils.handleResponse
 import com.k_office.domain.mapper.OtpMapper
 import com.k_office.domain.mapper.RegisterMapper
+import com.k_office.domain.model.AuthTypeModel
 import com.k_office.domain.model.MessageModel
 import com.k_office.domain.model.OtpModel
 import com.k_office.domain.model.RegistrationModel
@@ -12,9 +14,11 @@ import javax.inject.Inject
 
 interface AuthDataSource {
 
-    suspend fun sendOtp(phoneNumber: String, fcmToken: String, hash: String): MessageModel
+    suspend fun sendOtp(phoneNumber: String, fcmToken: String, hash: String): AuthTypeModel
 
     suspend fun verifyOtp(phoneNumber: String, otp: String): OtpModel
+
+    suspend fun verifyRegister(phoneNumber: String, otp: String): MessageModel
 
     suspend fun register(request: RegistrationModel): OtpModel
 
@@ -27,16 +31,11 @@ interface AuthDataSource {
             phoneNumber: String,
             fcmToken: String,
             hash: String,
-        ): MessageModel {
-            val response = kOfficeApi.sendOtp(
-                    SendOtpRequest(
-                        phoneNumber,
-                        fcmToken,
-                        hash
-                    )
-                )
-
-            return MessageModel(response?.message!!)
+        ): AuthTypeModel {
+            val response = kOfficeApi
+                .sendOtp(SendOtpRequest(phoneNumber, fcmToken, hash))
+                .handleResponse()
+            return AuthTypeModel(phoneNumber, response.type, response.message)
         }
 
         override suspend fun verifyOtp(
@@ -50,6 +49,13 @@ interface AuthDataSource {
             )
             val mappedResponse = OtpMapper.mapTo(response)
             return mappedResponse
+        }
+
+        override suspend fun verifyRegister(phoneNumber: String, otp: String): MessageModel {
+            val response = kOfficeApi.verifyRegister(VerifyOtpRequest(
+                phoneNumber, otp
+            )).handleResponse()
+            return MessageModel(response.message)
         }
 
         override suspend fun register(request: RegistrationModel): OtpModel {

@@ -5,5 +5,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class VerifyOtpArgs(
-    val phoneNumber: String
+    val phoneNumber: String,
+    val type: String
 ): Args

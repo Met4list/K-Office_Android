@@ -1,5 +1,6 @@
 package com.k_office.presentation.screen.login
 
+import com.k_office.domain.model.AuthTypeModel
 import com.k_office.domain.use_case.AuthorizationUseCase
 import com.k_office.presentation.base.view_model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,12 +13,12 @@ class LoginViewModel @Inject constructor(
     private val authorizationUseCase: AuthorizationUseCase,
 ) : BaseViewModel() {
 
-    private val _phoneNumber = MutableSharedFlow<String>()
-    val phoneNumber = _phoneNumber.asSharedFlow()
+    private val _authType = MutableSharedFlow<AuthTypeModel>()
+    val authType = _authType.asSharedFlow()
 
     fun login(telephoneNumber: String) {
         launchWithResponseState(block = { authorizationUseCase.invoke(telephoneNumber) }) {
-            _phoneNumber.emit(telephoneNumber)
+            _authType.emit(it)
         }
     }
 

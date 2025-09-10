@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,12 +49,21 @@ import com.k_office.presentation.base.utils.isValidPhoneNumber
 import com.k_office.presentation.screen.registration.RegistrationViewModel
 
 @Composable
-internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
+internal fun RegistrationScreen(viewModel: RegistrationViewModel, verifiedPhoneNumber: String) {
     var name by remember { mutableStateOf("") }
 
     var phoneNumber by remember { mutableStateOf(TextFieldValue("+380")) }
 
     val loading by viewModel.loading.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        if (verifiedPhoneNumber.isNotEmpty()) {
+            phoneNumber = phoneNumber.copy(
+                text = verifiedPhoneNumber,
+                selection = TextRange(verifiedPhoneNumber.length)
+            )
+        }
+    }
 
     if (loading) {
         LoadingDialog()
@@ -175,7 +185,7 @@ internal fun RegistrationScreen(viewModel: RegistrationViewModel) {
             // Continue button
             Button(
                 onClick = { viewModel.registrationBonus(phoneNumber.text, name) },
-                enabled = name.isNotBlank() && phoneNumber.text.isValidPhoneNumber(),
+                enabled = name.isNotBlank() && (phoneNumber.text.isValidPhoneNumber() && phoneNumber.text == verifiedPhoneNumber),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),

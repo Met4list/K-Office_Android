@@ -9,6 +9,7 @@ import com.k_office.domain.base.DataState
 import com.k_office.domain.base.extractServerErrorMessage
 import com.k_office.domain.base.toUIText
 import com.k_office.domain.data_source.AuthDataSource
+import com.k_office.domain.model.AuthTypeModel
 import com.k_office.domain.model.MessageModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -23,8 +24,8 @@ class AuthorizationUseCase @Inject constructor(
     private val receiveFCMTokenUseCase: ReceiveFCMTokenUseCase,
     private val notificationApiService: NotificationApiService,
     private val baseConfigProvider: BaseConfigProvider,
-) : BaseUseCase<String, Flow<DataState<MessageModel>>> {
-    override suspend fun invoke(telephone: String): Flow<DataState<MessageModel>> =
+) : BaseUseCase<String, Flow<DataState<AuthTypeModel>>> {
+    override suspend fun invoke(telephone: String): Flow<DataState<AuthTypeModel>> =
         channelFlow {
             try {
                 send(DataState.Loading)

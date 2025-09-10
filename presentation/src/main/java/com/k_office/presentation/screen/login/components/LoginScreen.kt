@@ -1,5 +1,6 @@
 package com.k_office.presentation.screen.login.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,11 +47,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.k_office.presentation.R
 import com.k_office.presentation.base.compose.LoadingDialog
+import com.k_office.presentation.base.utils.findActivity
 import com.k_office.presentation.base.utils.openBrowserPage
 import com.k_office.presentation.screen.login.LoginViewModel
 
 @Composable
-internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit) {
+internal fun LoginScreen(viewModel: LoginViewModel) {
     val context = LocalContext.current
 
     var phoneNumber by remember { mutableStateOf(TextFieldValue("+380")) }
@@ -87,6 +88,10 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
             append(stringResource(R.string.offer_agreement))
         }
         pop()
+    }
+
+    BackHandler {
+        context.findActivity()?.finishAffinity()
     }
 
     if (loading) {
@@ -182,13 +187,6 @@ internal fun LoginScreen(viewModel: LoginViewModel, onRegisterClick: () -> Unit)
             )
 
             Spacer(modifier = Modifier.weight(1f))
-
-            TextButton(onClick = onRegisterClick) {
-                Text(
-                    text = stringResource(R.string.register_now),
-                    color = colorResource(R.color.blue_light)
-                )
-            }
 
             // Login button
             Button(

@@ -19,6 +19,7 @@ import com.k_office.domain.use_case.LogoutUseCase
 import com.k_office.domain.use_case.ReceiveFCMTokenUseCase
 import com.k_office.domain.use_case.UpdateUserInfoUseCase
 import com.k_office.domain.use_case.VerifyOtpUseCase
+import com.k_office.domain.use_case.VerifyRegisterUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -109,4 +110,10 @@ class DomainModule {
         currentUserStorage: CurrentUserStorage,
         tokenStorage: TokenStorage
     ): UpdateUserInfoUseCase = UpdateUserInfoUseCase(userDataSource, currentUserStorage, tokenStorage)
+
+    @Provides
+    @Singleton
+    fun provideVerifyRegisterUseCase(
+        authDataSource: AuthDataSource
+    ): VerifyRegisterUseCase = VerifyRegisterUseCase(authDataSource)
 }

@@ -7,14 +7,18 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.k_office.domain.mapper.AuthType
 import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
 import com.k_office.presentation.base.utils.FragmentArgs
 import com.k_office.presentation.base.utils.FragmentUtil
 import com.k_office.presentation.base.utils.args
+import com.k_office.presentation.base.utils.setArgs
 import com.k_office.presentation.base.utils.setFragmentContent
 import com.k_office.presentation.screen.home.HomeFragment
 import com.k_office.presentation.screen.main_activity.MainActivity
+import com.k_office.presentation.screen.registration.RegistrationArgs
+import com.k_office.presentation.screen.registration.RegistrationFragment
 import com.k_office.presentation.screen.verify_otp.args.VerifyOtpArgs
 import com.k_office.presentation.screen.verify_otp.components.OtpVerificationScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +40,12 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
             viewModel = viewModel,
             phoneNumber = args.phoneNumber,
             onVerificationComplete = {
-                viewModel.verifyOtp(args.phoneNumber, it)
+                val type = AuthType.findByType(args.type)
+                if (type == AuthType.REGISTER) {
+                    viewModel.verifyRegister(args.phoneNumber, it)
+                } else {
+                    viewModel.verifyOtp(args.phoneNumber, it)
+                }
             }, onRetryClick = {
                 viewModel.retryOtp(args.phoneNumber)
                 viewModel.clearOTP()
@@ -50,14 +59,28 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
             viewModel.onSuccess
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
-                    if (it) {
-                        showMessage(id = R.string.successfully_auth)
-                        (requireActivity() as MainActivity).onUserUpdateStart()
-                        FragmentUtil.setFragmentIfAbsent(
-                            HomeFragment(),
-                            requireActivity() as MainActivity,
-                            R.id.container
-                        )
+                    when (AuthType.findByType(args.type)) {
+                        AuthType.REGISTER -> {
+                            if (it) {
+                                FragmentUtil.setFragmentIfAbsent(
+                                    RegistrationFragment().setArgs(RegistrationArgs(args.phoneNumber)),
+                                    requireActivity() as MainActivity,
+                                    R.id.container
+                                )
+                            }
+                        }
+                        AuthType.LOGIN -> {
+                            if (it) {
+                                showMessage(id = R.string.successfully_auth)
+                                (requireActivity() as MainActivity).onUserUpdateStart()
+                                FragmentUtil.setFragmentIfAbsent(
+                                    HomeFragment(),
+                                    requireActivity() as MainActivity,
+                                    R.id.container
+                                )
+                            }
+                        }
+                        else -> Unit
                     }
                 }
         }
@@ -68,14 +91,5 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect(::showMessage)
         }
-    }
-
-    private fun clearLogin() {
-        FragmentUtil.hideShowOrAdd(
-            this,
-            HomeFragment(),
-            requireActivity().supportFragmentManager,
-            R.id.container
-        )
     }
 }

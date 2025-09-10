@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.k_office.domain.base.DataState
 import com.k_office.domain.use_case.AuthorizationUseCase
 import com.k_office.domain.use_case.VerifyOtpUseCase
+import com.k_office.domain.use_case.VerifyRegisterUseCase
 import com.k_office.presentation.base.utils.SMSHelper
 import com.k_office.presentation.base.view_model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
     private val verifyOtpUseCase: VerifyOtpUseCase,
+    private val verifyRegisterUseCase: VerifyRegisterUseCase,
     private val authorizationUseCase: AuthorizationUseCase,
 ) : BaseViewModel() {
 
@@ -74,6 +76,12 @@ class OtpVerificationViewModel @Inject constructor(
 
     fun verifyOtp(phoneNumber: String, otp: String) {
         launchWithResponseState(block = { verifyOtpUseCase.invoke(Pair(phoneNumber, otp)) }) {
+            _onSuccess.emit(true)
+        }
+    }
+
+    fun verifyRegister(phoneNumber: String, otp: String) {
+        launchWithResponseState(block = { verifyRegisterUseCase.invoke(Pair(phoneNumber, otp)) }) {
             _onSuccess.emit(true)
         }
     }

@@ -21,6 +21,7 @@ class ConstUrls @Inject constructor(
         private const val AUTH_ROUTE = "/auth"
         const val SEND_OTP = "$AUTH_ROUTE/send-otp"
         const val VERIFY_OTP = "$AUTH_ROUTE/verify-otp"
+        const val VERIFY_REGISTER = "$AUTH_ROUTE/verify-register"
         const val REGISTER = "$AUTH_ROUTE/register"
         const val REFRESH = "$AUTH_ROUTE/refresh"
         const val LOGOUT = "$AUTH_ROUTE/logout"

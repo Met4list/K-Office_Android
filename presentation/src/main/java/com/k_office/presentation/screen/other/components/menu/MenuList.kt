@@ -26,6 +26,7 @@ internal inline fun MenuList(
 ) {
 
     val context = LocalContext.current
+
     var showLogoutDialog by remember {
         mutableStateOf(false)
     }
