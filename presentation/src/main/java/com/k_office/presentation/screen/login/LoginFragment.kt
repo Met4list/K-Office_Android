@@ -34,12 +34,24 @@ class LoginFragment : BaseFragment() {
             viewModel.authType
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
-                    showMessage(it.message)
-                    navController.navigate(
-                        LoginFragmentDirections.actionLoginFragmentToOtpVerificationFragment(
-                            VerifyOtpArgs(it.phone, it.type)
+                    if (it != null) {
+                        showMessage(it.message)
+                        navController.navigate(
+                            LoginFragmentDirections.actionLoginFragmentToOtpVerificationFragment(
+                                VerifyOtpArgs(it.phone, it.type)
+                            )
                         )
-                    )
+                    }
+                }
+        }
+
+        lifecycleScope.launch {
+            viewModel.isLoggedIn
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect {
+                    if (it) {
+                        navController.navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment())
+                    }
                 }
         }
 

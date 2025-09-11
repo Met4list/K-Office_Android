@@ -10,8 +10,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import com.k_office.domain.data_source.TokenDataSource
 import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.FragmentUtil
@@ -36,8 +34,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var userDataServiceManager: UserDataServiceManager
 
-    private lateinit var navController: NavController
-
     private val tokenExpiredReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
@@ -55,10 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupFragment() {
-        binding.container.post {
-            navController = findNavController(R.id.container)
-            handleNavigation()
-        }
+        handleNavigation()
 
         lifecycleScope.launch {
             viewModel.uiTextMessage.collect { uIText ->
@@ -80,10 +73,8 @@ class MainActivity : AppCompatActivity() {
             viewModel.isLoggedIn.collect {
                 if (it) {
                     userDataServiceManager.startPeriodicWork(lifecycleScope, this@MainActivity)
-                    navController.navigate(R.id.action_loginFragment_to_homeFragment)
                 } else {
                     userDataServiceManager.stopPeriodicWork(this@MainActivity)
-                    navController.navigate(R.id.loginFragment)
                 }
             }
         }

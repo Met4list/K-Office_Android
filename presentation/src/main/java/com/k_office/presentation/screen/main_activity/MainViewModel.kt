@@ -13,8 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val tokenDataSource: TokenDataSource,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : BaseViewModel() {
 
     private val _isLoggedIn = MutableStateFlow(false)

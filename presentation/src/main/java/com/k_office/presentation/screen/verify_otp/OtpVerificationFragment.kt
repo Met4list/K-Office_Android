@@ -10,39 +10,38 @@ import androidx.lifecycle.lifecycleScope
 import com.k_office.domain.mapper.AuthType
 import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
-import com.k_office.presentation.base.utils.FragmentArgs
 import com.k_office.presentation.base.utils.setFragmentContent
 import com.k_office.presentation.screen.main_activity.MainActivity
-import com.k_office.presentation.screen.verify_otp.args.VerifyOtpArgs
 import com.k_office.presentation.screen.verify_otp.components.OtpVerificationScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
+class OtpVerificationFragment : BaseFragment() {
 
     private val viewModel: OtpVerificationViewModel by viewModels()
 
-    private lateinit var args: OtpVerificationFragmentArgs
+    private val args by lazy {
+        OtpVerificationFragmentArgs.fromBundle(requireArguments()).verifyOtpArgs
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = setFragmentContent {
-        args = OtpVerificationFragmentArgs.fromBundle(requireArguments())
         OtpVerificationScreen(
             viewModel = viewModel,
-            phoneNumber = args.verifyOtpArgs.phoneNumber,
+            phoneNumber = args.phoneNumber,
             onVerificationComplete = {
-                val type = AuthType.findByType(args.verifyOtpArgs.type)
+                val type = AuthType.findByType(args.type)
                 if (type == AuthType.REGISTER) {
-                    viewModel.verifyRegister(args.verifyOtpArgs.phoneNumber, it)
+                    viewModel.verifyRegister(args.phoneNumber, it)
                 } else {
-                    viewModel.verifyOtp(args.verifyOtpArgs.phoneNumber, it)
+                    viewModel.verifyOtp(args.phoneNumber, it)
                 }
             }, onRetryClick = {
-                viewModel.retryOtp(args.verifyOtpArgs.phoneNumber)
+                viewModel.retryOtp(args.phoneNumber)
                 viewModel.clearOTP()
             }
         )
@@ -54,12 +53,12 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
             viewModel.onSuccess
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
-                    when (AuthType.findByType(args.verifyOtpArgs.type)) {
+                    when (AuthType.findByType(args.type)) {
                         AuthType.REGISTER -> {
                             if (it) {
                                 navController.navigate(
                                     OtpVerificationFragmentDirections.actionOtpVerificationFragmentToRegistrationFragment(
-                                        args.verifyOtpArgs.phoneNumber
+                                        args.phoneNumber
                                     )
                                 )
                             }
@@ -73,7 +72,7 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
                             }
                         }
 
-                        else -> Unit
+                        else -> showMessage("Something went wrong.")
                     }
                 }
         }
