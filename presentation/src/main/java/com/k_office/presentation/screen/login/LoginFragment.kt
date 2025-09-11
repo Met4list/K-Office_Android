@@ -7,13 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
-import com.k_office.presentation.base.utils.FragmentUtil
-import com.k_office.presentation.base.utils.setArgs
 import com.k_office.presentation.base.utils.setFragmentContent
 import com.k_office.presentation.screen.login.components.LoginScreen
-import com.k_office.presentation.screen.verify_otp.OtpVerificationFragment
 import com.k_office.presentation.screen.verify_otp.args.VerifyOtpArgs
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -39,10 +35,10 @@ class LoginFragment : BaseFragment() {
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
                     showMessage(it.message)
-                    FragmentUtil.setFragmentIfAbsent(
-                        OtpVerificationFragment().setArgs(VerifyOtpArgs(it.phone, it.type)),
-                        requireActivity().supportFragmentManager,
-                        R.id.container
+                    navController.navigate(
+                        LoginFragmentDirections.actionLoginFragmentToOtpVerificationFragment(
+                            VerifyOtpArgs(it.phone, it.type)
+                        )
                     )
                 }
         }

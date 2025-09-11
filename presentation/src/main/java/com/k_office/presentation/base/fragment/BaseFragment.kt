@@ -7,9 +7,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.k_office.domain.base.UIText
 
 abstract class BaseFragment: Fragment() {
+
+    protected val navController: NavController by lazy { initNavController() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,4 +38,6 @@ abstract class BaseFragment: Fragment() {
     protected fun showMessage(@StringRes id: Int, duration: Int = Toast.LENGTH_SHORT) {
         showMessage(requireContext().getString(id), duration)
     }
+
+    protected open fun initNavController(): NavController = findNavController()
 }

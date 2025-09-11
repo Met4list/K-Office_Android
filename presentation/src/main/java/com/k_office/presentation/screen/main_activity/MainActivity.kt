@@ -4,16 +4,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.fragment.app.FragmentManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import com.k_office.domain.data_source.TokenDataSource
 import com.k_office.presentation.R
-import com.k_office.presentation.base.activity.BaseActivity
 import com.k_office.presentation.base.utils.FragmentUtil
-import com.k_office.presentation.screen.home.HomeFragment
+import com.k_office.presentation.base.utils.viewBinding
+import com.k_office.presentation.databinding.ActivityMainBinding
 import com.k_office.presentation.screen.login.LoginFragment
 import com.k_office.presentation.utils.UserDataServiceManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,9 +24,9 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity() {
+class MainActivity : AppCompatActivity() {
 
-    override val layoutId: Int = R.layout.activity_main
+    private val binding by viewBinding(ActivityMainBinding::inflate)
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -32,6 +35,8 @@ class MainActivity : BaseActivity() {
 
     @Inject
     lateinit var userDataServiceManager: UserDataServiceManager
+
+    private lateinit var navController: NavController
 
     private val tokenExpiredReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -43,30 +48,16 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun setupFragment() {
-        super.setupFragment()
-        registerTokenExpiredReceiver()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(binding.root)
+        setupFragment()
+    }
 
-        lifecycleScope.launch {
-            viewModel.isLoggedIn.collect {
-                if (it) {
-                    FragmentUtil.setFragmentIfAbsent(
-                        HomeFragment(),
-                        this@MainActivity,
-                        R.id.container
-                    )
-                    // Start background service when user is logged in
-                    userDataServiceManager.startPeriodicWork(lifecycleScope, this@MainActivity)
-                } else {
-                    FragmentUtil.setFragmentIfAbsent(
-                        LoginFragment(),
-                        this@MainActivity,
-                        R.id.container
-                    )
-                    // Stop background service when user is logged out
-                    userDataServiceManager.stopPeriodicWork(this@MainActivity)
-                }
-            }
+    private fun setupFragment() {
+        binding.container.post {
+            navController = findNavController(R.id.container)
+            handleNavigation()
         }
 
         lifecycleScope.launch {
@@ -81,15 +72,19 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        lifecycleScope.launch {
-            viewModel.tokenExpiredEvent.collect {
-                supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        registerTokenExpiredReceiver()
+    }
 
-                FragmentUtil.setFragmentIfAbsent(
-                    LoginFragment(),
-                    this@MainActivity,
-                    R.id.container
-                )
+    private fun handleNavigation() {
+        lifecycleScope.launch {
+            viewModel.isLoggedIn.collect {
+                if (it) {
+                    userDataServiceManager.startPeriodicWork(lifecycleScope, this@MainActivity)
+                    navController.navigate(R.id.action_loginFragment_to_homeFragment)
+                } else {
+                    userDataServiceManager.stopPeriodicWork(this@MainActivity)
+                    navController.navigate(R.id.loginFragment)
+                }
             }
         }
     }

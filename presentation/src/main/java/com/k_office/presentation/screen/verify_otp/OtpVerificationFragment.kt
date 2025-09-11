@@ -11,14 +11,8 @@ import com.k_office.domain.mapper.AuthType
 import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
 import com.k_office.presentation.base.utils.FragmentArgs
-import com.k_office.presentation.base.utils.FragmentUtil
-import com.k_office.presentation.base.utils.args
-import com.k_office.presentation.base.utils.setArgs
 import com.k_office.presentation.base.utils.setFragmentContent
-import com.k_office.presentation.screen.home.HomeFragment
 import com.k_office.presentation.screen.main_activity.MainActivity
-import com.k_office.presentation.screen.registration.RegistrationArgs
-import com.k_office.presentation.screen.registration.RegistrationFragment
 import com.k_office.presentation.screen.verify_otp.args.VerifyOtpArgs
 import com.k_office.presentation.screen.verify_otp.components.OtpVerificationScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,25 +23,26 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
 
     private val viewModel: OtpVerificationViewModel by viewModels()
 
-    private val args by args()
+    private lateinit var args: OtpVerificationFragmentArgs
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View = setFragmentContent {
+        args = OtpVerificationFragmentArgs.fromBundle(requireArguments())
         OtpVerificationScreen(
             viewModel = viewModel,
-            phoneNumber = args.phoneNumber,
+            phoneNumber = args.verifyOtpArgs.phoneNumber,
             onVerificationComplete = {
-                val type = AuthType.findByType(args.type)
+                val type = AuthType.findByType(args.verifyOtpArgs.type)
                 if (type == AuthType.REGISTER) {
-                    viewModel.verifyRegister(args.phoneNumber, it)
+                    viewModel.verifyRegister(args.verifyOtpArgs.phoneNumber, it)
                 } else {
-                    viewModel.verifyOtp(args.phoneNumber, it)
+                    viewModel.verifyOtp(args.verifyOtpArgs.phoneNumber, it)
                 }
             }, onRetryClick = {
-                viewModel.retryOtp(args.phoneNumber)
+                viewModel.retryOtp(args.verifyOtpArgs.phoneNumber)
                 viewModel.clearOTP()
             }
         )
@@ -59,27 +54,25 @@ class OtpVerificationFragment : BaseFragment(), FragmentArgs<VerifyOtpArgs> {
             viewModel.onSuccess
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
-                    when (AuthType.findByType(args.type)) {
+                    when (AuthType.findByType(args.verifyOtpArgs.type)) {
                         AuthType.REGISTER -> {
                             if (it) {
-                                FragmentUtil.setFragmentIfAbsent(
-                                    RegistrationFragment().setArgs(RegistrationArgs(args.phoneNumber)),
-                                    requireActivity() as MainActivity,
-                                    R.id.container
+                                navController.navigate(
+                                    OtpVerificationFragmentDirections.actionOtpVerificationFragmentToRegistrationFragment(
+                                        args.verifyOtpArgs.phoneNumber
+                                    )
                                 )
                             }
                         }
+
                         AuthType.LOGIN -> {
                             if (it) {
                                 showMessage(id = R.string.successfully_auth)
                                 (requireActivity() as MainActivity).onUserUpdateStart()
-                                FragmentUtil.setFragmentIfAbsent(
-                                    HomeFragment(),
-                                    requireActivity() as MainActivity,
-                                    R.id.container
-                                )
+                                navController.navigate(OtpVerificationFragmentDirections.actionOtpVerificationFragmentToHomeFragment())
                             }
                         }
+
                         else -> Unit
                     }
                 }

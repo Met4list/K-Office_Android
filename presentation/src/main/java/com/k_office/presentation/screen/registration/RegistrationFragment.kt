@@ -21,18 +21,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class RegistrationFragment : BaseFragment(), FragmentArgs<RegistrationArgs> {
+class RegistrationFragment : BaseFragment() {
 
     private val viewModel: RegistrationViewModel by viewModels()
-
-    private val args by args()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = setFragmentContent {
-
+        val args = RegistrationFragmentArgs.fromBundle(requireArguments())
         RegistrationScreen(viewModel, args.phoneNumber)
     }
 
