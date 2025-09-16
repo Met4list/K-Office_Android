@@ -1,17 +1,17 @@
 package com.k_office.presentation.base.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.k_office.domain.base.UIText
+import timber.log.Timber
 
-abstract class BaseFragment: Fragment() {
+abstract class BaseFragment : Fragment() {
 
     protected val navController: NavController by lazy { initNavController() }
 

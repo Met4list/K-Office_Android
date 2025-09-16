@@ -38,14 +38,13 @@ class RegistrationFragment : BaseFragment() {
         super.setupViewModelCallbacks()
 
         lifecycleScope.launch {
-            viewModel.isSuccessfulyRegistered.collect {
+            viewModel
+                .isSuccessfulyRegistered
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect {
                 if (it) {
                     showMessage(id = R.string.successfully_registered)
-                    FragmentUtil.setFragmentIfAbsent(
-                        HomeFragment(),
-                        requireActivity() as MainActivity,
-                        R.id.container
-                    )
+                    navController.navigate(RegistrationFragmentDirections.actionRegistrationFragmentToHomeFragment())
                 }
             }
         }

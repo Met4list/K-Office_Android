@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
 import com.k_office.presentation.base.utils.setFragmentContent
 import com.k_office.presentation.screen.login.components.LoginScreen
@@ -33,14 +34,16 @@ class LoginFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel.authType
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
-                .collect {
-                    if (it != null) {
-                        showMessage(it.message)
-                        navController.navigate(
-                            LoginFragmentDirections.actionLoginFragmentToOtpVerificationFragment(
-                                VerifyOtpArgs(it.phone, it.type)
+                .collect { event ->
+                    event?.getContentIfNotHandled()?.let {
+                        if (navController.currentDestination?.id == R.id.loginFragment) {
+                            showMessage(it.message)
+                            navController.navigate(
+                                LoginFragmentDirections.actionLoginFragmentToOtpVerificationFragment(
+                                    VerifyOtpArgs(it.phone, it.type)
+                                )
                             )
-                        )
+                        }
                     }
                 }
         }
