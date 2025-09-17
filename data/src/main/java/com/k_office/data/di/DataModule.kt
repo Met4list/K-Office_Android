@@ -142,10 +142,9 @@ class DataModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        @ApplicationContext context: Context,
         baseConfigProvider: BaseConfigProvider,
+        chuckerInterceptor: ChuckerInterceptor
     ): OkHttpClient {
-        val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addDefaultInterceptor()
@@ -164,13 +163,12 @@ class DataModule {
     @Singleton
     @Named("with_auth")
     fun provideAuthenticatedOkHttpClient(
-        @ApplicationContext context: Context,
         baseConfigProvider: BaseConfigProvider,
         tokenStorage: TokenStorage,
         tokenRefreshInterceptor: TokenRefreshInterceptor,
-        cookieJar: CookieJar
+        cookieJar: CookieJar,
+        chuckerInterceptor: ChuckerInterceptor
     ): OkHttpClient {
-        val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
         val okHttpClient = OkHttpClient.Builder()
             .cookieJar(cookieJar)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
@@ -192,12 +190,11 @@ class DataModule {
     @Singleton
     @Named("token_refresh")
     fun provideTokenRefreshOkHttpClient(
-        @ApplicationContext context: Context,
         baseConfigProvider: BaseConfigProvider,
         tokenStorage: TokenStorage,
-        cookieJar: CookieJar
+        cookieJar: CookieJar,
+        chuckerInterceptor: ChuckerInterceptor
     ): OkHttpClient {
-        val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
         val okHttpClient = OkHttpClient.Builder()
             .cookieJar(cookieJar)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
@@ -242,4 +239,9 @@ class DataModule {
             SetCookieCache(),
             SharedPrefsCookiePersistor(context)
         )
+
+    @Provides
+    @Singleton
+    fun provideChuckerInterceptor(@ApplicationContext context: Context): ChuckerInterceptor =
+        ChuckerInterceptor.Builder(context).build()
 }

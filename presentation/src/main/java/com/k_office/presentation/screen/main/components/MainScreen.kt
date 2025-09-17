@@ -20,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,8 +48,8 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
 
     val context = LocalContext.current
 
-    val banners = viewModel.banners.collectAsStateWithLifecycle(listOf())
-    val currentUser = viewModel.currentUser.collectAsState()
+    val banners by viewModel.banners.collectAsStateWithLifecycle()
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
 
     var showBonusCard by remember {
         mutableStateOf(false)
@@ -65,7 +64,7 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
     }
 
     if (showBonusCard) {
-        BonusCardDialog(currentUser.value) {
+        BonusCardDialog(currentUser) {
             showBonusCard = false
         }
     }
@@ -81,8 +80,8 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
             verticalArrangement = Arrangement.SpaceAround
         ) {
             HeaderGreeting(
-                name = currentUser.value?.name.orEmpty(),
-                balance = "${currentUser.value?.sum ?: 0} бонусів"
+                name = currentUser?.name.orEmpty(),
+                balance = "${currentUser?.sum ?: 0} бонусів"
             )
             Spacer(modifier = Modifier.height(6.dp))
 
@@ -92,12 +91,12 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            BarCode(currentUser.value) {
+            BarCode(currentUser) {
                 showBonusCard = true
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            AdsBanners(banners = banners.value)
+            AdsBanners(banners = banners)
         }
     }
 }

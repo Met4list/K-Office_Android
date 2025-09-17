@@ -9,9 +9,7 @@ import com.k_office.domain.use_case.LogoutUseCase
 import com.k_office.domain.use_case.UpdateUserInfoUseCase
 import com.k_office.presentation.base.view_model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
@@ -29,8 +27,8 @@ class HomeViewModel @Inject constructor(
     private val _logoutAction = MutableStateFlow(false)
     val logoutAction = _logoutAction.asStateFlow()
 
-    private val _banners = MutableSharedFlow<List<AdsBanner>>()
-    val banners = _banners.asSharedFlow()
+    private val _banners = MutableStateFlow<List<AdsBanner>>(listOf())
+    val banners = _banners.asStateFlow()
 
     init {
         launchWithResponseState(block = { getCurrentUserUseCase.invoke(Unit) }) {

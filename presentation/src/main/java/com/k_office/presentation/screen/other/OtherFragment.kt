@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
+import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
 import com.k_office.presentation.base.utils.setFragmentContent
+import com.k_office.presentation.screen.home.HomeFragment
 import com.k_office.presentation.screen.home.HomeViewModel
 import com.k_office.presentation.screen.main_activity.MainActivity
 import com.k_office.presentation.screen.other.components.OtherScreen
@@ -35,7 +38,7 @@ class OtherFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel.logoutAction.collect {
                 if (it) {
-                    (requireActivity() as MainActivity).logout()
+                    (parentFragment as HomeFragment).navigateToLogin()
                 }
             }
         }

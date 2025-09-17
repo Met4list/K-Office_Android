@@ -34,9 +34,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 internal inline fun AdsBanners(modifier: Modifier = Modifier, banners: List<AdsBanner>) {
-    if (banners.isEmpty()) {
-        return
-    }
+
 
     val context = LocalContext.current
 

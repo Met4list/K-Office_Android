@@ -50,7 +50,7 @@ internal inline fun AllShopsScreen(viewModel: ShopListViewModel) {
         }
     )
 
-    val hasLocationPermission = remember {
+    val hasLocationPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
                 context,
@@ -62,7 +62,7 @@ internal inline fun AllShopsScreen(viewModel: ShopListViewModel) {
     LaunchedEffect(Unit) {
         viewModel.loadShops(context)
 
-        if (!hasLocationPermission.value) {
+        if (!hasLocationPermission) {
             permissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -72,10 +72,10 @@ internal inline fun AllShopsScreen(viewModel: ShopListViewModel) {
         }
     }
 
-    val properties by remember(hasLocationPermission.value) {
+    val properties by remember(hasLocationPermission) {
         mutableStateOf(
             MapProperties(
-                isMyLocationEnabled = hasLocationPermission.value
+                isMyLocationEnabled = hasLocationPermission
             )
         )
     }

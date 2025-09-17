@@ -131,4 +131,8 @@ class HomeFragment : BaseFragment() {
                 .collect(::showMessage)
         }
     }
+
+    fun navigateToLogin() {
+        navController.navigate(HomeFragmentDirections.actionHomeFragmentToLoginFragment())
+    }
 }
