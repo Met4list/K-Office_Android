@@ -40,40 +40,6 @@ class OtpVerificationViewModel @Inject constructor(
     private val _smsPermissionGranted = MutableStateFlow(false)
     val smsPermissionGranted = _smsPermissionGranted.asStateFlow()
 
-    private val _statusMessage = MutableStateFlow("Waiting for OTP...")
-    val statusMessage = _statusMessage.asStateFlow()
-
-    fun checkSMSPermissions(context: Context) {
-        val smsPermission =
-            ContextCompat.checkSelfPermission(context, Manifest.permission.RECEIVE_SMS)
-        val readPermission =
-            ContextCompat.checkSelfPermission(context, Manifest.permission.READ_SMS)
-
-        val hasPermissions = smsPermission == PackageManager.PERMISSION_GRANTED &&
-                readPermission == PackageManager.PERMISSION_GRANTED
-
-        _smsPermissionGranted.value = hasPermissions
-
-        if (hasPermissions) {
-            _statusMessage.value = "SMS permissions granted. Waiting for OTP..."
-        } else {
-            _statusMessage.value = "SMS permissions required for auto-detection"
-        }
-    }
-
-    fun onSMSPermissionsResult(permissions: Map<String, Boolean>) {
-        val hasPermissions = permissions[Manifest.permission.RECEIVE_SMS] == true &&
-                permissions[Manifest.permission.READ_SMS] == true
-
-        _smsPermissionGranted.value = hasPermissions
-
-        if (hasPermissions) {
-            _statusMessage.value = "Permissions granted. Waiting for OTP..."
-        } else {
-            _statusMessage.value = "SMS permissions denied. Please enter OTP manually."
-        }
-    }
-
     fun verifyOtp(phoneNumber: String, otp: String) {
         launchWithResponseState(block = { verifyOtpUseCase.invoke(Pair(phoneNumber, otp)) }) {
             _onSuccess.emit(true)
@@ -115,32 +81,24 @@ class OtpVerificationViewModel @Inject constructor(
     fun onOtpReceived(otp: String?) {
         viewModelScope.launch {
             _otpState.emit(otp)
-            if (!otp.isNullOrEmpty()) {
-                _statusMessage.emit("OTP введен: $otp")
-            }
         }
     }
 
     fun onSMSReceived(message: String) {
         try {
-            Timber.d("SMS received: $message")
+            Timber.d("SMS received: via SMS Retriever $message")
             val extractedOTP = SMSHelper.extractOTP(message)
             if (extractedOTP.isNotEmpty() && SMSHelper.isValidOTP(extractedOTP)) {
                 viewModelScope.launch {
                     _otpState.emit(extractedOTP)
-                    _statusMessage.emit("OTP получен автоматически: $extractedOTP")
                 }
-            } else {
-                _statusMessage.value = "Не удалось извлечь OTP из SMS"
             }
         } catch (e: Exception) {
             Timber.d("Error processing SMS: ${e.message}")
-            _statusMessage.value = "Ошибка обработки SMS"
         }
     }
 
     fun clearOTP() {
         _otpState.value = ""
-        _statusMessage.value = "Waiting for OTP..."
     }
 }

@@ -1,6 +1,5 @@
 package com.k_office.presentation.screen.verify_otp.components
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
@@ -45,7 +44,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -73,20 +71,13 @@ internal fun OtpVerificationScreen(
     val loading by viewModel.loading.collectAsStateWithLifecycle()
     val retryOtp by viewModel.retryOtp.collectAsStateWithLifecycle(false)
 
-    val smsPermissionGranted by viewModel.smsPermissionGranted.collectAsStateWithLifecycle()
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        viewModel.onSMSPermissionsResult(permissions)
-    }
 
     val consentLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val message = result.data?.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
-            Timber.d("OtpScreen", "Consent result OK. Message length: ${message?.length}")
+            Timber.d("OtpScreen", "Consent result OK. Message: $message")
             message?.let { viewModel.onSMSReceived(it) }
         } else {
             Timber.w("OtpScreen", "Consent result not OK: ${result.resultCode}")
@@ -94,24 +85,8 @@ internal fun OtpVerificationScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.checkSMSPermissions(context)
-        if (!smsPermissionGranted) {
-            val smsPermission =
-                ContextCompat.checkSelfPermission(context, Manifest.permission.RECEIVE_SMS)
-            val readPermission =
-                ContextCompat.checkSelfPermission(context, Manifest.permission.READ_SMS)
-
-            if (smsPermission != android.content.pm.PackageManager.PERMISSION_GRANTED ||
-                readPermission != android.content.pm.PackageManager.PERMISSION_GRANTED
-            ) {
-                permissionLauncher.launch(
-                    arrayOf(
-                        Manifest.permission.RECEIVE_SMS,
-                        Manifest.permission.READ_SMS
-                    )
-                )
-            }
-        }
+        Timber.d("OtpScreen", "Starting SMS User Consent (no permissions required)")
+        context.startSmsRetriever()
     }
 
     LaunchedEffect(key1 = isTimerRunning) {
@@ -131,11 +106,6 @@ internal fun OtpVerificationScreen(
             Timber.d("OtpScreen", "Retry requested, restarting SMS User Consent")
             context.startSmsRetriever()
         }
-    }
-
-    LaunchedEffect(Unit) {
-        Timber.d("OtpScreen", "Starting SMS User Consent (no SMS permission required)")
-        context.startSmsRetriever()
     }
 
     DisposableEffect(key1 = Unit) {
@@ -158,10 +128,7 @@ internal fun OtpVerificationScreen(
                         }
 
                         CommonStatusCodes.TIMEOUT -> {
-                            Timber.w(
-                                "OtpScreen",
-                                "SMS_RETRIEVED_ACTION: TIMEOUT - restarting user consent"
-                            )
+                            Timber.w("OtpScreen", "SMS_RETRIEVED_ACTION: TIMEOUT")
                             context?.startSmsRetriever()
                         }
 
@@ -177,7 +144,6 @@ internal fun OtpVerificationScreen(
         }
 
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             context.registerReceiver(receiver, intentFilter, Context.RECEIVER_EXPORTED)
         } else {
@@ -189,6 +155,7 @@ internal fun OtpVerificationScreen(
         }
     }
 
+    // Остальная часть UI остается той же...
     if (loading) {
         LoadingDialog()
     } else {
