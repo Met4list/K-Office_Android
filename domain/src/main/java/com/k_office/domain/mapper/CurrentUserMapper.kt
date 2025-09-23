@@ -2,6 +2,7 @@ package com.k_office.domain.mapper
 
 import com.k_office.data.model.UserModel
 import com.k_office.data.model.UserRefreshModel
+import com.k_office.data.response.UserData
 import com.k_office.data.response.UserRefreshResponse
 import com.k_office.data.response.UserResponse
 import com.k_office.domain.base.Mapper
@@ -31,7 +32,7 @@ object CurrentUserMapper: Mapper<UserModel, CurrentUserModel> {
             id,
             name,
             telephone,
-            sum = null
+            sum
         )
     }
 
@@ -50,6 +51,19 @@ object CurrentUserMapper: Mapper<UserModel, CurrentUserModel> {
                 telephone,
                 sum.toFloat()
             )
+        )
+    }
+
+    fun mapTo(model: CurrentUserModel): UserModel = with(model) {
+        UserModel(
+            address,
+            bonusCard,
+            code,
+            createdAt,
+            id,
+            name,
+            telephone,
+            sum
         )
     }
 }

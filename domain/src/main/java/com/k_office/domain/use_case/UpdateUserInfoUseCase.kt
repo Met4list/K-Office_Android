@@ -20,7 +20,7 @@ class UpdateUserInfoUseCase @Inject constructor(
     override suspend fun invoke(request: Unit): Flow<DataState<CurrentUserModel>> = flow {
         emit(DataState.Loading)
         try {
-            val response = userDataSource.updateUserInfo()
+            val response = userDataSource.refreshUserInfo()
             val mappedModel = CurrentUserMapper.mapTo(response.user)
             currentUserStorage.insertUser(response.user)
             tokenStorage.saveTokens(response.accessToken, response.expiresIn.toLong())

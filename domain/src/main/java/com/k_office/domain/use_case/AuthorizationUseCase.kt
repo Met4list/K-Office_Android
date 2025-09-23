@@ -7,10 +7,8 @@ import com.k_office.data.request.RegisterTokenRequest
 import com.k_office.domain.base.BaseUseCase
 import com.k_office.domain.base.DataState
 import com.k_office.domain.base.extractServerErrorMessage
-import com.k_office.domain.base.toUIText
 import com.k_office.domain.data_source.AuthDataSource
 import com.k_office.domain.model.AuthTypeModel
-import com.k_office.domain.model.MessageModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -45,10 +43,10 @@ class AuthorizationUseCase @Inject constructor(
                     )
                 }.await()
                 send(DataState.Success(data = response))
-
-                send(DataState.Default)
             } catch (t: HttpException) {
                 send(DataState.Failure(t.extractServerErrorMessage()))
+            } finally {
+                send(DataState.Default)
             }
         }
 }

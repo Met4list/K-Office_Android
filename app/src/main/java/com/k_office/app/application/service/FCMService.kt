@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Random
@@ -64,10 +65,11 @@ class FCMService : FirebaseMessagingService() {
 
     private fun sendRegistrationToServer(token: String?) {
         coroutineScope.launch {
-            val userId = currentUserStorage.getUserId()
+            val userId = currentUserStorage.getUserId().first()
+            val isLoggedIn = currentUserStorage.isLoggedIn().first()
             token?.let {
                 if (userId == null) return@launch
-                if (currentUserStorage.isLoggedIn() && baseConfigProvider.provideIsDevEnv()) notificationApiService.sendMessagingToken(
+                if (isLoggedIn && baseConfigProvider.provideIsDevEnv()) notificationApiService.sendMessagingToken(
                     MessagingTokenRequest(it, userId)
                 )
             }

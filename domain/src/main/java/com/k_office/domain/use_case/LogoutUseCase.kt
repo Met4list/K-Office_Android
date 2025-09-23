@@ -22,9 +22,10 @@ class LogoutUseCase @Inject constructor(
             tokenStorage.clearTokens()
             firebaseMessaging.deleteToken()
             emit(DataState.Success(true))
-            emit(DataState.Default)
         } catch (t: Throwable) {
             emit(DataState.Failure(t.toUIText()))
+        } finally {
+            emit(DataState.Default)
         }
     }
 }

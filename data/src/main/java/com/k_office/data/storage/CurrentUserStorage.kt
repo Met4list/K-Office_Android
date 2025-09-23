@@ -1,26 +1,27 @@
 package com.k_office.data.storage
 
 import com.k_office.data.model.UserModel
+import kotlinx.coroutines.flow.Flow
 
 interface CurrentUserStorage {
 
-    fun insertUser(currentUser: UserModel)
+    suspend fun insertUser(currentUser: UserModel)
 
-    fun clear()
+    suspend fun clear()
 
-    fun getUser(): UserModel?
+    fun getUser(): Flow<UserModel?>
 
-    fun getUserId(): String
+    fun getUserId(): Flow<String>
 
-    fun getBonusCard(): String
+    fun getBonusCard(): Flow<String>
 
-    fun username(): String
+    fun getUsername(): Flow<String>
 
-    fun phoneNumber(): String
+    fun phoneNumber(): Flow<String>
 
-    fun getBalance(): Float
+    fun getBalance(): Flow<Float>
 
-    fun getCode(): String
+    fun getCode(): Flow<String>
 
-    fun isLoggedIn(): Boolean
+    fun isLoggedIn(): Flow<Boolean>
 }

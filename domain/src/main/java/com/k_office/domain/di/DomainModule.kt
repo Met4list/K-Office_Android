@@ -12,6 +12,7 @@ import com.k_office.domain.data_source.AuthDataSource
 import com.k_office.domain.data_source.TokenDataSource
 import com.k_office.domain.data_source.UserDataSource
 import com.k_office.domain.use_case.AuthorizationUseCase
+import com.k_office.domain.use_case.EditCurrentUserUseCase
 import com.k_office.domain.use_case.GetAdsBannersUseCase
 import com.k_office.domain.use_case.GetCurrentUserUseCase
 import com.k_office.domain.use_case.GetShopsInfoUseCase
@@ -116,4 +117,11 @@ class DomainModule {
     fun provideVerifyRegisterUseCase(
         authDataSource: AuthDataSource
     ): VerifyRegisterUseCase = VerifyRegisterUseCase(authDataSource)
+
+    @Provides
+    @Singleton
+    fun provideEditCurrentUserUseCase(
+        currentUserStorage: CurrentUserStorage,
+        userDataSource: UserDataSource
+    ): EditCurrentUserUseCase = EditCurrentUserUseCase(currentUserStorage, userDataSource)
 }

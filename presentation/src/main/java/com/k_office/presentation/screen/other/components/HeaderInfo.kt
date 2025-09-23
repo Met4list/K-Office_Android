@@ -1,6 +1,7 @@
 package com.k_office.presentation.screen.other.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +30,8 @@ import com.k_office.presentation.base.utils.getColorForChar
 @Composable
 internal fun HeaderInfo(
     name: String,
-    phone: String
+    phone: String,
+    onClick: () -> Unit = {}
 ) {
 
     val firstCharName = name.firstOrNull()?.uppercaseChar() ?: '?'
@@ -37,7 +39,10 @@ internal fun HeaderInfo(
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                onClick.invoke()
+            },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -78,11 +83,11 @@ internal fun HeaderInfo(
                 )
             }
 
-//            Icon(
-//                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-//                contentDescription = "Arrow",
-//                tint = Color.Gray
-//            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Arrow",
+                tint = Color.Gray
+            )
         }
     }
 }

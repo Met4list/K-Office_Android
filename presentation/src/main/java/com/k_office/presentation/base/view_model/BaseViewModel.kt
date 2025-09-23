@@ -22,6 +22,7 @@ abstract class BaseViewModel: ViewModel() {
 
     protected val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         Timber.e(throwable)
+        throwable.printStackTrace()
         _uiTextMessage.value = throwable.toUIText()
         _loading.value = false
     }

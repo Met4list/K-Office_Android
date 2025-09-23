@@ -19,9 +19,9 @@ class VerifyRegisterUseCase @Inject constructor(
             val otp = request.second
             val response = authDataSource.verifyRegister(phoneNumber, otp)
             emit(DataState.Success(response))
-            emit(DataState.Default)
         } catch (t: Throwable) {
             emit(DataState.Failure(t.toUIText()))
+        } finally {
             emit(DataState.Default)
         }
     }

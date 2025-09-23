@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.k_office.data.storage";
+option java_outer_classname = "UserProtoModelOuterClass";
+
+message UserProtoModel {
+  string id = 1;
+  string createdAt = 2;
+  string name = 3;
+  string telephone = 4;
+  string bonusCard = 5;
+  float sum = 6;
+  string code = 7;
+}

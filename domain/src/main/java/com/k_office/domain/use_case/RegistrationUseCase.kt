@@ -52,6 +52,8 @@ class RegistrationUseCase @Inject constructor(
                 send(DataState.Default)
             } catch (t: Throwable) {
                 send(DataState.Failure(t.toUIText()))
+            } finally {
+                send(DataState.Default)
             }
         }
 }

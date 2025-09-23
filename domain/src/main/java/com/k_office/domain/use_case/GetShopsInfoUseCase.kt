@@ -38,6 +38,8 @@ class GetShopsInfoUseCase : BaseUseCase<Context, Flow<DataState<List<Shop>>>> {
             emit(DataState.Failure(e.toUIText()))
         } catch (e: Exception) {
             emit(DataState.Failure(e.toUIText()))
+        } finally {
+            emit(DataState.Default)
         }
     }
 

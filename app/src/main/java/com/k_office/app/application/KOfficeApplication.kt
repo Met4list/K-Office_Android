@@ -13,6 +13,8 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.k_office.data.storage.CurrentUserStorage
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -30,7 +32,7 @@ class KOfficeApplication : Application(), ImageLoaderFactory, Configuration.Prov
         Timber.plant(Timber.DebugTree(), logCrashlytics())
         FirebaseApp.initializeApp(this)
 
-        val userId = currentUserStorage.getUserId()
+        val userId = runBlocking { currentUserStorage.getUserId().first() }
         if (!userId.isNullOrBlank()) {
             FirebaseCrashlytics.getInstance().setUserId(userId)
         }

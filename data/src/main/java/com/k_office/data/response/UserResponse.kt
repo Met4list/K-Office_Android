@@ -17,5 +17,7 @@ data class UserResponse(
     @SerializedName("name")
     val name: String,
     @SerializedName("telephone")
-    val telephone: String
+    val telephone: String,
+    @SerializedName("sum")
+    val sum: Float?
 )

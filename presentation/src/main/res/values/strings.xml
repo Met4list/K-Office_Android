@@ -46,4 +46,6 @@
     <string name="fill_your_data">Введіть ваші дані</string>
     <string name="successfully_registered">Користувача успішно зареєстровано</string>
     <string name="successfully_auth">Користувача успішно авторизовано</string>
+    
+    <string name="profile_title">Профіль</string>
 </resources>

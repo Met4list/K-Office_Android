@@ -1,7 +1,8 @@
 package com.k_office.data.di
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
@@ -21,9 +22,12 @@ import com.k_office.data.storage.CurrentUserStorage
 import com.k_office.data.storage.CurrentUserStorageImpl
 import com.k_office.data.storage.TokenStorage
 import com.k_office.data.storage.TokenStorageImpl
+import com.k_office.data.storage.UserProtoModelOuterClass
+import com.k_office.data.storage.userDataStore
 import com.k_office.data.utils.AuthInterceptor
 import com.k_office.data.utils.ConstUrls
 import com.k_office.data.utils.TokenRefreshInterceptor
+import com.k_office.data.utils.UserProtoModelSerializer
 import com.k_office.data.utils.addDefaultInterceptor
 import dagger.Module
 import dagger.Provides
@@ -134,9 +138,8 @@ class DataModule {
     @Provides
     @Singleton
     fun provideCurrentUserStorage(@ApplicationContext context: Context): CurrentUserStorage {
-        val sharedPreferences: SharedPreferences =
-            context.getSharedPreferences("user_config", Context.MODE_PRIVATE)
-        return CurrentUserStorageImpl(sharedPreferences)
+        val dataStore = context.userDataStore
+        return CurrentUserStorageImpl(dataStore)
     }
 
     @Provides
