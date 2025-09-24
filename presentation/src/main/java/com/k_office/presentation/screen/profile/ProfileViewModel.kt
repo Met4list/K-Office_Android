@@ -6,7 +6,9 @@ import com.k_office.domain.use_case.EditCurrentUserUseCase
 import com.k_office.domain.use_case.GetCurrentUserUseCase
 import com.k_office.presentation.base.view_model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
@@ -17,7 +19,7 @@ class ProfileViewModel @Inject constructor(
 ): BaseViewModel() {
 
     private val _currentUser = MutableStateFlow<CurrentUserModel?>(null)
-    val currentUser = _currentUser.asStateFlow()
+    val currentUser = _currentUser.asSharedFlow()
 
     private val _successfullyEdited = MutableStateFlow(false)
     val successfullyEdited = _successfullyEdited.asStateFlow()

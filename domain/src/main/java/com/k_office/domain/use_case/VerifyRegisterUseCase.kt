@@ -20,6 +20,7 @@ class VerifyRegisterUseCase @Inject constructor(
             val response = authDataSource.verifyRegister(phoneNumber, otp)
             emit(DataState.Success(response))
         } catch (t: Throwable) {
+            t.printStackTrace()
             emit(DataState.Failure(t.toUIText()))
         } finally {
             emit(DataState.Default)

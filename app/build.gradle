@@ -39,6 +39,7 @@ android {
             storePassword KOFFICE_RELEASE_STORE_PASSWORD
             keyAlias KOFFICE_RELEASE_KEY_ALIAS
             keyPassword KOFFICE_RELEASE_KEY_PASSWORD
+            storeType "JKS"
         }
     }
 
@@ -46,12 +47,12 @@ android {
         create("dev") {
             dimension = "environment"
             buildConfigField("Boolean", "IS_DEV", "true")
-            buildConfigField("String", "BASE_URL", "\"https://k-office-server-staging.onrender.com\"")
+            buildConfigField("String", "BASE_URL", "\"https://k-office-staging-445809650727.europe-west1.run.app\"")
         }
         create("prod") {
             dimension = "environment"
             buildConfigField("Boolean", "IS_DEV", "false")
-            buildConfigField("String", "BASE_URL", "\"https://k-office-server.onrender.com\"")
+            buildConfigField("String", "BASE_URL", "\"https://k-office-445809650727.europe-west1.run.app\"")
         }
     }
 
@@ -60,8 +61,21 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+
+            android.buildTypes.release.shrinkResources = false
         }
     }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    androidResources {
+        ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -77,6 +91,7 @@ android {
     lint {
         abortOnError true
         checkDependencies true
+        disable 'Instantiatable'
     }
 }
 

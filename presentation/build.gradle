@@ -23,6 +23,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'consumer-rules.pro'
         }
     }
 
@@ -49,6 +50,7 @@ dependencies {
 
     configurations.all {
         exclude group: 'xpp3'
+        exclude group: 'xmlpull'
     }
 
     implementation libs.androidx.core.ktx

@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +45,7 @@ internal fun ProfileScreen(viewModel: ProfileViewModel) {
 
     val context = LocalContext.current
 
-    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    val currentUser by viewModel.currentUser.collectAsState(null)
     val successfullyMessage by viewModel.successfullyMessage.collectAsStateWithLifecycle()
 
     var phoneNumber by remember { mutableStateOf(TextFieldValue("+380")) }
@@ -56,7 +57,7 @@ internal fun ProfileScreen(viewModel: ProfileViewModel) {
             selection = TextRange(currentUser?.telephone?.length ?: 0)
         )
 
-        name = currentUser?.name.toString()
+        name = currentUser?.name.orEmpty()
     }
 
     LaunchedEffect(successfullyMessage) {

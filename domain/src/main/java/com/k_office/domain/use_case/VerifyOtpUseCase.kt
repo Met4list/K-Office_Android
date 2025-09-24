@@ -46,8 +46,9 @@ class VerifyOtpUseCase @Inject constructor(
                 val currentUserModel = CurrentUserMapper.mapTo(response.user)
 
                 send(DataState.Success(currentUserModel))
-            } catch (t: HttpException) {
-                send(DataState.Failure(t.extractServerErrorMessage()))
+            } catch (t: Throwable) {
+                t.printStackTrace()
+                send(DataState.Failure(t.toUIText()))
             } finally {
                 send(DataState.Default)
             }

@@ -7,6 +7,7 @@ import com.k_office.data.request.RegisterTokenRequest
 import com.k_office.domain.base.BaseUseCase
 import com.k_office.domain.base.DataState
 import com.k_office.domain.base.extractServerErrorMessage
+import com.k_office.domain.base.toUIText
 import com.k_office.domain.data_source.AuthDataSource
 import com.k_office.domain.model.AuthTypeModel
 import kotlinx.coroutines.Dispatchers
@@ -43,8 +44,9 @@ class AuthorizationUseCase @Inject constructor(
                     )
                 }.await()
                 send(DataState.Success(data = response))
-            } catch (t: HttpException) {
-                send(DataState.Failure(t.extractServerErrorMessage()))
+            } catch (t: Throwable) {
+                t.printStackTrace()
+                send(DataState.Failure(t.toUIText()))
             } finally {
                 send(DataState.Default)
             }
