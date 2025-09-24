@@ -20,7 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.k_office.** { *; }
+-keep class com.k_office.data.** { *; }
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
 -verbose
