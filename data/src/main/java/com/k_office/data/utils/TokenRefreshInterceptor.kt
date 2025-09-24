@@ -76,26 +76,19 @@ class TokenRefreshInterceptor @Inject constructor(
 
     private suspend fun refreshTokenInternal(): Result<Pair<String, Long>> {
         return try {
-//            val refreshToken = tokenStorage.getRefreshToken()
-//                ?: return Result.failure(Exception("No refresh token available"))
+        val authResponse = authApiService.refreshToken()
 
-            val authResponse = authApiService.refreshToken()
-            if (authResponse.isSuccessful) {
-                authResponse.body()?.let { dto ->
-                    val expiryTime = System.currentTimeMillis() + (dto.expiresIn * 60 * 1000)
-                    tokenStorage.saveTokens(dto.accessToken,expiryTime)
-                    Timber.d("Token refresh successful via /auth/refresh, new access token: %s...", dto.accessToken.take(10))
-                    return Result.success(Pair(dto.accessToken,dto.expiresIn))
-                }
+        if (authResponse.isSuccessful) {
+            authResponse.body()?.let { dto ->
+                val expiryTime = System.currentTimeMillis() + (dto.expiresIn * 60 * 1000)
+                tokenStorage.saveTokens(dto.accessToken, expiryTime)
+                Timber.d("Token refresh successful via /auth/refresh, new access token: %s...", dto.accessToken.take(10))
+                return Result.success(Pair(dto.accessToken, dto.expiresIn))
             }
+        }
 
-            Timber.d("Auth refresh failed (%s), trying /user/refresh as fallback", authResponse.code())
-            val userResponse = userApiService.refreshUserInfo()
-
-            val expiryTime = System.currentTimeMillis() + (userResponse.expiresIn * 60 * 1000)
-            tokenStorage.saveTokens(userResponse.accessToken, expiryTime)
-            Timber.d("Token refresh successful via /user/refresh, new access token: %s...", userResponse.accessToken.take(10))
-            Result.success(Pair(userResponse.accessToken,userResponse.expiresIn.toLong()))
+        Timber.e("Auth refresh failed with code: %s. Session is lost.", authResponse.code())
+        return Result.failure(Exception("Failed to refresh token, HTTP ${authResponse.code()}"))
 
         } catch (e: Exception) {
             Timber.e(e, "Exception during token refresh: %s", e.message)

@@ -146,9 +146,11 @@ class DataModule {
     @Singleton
     fun provideOkHttpClient(
         baseConfigProvider: BaseConfigProvider,
-        chuckerInterceptor: ChuckerInterceptor
+        chuckerInterceptor: ChuckerInterceptor,
+        cookieJar: CookieJar
     ): OkHttpClient {
         val okHttpClient = OkHttpClient.Builder()
+            .cookieJar(cookieJar)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addDefaultInterceptor()
             .readTimeout(120, TimeUnit.SECONDS)
