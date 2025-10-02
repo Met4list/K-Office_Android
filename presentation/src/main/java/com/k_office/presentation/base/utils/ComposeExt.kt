@@ -8,12 +8,14 @@ import android.location.Location
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.IdRes
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -26,7 +28,7 @@ import timber.log.Timber
 data class LocationState(
     val location: Location?,
     val isLoading: Boolean,
-    val requestPermissions: () -> Unit
+    val requestPermissions: () -> Unit,
 )
 
 
@@ -139,7 +141,7 @@ private fun startLocationUpdatesInternal(
     context: Context,
     fusedLocationClient: FusedLocationProviderClient,
     locationCallback: LocationCallback,
-    onStatusUpdate: (Boolean) -> Unit
+    onStatusUpdate: (Boolean) -> Unit,
 ) {
     val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000L)
         .setMinUpdateIntervalMillis(5000L)
@@ -165,25 +167,4 @@ private fun startLocationUpdatesInternal(
         )
         onStatusUpdate(false)
     }
-}
-
-@Composable
-fun Context.WithFragmentNavigator(
-    @IdRes containerId: Int,
-    content: @Composable (navigateTo: (Fragment) -> Unit) -> Unit
-) {
-    val activity = this.findActivity()
-
-    if (activity == null) {
-        return
-    }
-
-    val fragmentManager = (activity as? FragmentActivity)?.supportFragmentManager
-        ?: throw IllegalStateException("Context's Activity must be a FragmentActivity to use FragmentManager.")
-
-    val navigateTo: (Fragment) -> Unit = { fragment ->
-        FragmentUtil.setFragmentIfAbsent(fragment, fragmentManager, containerId)
-    }
-
-    content(navigateTo)
 }

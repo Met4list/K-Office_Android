@@ -1,6 +1,7 @@
 package com.k_office.presentation.screen.home
 
 import android.content.Context
+import com.k_office.domain.base.UIText
 import com.k_office.domain.model.AdsBanner
 import com.k_office.domain.model.CurrentUserModel
 import com.k_office.domain.use_case.GetAdsBannersUseCase
@@ -30,6 +31,9 @@ class HomeViewModel @Inject constructor(
     private val _banners = MutableStateFlow<List<AdsBanner>>(listOf())
     val banners = _banners.asStateFlow()
 
+    private val _successfullyUpdated = MutableStateFlow<UIText?>(null)
+    val successfullyUpdated = _successfullyUpdated.asStateFlow()
+
     init {
         launchWithResponseState(block = { getCurrentUserUseCase.invoke(Unit) }) {
             _currentUser.emit(it)
@@ -50,7 +54,8 @@ class HomeViewModel @Inject constructor(
 
     fun updateUserInfo() {
         launchWithResponseState(block = { updateUserInfoUseCase.invoke(Unit) }) {
-            _currentUser.emit(it)
+            _successfullyUpdated.emit(it.first)
+            _currentUser.emit(it.second)
         }
     }
 }

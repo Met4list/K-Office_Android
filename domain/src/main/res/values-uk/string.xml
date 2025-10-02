@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="successfully_updated" tools:ignore="ExtraTranslation">Дані користувача було успішно оновлено</string>
     <string name="type_phone_login" tools:ignore="ExtraTranslation">Введіть код для підтвердження</string>
 </resources>

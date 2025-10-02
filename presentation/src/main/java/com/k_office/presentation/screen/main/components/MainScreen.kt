@@ -1,5 +1,6 @@
 package com.k_office.presentation.screen.main.components
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,7 +32,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,6 +56,7 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
 
     val banners by viewModel.banners.collectAsStateWithLifecycle()
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+    val successfullyMessage by viewModel.successfullyUpdated.collectAsState()
 
     var showBonusCard by remember {
         mutableStateOf(false)
@@ -69,6 +76,12 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
         }
     }
 
+    LaunchedEffect(successfullyMessage) {
+        if (successfullyMessage != null) {
+            Toast.makeText(context, successfullyMessage?.getString(context), Toast.LENGTH_SHORT).show()
+        }
+    }
+
     SwipeRefresh(state = refreshState, onRefresh = {
         viewModel.updateUserInfo()
     }) {
@@ -81,7 +94,7 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
         ) {
             HeaderGreeting(
                 name = currentUser?.name.orEmpty(),
-                balance = "${currentUser?.sum ?: 0} бонусів"
+                balance = "${currentUser?.sum} бонусів"
             )
             Spacer(modifier = Modifier.height(6.dp))
 
@@ -110,27 +123,41 @@ internal inline fun HeaderGreeting(name: String, balance: String) {
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
-            Text(
-                text = stringResource(R.string.greetings_title),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = name,
-                color = colorResource(R.color.blue_primary),
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1
-            )
-        }
-        Column(horizontalAlignment = Alignment.End) {
-            Text(text = stringResource(R.string.balance), color = Color.Gray)
-            Text(
-                text = balance,
-                color = colorResource(R.color.blue_primary),
-                fontWeight = FontWeight.Bold,
-                maxLines = 1
-            )
-        }
+        Text(
+            text = buildAnnotatedString {
+                withStyle(style = MaterialTheme.typography.bodyMedium.toSpanStyle()) {
+                    append(stringResource(R.string.greetings_title))
+                }
+                append("\n")
+                withStyle(
+                    style = MaterialTheme.typography.bodyLarge.toSpanStyle().copy(
+                        color = colorResource(R.color.blue_primary)
+                    )
+                ) {
+                    append(name)
+                }
+            },
+            maxLines = 2
+        )
+
+        Text(
+            text = buildAnnotatedString {
+                withStyle(style = SpanStyle(color = Color.Gray)) {
+                    append(stringResource(R.string.balance))
+                }
+                append("\n")
+                withStyle(
+                    style = SpanStyle(
+                        color = colorResource(R.color.blue_primary),
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
+                    append(balance)
+                }
+            },
+            textAlign = TextAlign.End,
+            maxLines = 2
+        )
     }
 }
 

@@ -5,7 +5,6 @@ import com.k_office.data.storage.TokenStorage
 import com.k_office.domain.base.BaseUseCase
 import com.k_office.domain.base.DataState
 import com.k_office.domain.base.UIText
-import com.k_office.domain.base.extractServerErrorMessage
 import com.k_office.domain.base.toUIText
 import com.k_office.domain.data_source.AuthDataSource
 import com.k_office.domain.mapper.CurrentUserMapper
@@ -13,7 +12,6 @@ import com.k_office.domain.model.CurrentUserModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import retrofit2.HttpException
 import javax.inject.Inject
 
 class VerifyOtpUseCase @Inject constructor(

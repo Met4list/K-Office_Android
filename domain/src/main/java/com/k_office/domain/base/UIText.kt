@@ -33,28 +33,3 @@ fun Throwable?.toUIText(): UIText =
     this?.message?.let {
         UIText.DynamicString(it)
     } ?: UIText.getDefaultErrorMessage()
-
-fun Throwable.extractServerErrorMessage(): UIText {
-    return try {
-        if (this is HttpException) {
-            val exception = this as HttpException
-            val errorBody = exception.response()?.errorBody()?.string()
-            if (errorBody != null) {
-                val gson = Gson()
-                val errorResponse = gson.fromJson(errorBody, MessageResponse::class.java)
-                val message = errorResponse.message
-                if (!message.isNullOrEmpty()) {
-                    UIText.DynamicString(message)
-                } else {
-                    toUIText()
-                }
-            } else {
-                toUIText()
-            }
-        } else {
-            toUIText()
-        }
-    } catch (e: Exception) {
-        e.toUIText()
-    }
-}
