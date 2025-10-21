@@ -4,25 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
+import com.k_office.presentation.base.utils.FragmentUtil
+import com.k_office.presentation.base.utils.setArgs
 import com.k_office.presentation.base.utils.setFragmentContent
+import com.k_office.presentation.screen.shop_details.ShopDetailsArgs
+import com.k_office.presentation.screen.shop_details.ShopDetailsFragment
 import com.k_office.presentation.screen.shop_list.components.ShopListScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ShopListFragment: BaseFragment() {
+class ShopListFragment : BaseFragment() {
 
     private val viewModel: ShopListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = setFragmentContent {
         viewModel.loadShops(requireContext())
 
@@ -37,6 +41,20 @@ class ShopListFragment: BaseFragment() {
                 .uiTextMessage
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect(::showMessage)
+        }
+
+        lifecycleScope.launch {
+            viewModel
+                .shopDetails
+                .collect { shop ->
+                    if (shop != null) {
+                        FragmentUtil.setFragmentIfAbsent(
+                            ShopDetailsFragment().setArgs(ShopDetailsArgs(shop)),
+                            parentFragmentManager,
+                            R.id.nav_container
+                        )
+                    }
+                }
         }
     }
 }

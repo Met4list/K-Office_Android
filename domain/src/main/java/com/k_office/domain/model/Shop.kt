@@ -15,6 +15,8 @@ data class Shop(
     val latLng: LatLng,
     @SerializedName("location_details")
     val locationDetails: String,
+    @SerializedName("imageUrl")
+    val imageUrl: String,
     @SerializedName("name")
     val name: String,
     @SerializedName("services")

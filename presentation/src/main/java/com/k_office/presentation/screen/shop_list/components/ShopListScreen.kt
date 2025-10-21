@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -205,9 +206,10 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CircularProgressIndicator(modifier = Modifier.size(48.dp))
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Loading your location and calculating distances...")
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = colorResource(R.color.blue_primary)
+                )
             }
         } else if (userLocation == null && !shops.any { it.distance != "Calculating..." && it.distance != "N/A" }) {
             Column(
@@ -267,7 +269,11 @@ internal fun ShopListScreen(viewModel: ShopListViewModel) {
                 },
                 onRouteClick = {
                     selectedShopForInfoModal?.let { shop ->
-                        context.openGoogleMapsRoute(shop.latLng.latitude, shop.latLng.longitude, shop.name)
+                        context.openGoogleMapsRoute(
+                            shop.latLng.latitude,
+                            shop.latLng.longitude,
+                            shop.name
+                        )
                     }
                     viewModel.hideShopInfoModal()
                 }
@@ -282,7 +288,7 @@ internal fun ShopItem(
     shop: Shop,
     isSelected: Boolean,
     onMapClick: (Shop) -> Unit,
-    onDetailsClick: (Shop) -> Unit
+    onDetailsClick: (Shop) -> Unit,
 ) {
     val borderColor = if (isSelected) Color(0xFFC70039) else Color.Transparent
     val borderWidth = if (isSelected) 1.dp else 0.dp
@@ -302,7 +308,6 @@ internal fun ShopItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Левая часть - круглая иконка
             Box(
                 modifier = Modifier
                     .size(50.dp)
@@ -393,7 +398,7 @@ internal fun ShopItem(
 private fun startLocationUpdates(
     context: Context,
     userLocation: Location?,
-    onLocationUpdate: (Location?, Boolean) -> Unit
+    onLocationUpdate: (Location?, Boolean) -> Unit,
 ) {
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     val locationCallback = object : LocationCallback() {
@@ -420,12 +425,20 @@ private fun startLocationUpdates(
 
     if (hasFineLocationPermission || hasCoarseLocationPermission) {
         try {
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, context.mainLooper)
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                context.mainLooper
+            )
             if (userLocation == null) {
                 onLocationUpdate(null, true)
             }
         } catch (e: SecurityException) {
-            Toast.makeText(context, "Location permission not truly granted for updates: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                "Location permission not truly granted for updates: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
             onLocationUpdate(null, false)
         }
     } else {

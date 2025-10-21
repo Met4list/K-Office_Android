@@ -32,6 +32,9 @@ class ShopListViewModel @Inject constructor(
 
     var showModalBottomSheet by mutableStateOf(false)
 
+    private val _shopDetails = MutableStateFlow<Shop?>(null)
+    val shopDetails = _shopDetails.asStateFlow()
+
     var cameraPosition by mutableStateOf(
         CameraPosition.fromLatLngZoom(
             LatLng(49.2331, 28.4682),
@@ -49,7 +52,9 @@ class ShopListViewModel @Inject constructor(
 
     @SuppressLint("TimberArgCount")
     fun onShopDetailsClick(shop: Shop) {
-        selectedShopForModal = shop
+        viewModelScope.launch(coroutineExceptionHandler) {
+            _shopDetails.emit(shop)
+        }
         showModalBottomSheet = true
         Timber.d("ShopListViewModel", "Shop ${shop.name} details clicked, opening modal.")
     }

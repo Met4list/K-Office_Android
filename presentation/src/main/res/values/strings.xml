@@ -48,4 +48,9 @@
     <string name="successfully_auth">Користувача успішно авторизовано</string>
     
     <string name="profile_title">Профіль</string>
+
+    <string name="advantages">Переваги:</string>
+    <string name="shop_services">Послуги магазину:</string>
+
+    <string name="route">Маршут</string>
 </resources>
