@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,6 +45,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.FragmentUtil
+import com.k_office.presentation.base.utils.openBrowserPage
 import com.k_office.presentation.screen.dialogs.BonusCardDialog
 import com.k_office.presentation.screen.home.HomeViewModel
 import com.k_office.presentation.screen.shop_list.ShopListFragment
@@ -96,10 +98,16 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
                 name = currentUser?.name.orEmpty(),
                 balance = "${currentUser?.sum} бонусів"
             )
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             StoreLocation(title = "Адреси магазинів") {
                 FragmentUtil.setFragmentIfAbsent(ShopListFragment(), fragmentManager, R.id.nav_container)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OrderOnWebsite {
+                context.openBrowserPage(ORDER_ON_WEBSITE_LINK)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -179,3 +187,24 @@ internal inline fun StoreLocation(title: String, crossinline onClick: () -> Unit
         Text(modifier = Modifier.padding(start = 8.dp), text = title, fontWeight = FontWeight.Bold)
     }
 }
+
+@Composable
+internal inline fun OrderOnWebsite(crossinline onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFF3F3F3), shape = RoundedCornerShape(12.dp))
+            .padding(16.dp)
+            .clickable(onClick = { onClick.invoke() }),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        androidx.compose.material3.Icon(
+            Icons.Default.ShoppingCart,
+            contentDescription = null,
+            tint = Color.Gray
+        )
+        Text(modifier = Modifier.padding(start = 8.dp), text = stringResource(R.string.order_on_website), fontWeight = FontWeight.Bold)
+    }
+}
+
+private const val ORDER_ON_WEBSITE_LINK = "http://K-office.in.ua"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="greetings_title">Вітаю</string>
     <string name="balance">Баланс</string>
     <string name="main_title">Головна</string>
@@ -12,45 +12,47 @@
     <string name="name_or_scan_the_barcode">Назвіть або відскануйте штрих-код</string>
     <string name="logout">Вийти</string>
 
-    <string name="by_continuing_you_agree">Продовжуючи, ви погоджуєтеся з </string>
-    <string name="login_privacy_policy">Політикою конфіденційності</string>
-    <string name="and">та</string>
-    <string name="offer_agreement">Угодою про оферту</string>
-    <string name="register_now">Зареєструватись зараз</string>
-    <string name="login">Увійти</string>
-    <string name="auth">Авторизація</string>
-    <string name="phone_number">Номер телефону</string>
-    <string name="scan_in_shop">Скануйте в магазині</string>
-    <string name="logout_message">Ви впевнені, що хочете вийти?</string>
-    <string name="cancel">Скасувати</string>
+    <string name="by_continuing_you_agree" tools:ignore="MissingTranslation">Продовжуючи, ви погоджуєтеся з </string>
+    <string name="login_privacy_policy" tools:ignore="MissingTranslation">Політикою конфіденційності</string>
+    <string name="and" tools:ignore="MissingTranslation">та</string>
+    <string name="offer_agreement" tools:ignore="MissingTranslation">Угодою про оферту</string>
+    <string name="register_now" tools:ignore="MissingTranslation">Зареєструватись зараз</string>
+    <string name="login" tools:ignore="MissingTranslation">Увійти</string>
+    <string name="auth" tools:ignore="MissingTranslation">Авторизація</string>
+    <string name="phone_number" tools:ignore="MissingTranslation">Номер телефону</string>
+    <string name="scan_in_shop" tools:ignore="MissingTranslation">Скануйте в магазині</string>
+    <string name="logout_message" tools:ignore="MissingTranslation">Ви впевнені, що хочете вийти?</string>
+    <string name="cancel" tools:ignore="MissingTranslation">Скасувати</string>
 
-    <string name="dialog_button_cancel">СКАСУВАТИ</string>
-    <string name="dialog_button_exit">ВИЙТИ</string>
-    <string name="client_card_title">Карта клієнта</string>
-    <string name="close_dialog">Закрити діалог</string>
-    <string name="generated_barcode">Згенерований штрих-код</string>
-    <string name="key_continue">Продовжити</string>
+    <string name="dialog_button_cancel" tools:ignore="MissingTranslation">СКАСУВАТИ</string>
+    <string name="dialog_button_exit" tools:ignore="MissingTranslation">ВИЙТИ</string>
+    <string name="client_card_title" tools:ignore="MissingTranslation">Карта клієнта</string>
+    <string name="close_dialog" tools:ignore="MissingTranslation">Закрити діалог</string>
+    <string name="generated_barcode" tools:ignore="MissingTranslation">Згенерований штрих-код</string>
+    <string name="key_continue" tools:ignore="MissingTranslation">Продовжити</string>
 
-    <string name="otp_verification_title">Введіть код з SMS</string>
-    <string name="verify_otp">Підтвердити</string>
-    <string name="otp_verification_description">Ми відправили вам SMS повідомлення
+    <string name="otp_verification_title" tools:ignore="MissingTranslation">Введіть код з SMS</string>
+    <string name="verify_otp" tools:ignore="MissingTranslation">Підтвердити</string>
+    <string name="otp_verification_description" tools:ignore="MissingTranslation">Ми відправили вам SMS повідомлення
 з 4-х значним кодом на ваш номер телефону  %s</string>
 
-    <string name="did_not_receive_code">Не отримали код?</string>
+    <string name="did_not_receive_code" tools:ignore="MissingTranslation">Не отримали код?</string>
 
-    <string name="retry">Повторити</string>
+    <string name="retry" tools:ignore="MissingTranslation">Повторити</string>
 
-    <string name="enter_otp">Введіть код підтвердження</string>
-    <string name="loading">Завантаження</string>
+    <string name="enter_otp" tools:ignore="MissingTranslation">Введіть код підтвердження</string>
+    <string name="loading" tools:ignore="MissingTranslation">Завантаження</string>
 
-    <string name="fill_your_data">Введіть ваші дані</string>
-    <string name="successfully_registered">Користувача успішно зареєстровано</string>
-    <string name="successfully_auth">Користувача успішно авторизовано</string>
+    <string name="fill_your_data" tools:ignore="MissingTranslation">Введіть ваші дані</string>
+    <string name="successfully_registered" tools:ignore="MissingTranslation">Користувача успішно зареєстровано</string>
+    <string name="successfully_auth" tools:ignore="MissingTranslation">Користувача успішно авторизовано</string>
     
-    <string name="profile_title">Профіль</string>
+    <string name="profile_title" tools:ignore="MissingTranslation">Профіль</string>
 
-    <string name="advantages">Переваги:</string>
-    <string name="shop_services">Послуги магазину:</string>
+    <string name="advantages" tools:ignore="MissingTranslation">Переваги:</string>
+    <string name="shop_services" tools:ignore="MissingTranslation">Послуги магазину:</string>
 
-    <string name="route">Маршут</string>
+    <string name="route" tools:ignore="MissingTranslation">Маршут</string>
+    <string name="save" tools:ignore="MissingTranslation">Зберегти</string>
+    <string name="order_on_website">Замовити на сайті магазину</string>
 </resources>

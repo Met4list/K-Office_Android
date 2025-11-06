@@ -146,7 +146,7 @@ internal fun ProfileScreen(viewModel: ProfileViewModel) {
                     containerColor = colorResource(R.color.blue_primary)
                 )
             ) {
-                Text(text = stringResource(id = R.string.key_continue))
+                Text(text = stringResource(id = R.string.save))
             }
         }
     }
