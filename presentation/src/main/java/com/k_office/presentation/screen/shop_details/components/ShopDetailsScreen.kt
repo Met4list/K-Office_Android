@@ -67,6 +67,7 @@ internal fun ShopDetailsScreen(
 
     val imageRequest = ImageRequest.Builder(context)
         .data(shop.imageUrl)
+        .placeholder(com.k_office.presentation.R.drawable.ic_app_logo)
         .memoryCacheKey(shop.imageUrl)
         .diskCacheKey(shop.imageUrl)
         .diskCachePolicy(CachePolicy.ENABLED)
