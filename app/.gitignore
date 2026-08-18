@@ -1,7 +1,4 @@
 /build
 
-# Keystore file
-release-key.jks
-
 # Firebase secrets
 google-services.json
