@@ -47,7 +47,8 @@ android {
         create("dev") {
             dimension = "environment"
             buildConfigField("Boolean", "IS_DEV", "true")
-            buildConfigField("String", "BASE_URL", "\"https://k-office-staging-445809650727.europe-west1.run.app\"")
+            // Dev ходить на Render staging після переїзду з Cloud Run
+            buildConfigField("String", "BASE_URL", "\"https://k-office-server-staging.onrender.com\"")
         }
         create("prod") {
             dimension = "environment"

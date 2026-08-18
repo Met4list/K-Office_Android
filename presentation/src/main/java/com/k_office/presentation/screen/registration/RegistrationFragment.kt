@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
@@ -40,7 +39,6 @@ class RegistrationFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel
                 .isSuccessfulyRegistered
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
                 if (it) {
                     showMessage(id = R.string.successfully_registered)
@@ -52,7 +50,6 @@ class RegistrationFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel
                 .uiTextMessage
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect(::showMessage)
         }
     }

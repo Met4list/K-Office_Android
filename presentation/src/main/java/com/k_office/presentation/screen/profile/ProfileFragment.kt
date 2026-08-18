@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.k_office.presentation.base.fragment.BaseFragment
 import com.k_office.presentation.base.utils.setFragmentContent
@@ -32,7 +31,6 @@ class ProfileFragment: BaseFragment() {
         lifecycleScope.launch {
             viewModel
                 .successfullyEdited
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
                     if (it) parentFragmentManager.popBackStack()
                 }
@@ -41,7 +39,6 @@ class ProfileFragment: BaseFragment() {
         lifecycleScope.launch {
             viewModel
                 .uiTextMessage
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect(::showMessage)
         }
     }

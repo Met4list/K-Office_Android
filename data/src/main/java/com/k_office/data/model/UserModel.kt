@@ -5,6 +5,7 @@ data class UserRefreshModel(
     val message: String,
     val accessToken: String,
     val expiresIn: Int,
+    val refreshToken: String? = null,
     val user: UserModel
 )
 

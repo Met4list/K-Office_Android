@@ -229,11 +229,9 @@ class DataModule {
         @ApplicationContext context: Context,
         tokenStorage: TokenStorage,
         authApiService: AuthApiService,
-        @Named("token_refresh") userApiService: UserApiService,
     ): TokenRefreshInterceptor = TokenRefreshInterceptor(
         tokenStorage,
         authApiService,
-        userApiService,
         localBroadCastManager = LocalBroadcastManager.getInstance(context)
     )
 

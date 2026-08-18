@@ -11,7 +11,8 @@ object OtpMapper: Mapper<OtpResponse, OtpModel> {
         OtpModel(
             expiresIn,
             tokens = TokensModel(
-                accessToken
+                accessToken = accessToken,
+                refreshToken = refreshToken
             ),
             user = with(user) {
                 UserModel(

@@ -7,6 +7,7 @@ import retrofit2.http.GET
 
 interface AuthApiService {
 
+    // refreshToken приходить з httpOnly-cookie через CookieJar
     @GET(ConstUrls.REFRESH)
     suspend fun refreshToken(): Response<RefreshTokenResponse>
 }

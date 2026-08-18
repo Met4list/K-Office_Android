@@ -1,13 +1,93 @@
 [
   {
-    "link": "https://k-office.vn.ua/pismove-priladdya/ruchki-kulkovi-maslyani/ruchka-maslyana-bm8369-avtomatichna-military-07-mmassorti-korpusiv-z-gumgripom-sini-chornila-12",
-    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/14.png",
-    "alt_text": "Ручка"
+    "link": "https://k-office.vn.ua/gospodarchi-tovari-pobutova-himiya-posud/inventar-ta-priladdya-dlya-pribirannya/",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/dlyapribirannya1920_670.png",
+    "alt_text": "Інвентар для прибирання"
   },
   {
-    "link": "https://k-office.vn.ua/pismove-priladdya/ruchki-gelevi/ruchka-geleva-bm8372-01-avtomatichna-novel-05mm-prozorij-korpus-chornilo-sinogo-koloru-12",
-    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/Novel.png",
-    "alt_text": "Ручка Novel"
+    "link": "https://k-office.vn.ua/",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/1920kh670.png",
+    "alt_text": "Зошити"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=%D0%BD%D0%BE%D0%B6%D0%B8%D1%86%D1%96",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/_PNG.png",
+    "alt_text": "Ножиці"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=%D0%A3%D0%BD%D1%96%D0%B2%D0%B5%D1%80%D1%81%D0%B0%D0%BB%D1%8C%D0%BD%D1%96%20%D0%BE%D0%B1%D0%BA%D0%BB%D0%B0%D0%B4%D0%B8%D0%BD%D0%BA%D0%B8",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/_dlya_zoshit%D1%96v1920kh670.png",
+    "alt_text": "Обкладинки"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=%D1%84%D0%BE%D1%82%D0%BE%D0%BF%D0%B0%D0%BF%D1%96%D1%80",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/Fotopapir1920_670.png",
+    "alt_text": "Фотопапір"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=%D1%84%D0%BE%D1%82%D0%BE%D1%80%D0%B0%D0%BC%D0%BA%D0%B0",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/Fotoramky1920_670.png",
+    "alt_text": "Фоторамки"
+  },
+  {
+    "link": "https://k-office.vn.ua/",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/Kulky1920_670.png",
+    "alt_text": "Кульки"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=%D0%BB%D0%B0%D0%BC%D1%96%D0%BD%D1%83%D0%B2%D0%B0%D0%BD%D0%BD%D1%8F",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/Plivkalam1920_670.png",
+    "alt_text": "Плівка для ламінування"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=%D1%82%D0%B5%D1%80%D0%BC%D0%BE%D0%B5%D1%82%D0%B8%D0%BA%D0%B5%D1%82%D0%BA%D0%B0",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/Termoetyketka1920_670.png",
+    "alt_text": "Термоетикетка"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=1010000",
+    "image_url": "https://k-office.vn.ua/image/catalog/05.2026/Buroclean_papir1.png",
+    "alt_text": "Туалетний папір"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=2703",
+    "image_url": "https://k-office.vn.ua/image/catalog/01%2C2026/ZB.2703(2).png",
+    "alt_text": "Зошит ZB.2703"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=ZB.12470",
+    "image_url": "https://k-office.vn.ua/image/catalog/01%2C2026/yak%D1%96khochetsyaz'%D1%97sti1950kh670.png",
+    "alt_text": "Блокноти"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=BM.53",
+    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/28%2C11%2C2025/BUROMAX-1920kh670.png",
+    "alt_text": "Біндери"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=bm.62",
+    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/28%2C11%2C2025/BUROMAXOffice1920_670.png",
+    "alt_text": "Сітка"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=arabeski",
+    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/Arabeski_new_2.png",
+    "alt_text": "Папки Arabeski"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=morandi",
+    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/-V4.png",
+    "alt_text": "Morandi"
+  },
+  {
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=arabeski",
+    "image_url": "https://k-office.vn.ua/image/catalog/%2012%2C2025/Arabeski_Blossom2newd.png",
+    "alt_text": "Arabeski Blossom"
+  },
+  {
+    "link": "https://k-office.vn.ua/korporatyvnym-kliyentam",
+    "image_url": "https://k-office.vn.ua/image/catalog/1400kh400.jpg",
+    "alt_text": "Доставка"
   },
   {
     "link": "https://k-office.vn.ua/index.php?route=product/search&search=4217",
@@ -20,19 +100,19 @@
     "alt_text": "Ролер"
   },
   {
-    "link": "https://k-office.vn.ua/index.php?route=product/search&search=arabeski",
-    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/Arabeski_new_2.png",
-    "alt_text": "Папки Arabeski"
+    "link": "https://k-office.vn.ua/ofisna-tehnika-priladdya-seyfi/prezentaciyne-obladnannya/",
+    "image_url": "https://k-office.vn.ua/image/catalog/bannery/_1400kh400.png",
+    "alt_text": "Презентаційне обладнання"
   },
   {
-    "link": "https://k-office.vn.ua/pismove-priladdya/ruchki-gelevi/ruchka-geleva-bm8373-01-avtomatichna-galaxy-05mm-prozorij-korpus-chornilo-sinogo-koloru-12",
-    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/GALAXY.png",
-    "alt_text": "Ручка Galaxy"
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=%D0%9B%D0%BE%D1%82%D0%BE%D0%BA%20%20PASTEL%20",
+    "image_url": "https://k-office.vn.ua/image/catalog/bannery/lotki_1400kh400.png",
+    "alt_text": "Лотки PASTEL"
   },
   {
-    "link": "https://k-office.vn.ua/index.php?route=product/search&search=morandi",
-    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/-V4.png",
-    "alt_text": "Morandi"
+    "link": "https://k-office.vn.ua/index.php?route=product/search&search=zb.29",
+    "image_url": "https://k-office.vn.ua/image/catalog/01%2C2026/Korektory1ZIBI1920_670.png",
+    "alt_text": "Коректори"
   },
   {
     "link": "https://k-office.vn.ua/gospodarchi-tovari-pobutova-himiya-posud/rushniki-servetki-paperovivologi/torgova-marka/buroclean/",
@@ -40,8 +120,8 @@
     "alt_text": "Buroclean"
   },
   {
-    "link": "https://k-office.vn.ua/index.php?route=product/search&search=%D0%9A%D0%B0%D0%BB%D1%8C%D0%BA%D1%83%D0%BB%D1%8F%D1%82%D0%BE%D1%80%20Brilliant",
-    "image_url": "https://k-office.vn.ua/image/catalog/New%20banner/_1400Kh400.png",
-    "alt_text": "Калькулятори Brilliant"
+    "link": "https://k-office.vn.ua/korporatyvnym-kliyentam",
+    "image_url": "https://k-office.vn.ua/image/catalog/Logo/1200250.png",
+    "alt_text": "Корпоративним клієнтам"
   }
 ]

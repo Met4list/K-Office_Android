@@ -11,7 +11,7 @@ data class OtpResponse(
     @SerializedName("message")
     val message: String,
     @SerializedName("refreshToken")
-    val refreshToken: String,
+    val refreshToken: String? = null,
     @SerializedName("user")
     val user: UserResponse
 )

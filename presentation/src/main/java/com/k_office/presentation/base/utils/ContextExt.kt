@@ -36,26 +36,35 @@ fun Context.findActivity(): AppCompatActivity? {
 }
 
 fun Context.openGoogleMapsRoute(latitude: Double, longitude: Double, placeName: String? = null) {
-
-    val gmmIntentUri = if (placeName.isNullOrEmpty()) {
-        Uri.parse("google.navigation:q=$latitude,$longitude")
+    val destination = "$latitude,$longitude"
+    val destinationWithLabel = if (placeName.isNullOrBlank()) {
+        destination
     } else {
-        Uri.parse("google.navigation:q=$latitude,$longitude($placeName)")
+        // Підпис точки без лапок, щоб URI навігації не зламався
+        "$destination(${Uri.encode(placeName.replace("\"", ""))})"
+    }
+    // mode=d — автомобільний маршрут від поточної геопозиції клієнта
+    val navigationUri = Uri.parse("google.navigation:q=$destinationWithLabel&mode=d")
+    val mapsIntent = Intent(Intent.ACTION_VIEW, navigationUri).apply {
+        setPackage("com.google.android.apps.maps")
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
-    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-    mapIntent.setPackage("com.google.android.apps.maps")
-
-    if (mapIntent.resolveActivity(packageManager) != null) {
-        startActivity(mapIntent)
-    } else {
-        Toast.makeText(this, "Google Maps app not found. Opening in browser...", Toast.LENGTH_LONG).show()
-        val webMapIntent = Intent(Intent.ACTION_VIEW,
-            Uri.parse("https://maps.google.com/?q=$latitude,$longitude"))
-        if (webMapIntent.resolveActivity(packageManager) != null) {
-            startActivity(webMapIntent)
-        } else {
-            Toast.makeText(this, "No app found to open maps.", Toast.LENGTH_SHORT).show()
+    try {
+        startActivity(mapsIntent)
+    } catch (e: Exception) {
+        Timber.e(e, "Не вдалося відкрити додаток Google Maps")
+        // Якщо додаток не встановлено — маршрут у браузері, не просто точка на карті
+        val webUri = Uri.parse(
+            "https://www.google.com/maps/dir/?api=1&destination=$destination&travelmode=driving"
+        )
+        try {
+            startActivity(
+                Intent(Intent.ACTION_VIEW, webUri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        } catch (webError: Exception) {
+            Timber.e(webError)
+            Toast.makeText(this, "Не вдалося відкрити Google Maps", Toast.LENGTH_SHORT).show()
         }
     }
 }

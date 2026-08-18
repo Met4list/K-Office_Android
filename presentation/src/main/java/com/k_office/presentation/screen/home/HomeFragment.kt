@@ -9,7 +9,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
@@ -127,7 +126,6 @@ class HomeFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel
                 .uiTextMessage
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect(::showMessage)
         }
     }

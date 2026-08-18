@@ -38,7 +38,8 @@ class VerifyOtpUseCase @Inject constructor(
 
                 tokenStorage.saveTokens(
                     response.tokens.accessToken,
-                    response.expiresIn
+                    response.expiresIn,
+                    response.tokens.refreshToken
                 )
 
                 val currentUserModel = CurrentUserMapper.mapTo(response.user)

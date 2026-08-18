@@ -46,7 +46,7 @@ class RegistrationUseCase @Inject constructor(
                     response.user
                 )
                 response.tokens.apply {
-                    tokenStorage.saveTokens(accessToken, response.expiresIn)
+                    tokenStorage.saveTokens(accessToken, response.expiresIn, refreshToken)
                 }
                 send(DataState.Success(response.user))
                 send(DataState.Default)

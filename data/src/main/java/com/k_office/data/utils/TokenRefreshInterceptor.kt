@@ -1,9 +1,9 @@
 package com.k_office.data.utils
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.k_office.data.api.AuthApiService
-import com.k_office.data.api.UserApiService
 import com.k_office.data.storage.TokenStorage
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -17,7 +17,6 @@ import javax.inject.Inject
 class TokenRefreshInterceptor @Inject constructor(
     private val tokenStorage: TokenStorage,
     private val authApiService: AuthApiService,
-    private val userApiService: UserApiService,
     private val localBroadCastManager: LocalBroadcastManager
 ) : Interceptor {
 
@@ -26,14 +25,32 @@ class TokenRefreshInterceptor @Inject constructor(
     @SuppressLint("TimberArgCount")
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        val response = chain.proceed(originalRequest)
 
+        if (originalRequest.url.encodedPath.contains("/auth/refresh")) {
+            return chain.proceed(originalRequest)
+        }
+
+        // Тихо оновлюємо access-токен до запиту, якщо він уже згорів або ось-ось згорить
+        val requestToSend = runBlocking {
+            mutex.withLock {
+                if (tokenStorage.isTokenExpired() || tokenStorage.isAccessTokenExpiringSoon()) {
+                    refreshTokenInternal().getOrNull()?.let { newAccessToken ->
+                        originalRequest.newBuilder()
+                            .header("Authorization", "Bearer $newAccessToken")
+                            .build()
+                    } ?: originalRequest
+                } else {
+                    originalRequest
+                }
+            }
+        }
+
+        val response = chain.proceed(requestToSend)
         if (response.code == 401) {
             if (originalRequest.header("X-Retry-After-Refresh") == "true") {
                 return response
             }
-
-            Timber.d("Received 401 for %s, attempting refresh (if refresh token exists)", originalRequest.url.encodedPath)
+            Timber.d("Received 401 for %s, attempting token refresh", originalRequest.url.encodedPath)
             return handleUnauthorized(chain, originalRequest, response)
         }
 
@@ -56,44 +73,40 @@ class TokenRefreshInterceptor @Inject constructor(
                     return@withLock retryRequestWithNewToken(chain, originalRequest, currentToken)
                 }
 
-                val refreshResult = refreshTokenInternal()
-                when {
-                    refreshResult.isSuccess -> {
-                        val newAccessToken = refreshResult.getOrNull()?.first
-                        if (newAccessToken != null) {
-                            retryRequestWithNewToken(chain, originalRequest, newAccessToken)
-                        } else {
-                            chain.proceed(originalRequest)
-                        }
-                    }
-                    else -> {
-                        chain.proceed(originalRequest)
-                    }
+                val newAccessToken = refreshTokenInternal().getOrNull()
+                if (newAccessToken != null) {
+                    retryRequestWithNewToken(chain, originalRequest, newAccessToken)
+                } else {
+                    chain.proceed(originalRequest)
                 }
             }
         }
     }
 
-    private suspend fun refreshTokenInternal(): Result<Pair<String, Long>> {
+    private suspend fun refreshTokenInternal(): Result<String> {
         return try {
-        val authResponse = authApiService.refreshToken()
-
-        if (authResponse.isSuccessful) {
-            authResponse.body()?.let { dto ->
-                val expiryTime = System.currentTimeMillis() + (dto.expiresIn * 60 * 1000)
-                tokenStorage.saveTokens(dto.accessToken, expiryTime)
-                Timber.d("Token refresh successful via /auth/refresh, new access token: %s...", dto.accessToken.take(10))
-                return Result.success(Pair(dto.accessToken, dto.expiresIn))
+            // CookieJar сам додає refreshToken з cookie на /auth/refresh
+            val authResponse = authApiService.refreshToken()
+            if (authResponse.isSuccessful) {
+                authResponse.body()?.let { dto ->
+                    tokenStorage.saveTokens(dto.accessToken, dto.expiresIn, dto.refreshToken)
+                    Timber.d("Access token refreshed silently via cookie /auth/refresh")
+                    return Result.success(dto.accessToken)
+                }
             }
-        }
-
-        Timber.e("Auth refresh failed with code: %s. Session is lost.", authResponse.code())
-        return Result.failure(Exception("Failed to refresh token, HTTP ${authResponse.code()}"))
-
+            Timber.e("Auth refresh failed with code: %s", authResponse.code())
+            if (authResponse.code() == 401 || authResponse.code() == 403) {
+                notifySessionExpired()
+            }
+            Result.failure(Exception("Failed to refresh token, HTTP ${authResponse.code()}"))
         } catch (e: Exception) {
             Timber.e(e, "Exception during token refresh: %s", e.message)
             Result.failure(e)
         }
+    }
+
+    private fun notifySessionExpired() {
+        localBroadCastManager.sendBroadcast(Intent("ACTION_TOKEN_EXPIRED"))
     }
 
     private fun retryRequestWithNewToken(
@@ -105,7 +118,6 @@ class TokenRefreshInterceptor @Inject constructor(
             .header("Authorization", "Bearer $newAccessToken")
             .header("X-Retry-After-Refresh", "true")
             .build()
-
         return chain.proceed(newRequest)
     }
 }

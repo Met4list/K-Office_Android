@@ -29,7 +29,9 @@ interface TokenDataSource {
         }
 
         override suspend fun insertTokens(tokens: TokensModel) {
-            tokenStorage.saveTokens(tokens.accessToken, tokenStorage.getExpiryTimeMillis())
+            val remainingMinutes = ((tokenStorage.getExpiryTimeMillis() - System.currentTimeMillis()) / 60_000L)
+                .coerceAtLeast(1)
+            tokenStorage.saveTokens(tokens.accessToken, remainingMinutes, tokens.refreshToken)
         }
     }
 }

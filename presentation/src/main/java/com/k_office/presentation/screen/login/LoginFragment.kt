@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.k_office.presentation.base.fragment.BaseFragment
 import com.k_office.presentation.base.utils.setFragmentContent
@@ -32,7 +31,6 @@ class LoginFragment : BaseFragment() {
 
         lifecycleScope.launch {
             viewModel.authType
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect { event ->
                     event?.getContentIfNotHandled()?.let {
                         showMessage(it.message)
@@ -47,7 +45,6 @@ class LoginFragment : BaseFragment() {
 
         lifecycleScope.launch {
             viewModel.isLoggedIn
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect {
                     if (it) {
                         navController.navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment())
@@ -57,7 +54,6 @@ class LoginFragment : BaseFragment() {
 
         lifecycleScope.launch {
             viewModel.uiTextMessage
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect(::showMessage)
         }
     }

@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.k_office.presentation.R
 import com.k_office.presentation.base.fragment.BaseFragment
@@ -39,7 +38,6 @@ class ShopListFragment : BaseFragment() {
         lifecycleScope.launch {
             viewModel
                 .uiTextMessage
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collect(::showMessage)
         }
 
