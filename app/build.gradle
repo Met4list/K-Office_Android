@@ -129,6 +129,24 @@ tasks.register("bundlePlay") {
     }
 }
 
+// Збирає prodRelease APK і копіює в dist/ для Firebase App Distribution
+tasks.register("assembleFirebase") {
+    group = "publishing"
+    description = "Зібрати підписаний prodRelease APK для Firebase App Distribution"
+    dependsOn("assembleProdRelease")
+    doLast {
+        def apk = layout.buildDirectory.file("outputs/apk/prod/release/app-prod-release.apk").get().asFile
+        def destDir = rootProject.file("dist")
+        destDir.mkdirs()
+        def dest = new File(
+            destDir,
+            "k-office-${android.defaultConfig.versionName}-${android.defaultConfig.versionCode}.apk"
+        )
+        dest.bytes = apk.bytes
+        println "Firebase APK: ${dest.absolutePath}"
+    }
+}
+
 dependencies {
 
     implementation libs.androidx.core.ktx

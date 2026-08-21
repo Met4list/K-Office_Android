@@ -1,0 +1,87 @@
+name: Firebase App Distribution
+
+on:
+  workflow_dispatch:
+
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: local.properties
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
+        run: printf 'MAPS_API_KEY=%s\n' "$MAPS_API_KEY" > local.properties
+
+      - name: google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          python3 - <<'PY'
+          import base64, json, os, pathlib
+          raw = os.environ.get("GOOGLE_SERVICES_JSON", "").strip()
+          if raw.startswith("```"):
+              raw = raw.strip("`")
+              if raw.lower().startswith("json"):
+                  raw = raw[4:].strip()
+          if not raw:
+              raise SystemExit("Secret GOOGLE_SERVICES_JSON is empty")
+          try:
+              data = json.loads(raw)
+          except json.JSONDecodeError:
+              data = json.loads(base64.b64decode(raw))
+          if not isinstance(data, dict) or "project_info" not in data:
+              raise SystemExit("google-services.json is invalid")
+          pathlib.Path("app/google-services.json").write_text(
+              json.dumps(data), encoding="utf-8"
+          )
+          print("google-services.json written")
+          PY
+
+      - name: Зібрати prodRelease APK
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleFirebase --no-daemon
+
+      - name: Зберегти APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-apk
+          path: dist/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Залити в App Distribution
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib
+          raw = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
+          if not raw:
+              raise SystemExit("Secret FIREBASE_SERVICE_ACCOUNT is empty")
+          data = json.loads(raw)
+          pathlib.Path("firebase-sa.json").write_text(json.dumps(data), encoding="utf-8")
+          PY
+          export GOOGLE_APPLICATION_CREDENTIALS="$GITHUB_WORKSPACE/firebase-sa.json"
+          APK="$(ls dist/*.apk | head -n 1)"
+          npx --yes firebase-tools appdistribution:distribute "$APK" \
+            --app "1:351969825260:android:49ebb4a972ae48f5dff0c9" \
+            --project "com-koffice-app" \
+            --testers "madarthas445@gmail.com" \
+            --release-notes "K-Office prod 1.1.8.6"
+          rm -f firebase-sa.json
