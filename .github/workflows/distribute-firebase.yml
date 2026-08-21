@@ -2,6 +2,9 @@ name: Firebase App Distribution
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - develop
 
 jobs:
   distribute:
