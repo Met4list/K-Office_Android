@@ -28,7 +28,27 @@ jobs:
       - name: google-services.json
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: printf '%s' "$GOOGLE_SERVICES_JSON" > app/google-services.json
+        run: |
+          python3 - <<'PY'
+          import base64, json, os, pathlib
+          raw = os.environ.get("GOOGLE_SERVICES_JSON", "").strip()
+          if raw.startswith("```"):
+              raw = raw.strip("`")
+              if raw.lower().startswith("json"):
+                  raw = raw[4:].strip()
+          if not raw:
+              raise SystemExit("Secret GOOGLE_SERVICES_JSON is empty")
+          try:
+              data = json.loads(raw)
+          except json.JSONDecodeError:
+              data = json.loads(base64.b64decode(raw))
+          if not isinstance(data, dict) or "project_info" not in data:
+              raise SystemExit("google-services.json is invalid")
+          pathlib.Path("app/google-services.json").write_text(
+              json.dumps(data), encoding="utf-8"
+          )
+          print("google-services.json written")
+          PY
 
       - name: Зібрати prodRelease AAB
         run: |
