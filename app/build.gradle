@@ -10,24 +10,29 @@ plugins {
 }
 
 def properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    properties.load(localPropertiesFile.newDataInputStream())
+}
+// CI передає ключ через env, локально — з local.properties
+def mapsApiKey = System.getenv("MAPS_API_KEY") ?: properties.getProperty("MAPS_API_KEY") ?: ""
 
 android {
     namespace 'com.k_office.app'
-    compileSdk 35
+    compileSdk 36
 
     flavorDimensions += "environment"
 
     defaultConfig {
         applicationId "com.k_office.app"
         minSdk 24
-        targetSdk 35
+        // Play з 31.08.2026 приймає оновлення лише з target API 36
+        targetSdk 36
         versionCode 4
         versionName "1.1.8.3"
 
         manifestPlaceholders = [
-                MAPS_API_KEY: properties.getProperty('MAPS_API_KEY')
+                MAPS_API_KEY: mapsApiKey
         ]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -71,6 +76,10 @@ android {
         jniLibs {
             useLegacyPackaging = true
         }
+        // Не пакуємо baseline.prof — інакше adb install release падає на профілі
+        resources {
+            excludes += ["**/baseline.prof", "**/baseline.profm"]
+        }
     }
 
     androidResources {
@@ -99,6 +108,24 @@ android {
 secrets {
     propertiesFileName = "secrets.properties"
     defaultPropertiesFileName = "local.properties"
+}
+
+// Збирає prodRelease AAB і копіює в dist/ з номером версії
+tasks.register("bundlePlay") {
+    group = "publishing"
+    description = "Зібрати підписаний prodRelease App Bundle для Play Console"
+    dependsOn("bundleProdRelease")
+    doLast {
+        def aab = layout.buildDirectory.file("outputs/bundle/prodRelease/app-prod-release.aab").get().asFile
+        def destDir = rootProject.file("dist")
+        destDir.mkdirs()
+        def dest = new File(
+            destDir,
+            "k-office-${android.defaultConfig.versionName}-${android.defaultConfig.versionCode}.aab"
+        )
+        dest.bytes = aab.bytes
+        println "Play AAB: ${dest.absolutePath}"
+    }
 }
 
 dependencies {

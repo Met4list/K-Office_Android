@@ -1,0 +1,44 @@
+name: Play Bundle
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: local.properties
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
+        run: printf 'MAPS_API_KEY=%s\n' "$MAPS_API_KEY" > local.properties
+
+      - name: google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: printf '%s' "$GOOGLE_SERVICES_JSON" > app/google-services.json
+
+      - name: Зібрати prodRelease AAB
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:bundlePlay --no-daemon
+
+      - name: Зберегти AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: play-bundle
+          path: dist/*.aab
+          if-no-files-found: error
+          retention-days: 14
