@@ -5,6 +5,12 @@ on:
   push:
     branches:
       - develop
+    paths-ignore:
+      - '.github/workflows/distribute-firebase.yml'
+
+concurrency:
+  group: play-bundle-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   bundle:
