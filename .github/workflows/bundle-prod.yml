@@ -2,11 +2,6 @@ name: Play Bundle
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - develop
-    paths-ignore:
-      - '.github/workflows/distribute-firebase.yml'
 
 concurrency:
   group: play-bundle-${{ github.ref }}
