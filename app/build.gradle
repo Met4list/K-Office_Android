@@ -28,8 +28,8 @@ android {
         minSdk 24
         // Play з 31.08.2026 приймає оновлення лише з target API 36
         targetSdk 36
-        versionCode 6
-        versionName "1.1.8.5"
+        versionCode 7
+        versionName "1.1.8.6"
 
         manifestPlaceholders = [
                 MAPS_API_KEY: mapsApiKey
@@ -58,7 +58,8 @@ android {
         create("prod") {
             dimension = "environment"
             buildConfigField("Boolean", "IS_DEV", "false")
-            buildConfigField("String", "BASE_URL", "\"https://k-office-445809650727.europe-west1.run.app\"")
+            // Prod теж на Render після переїзду з Cloud Run
+            buildConfigField("String", "BASE_URL", "\"https://k-office-server.onrender.com\"")
         }
     }
 
