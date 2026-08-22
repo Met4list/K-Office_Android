@@ -29,12 +29,13 @@ class LoginFragment : BaseFragment() {
     override fun setupViewModelCallbacks() {
         super.setupViewModelCallbacks()
 
-        lifecycleScope.launch {
+        // viewLifecycleOwner: після переходу на OTP view знищується і колектори зупиняються
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.authType
                 .collect { event ->
                     event?.getContentIfNotHandled()?.let {
                         showMessage(it.message)
-                        navController.navigate(
+                        navigateSafely(
                             LoginFragmentDirections.actionLoginFragmentToOtpVerificationFragment(
                                 VerifyOtpArgs(it.phone, it.type)
                             )
@@ -43,16 +44,16 @@ class LoginFragment : BaseFragment() {
                 }
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isLoggedIn
                 .collect {
                     if (it) {
-                        navController.navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment())
+                        navigateSafely(LoginFragmentDirections.actionLoginFragmentToHomeFragment())
                     }
                 }
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiTextMessage
                 .collect(::showMessage)
         }

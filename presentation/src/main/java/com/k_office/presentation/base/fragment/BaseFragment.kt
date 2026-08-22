@@ -40,4 +40,14 @@ abstract class BaseFragment : Fragment() {
     }
 
     protected open fun initNavController(): NavController = findNavController()
+
+    // Не падаємо, якщо action вже не з поточного екрана (фрагмент у back stack ще слухає flow)
+    protected fun navigateSafely(directions: NavDirections) {
+        val current = navController.currentDestination
+        if (current?.getAction(directions.actionId) != null) {
+            navController.navigate(directions)
+        } else {
+            Timber.w("Skip navigate ${directions.actionId} from ${current?.label}")
+        }
+    }
 }

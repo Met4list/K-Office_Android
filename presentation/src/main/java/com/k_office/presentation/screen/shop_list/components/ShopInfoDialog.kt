@@ -1,5 +1,7 @@
 package com.k_office.presentation.screen.shop_list.components
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -28,7 +31,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.k_office.domain.model.Shop
-import com.k_office.presentation.base.utils.rememberLocationState
 import com.k_office.presentation.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,11 +40,16 @@ fun ShopInfoDialog(
     onDismiss: () -> Unit,
     onRouteClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val shopLatLng = remember { LatLng(shop.latLng.latitude, shop.latLng.longitude) }
-
-    val locationState = rememberLocationState()
-    val userLocation = locationState.location
-    val isLoadingLocation = locationState.isLoading
+    val hasLocationPermission = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED ||
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(shopLatLng, 15f)
@@ -69,33 +76,22 @@ fun ShopInfoDialog(
                     .weight(1f)
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             ) {
-                if (isLoadingLocation && userLocation == null) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator(modifier = Modifier.size(48.dp))
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(text = "Loading map and your location...")
+                // Карта одразу по координатах магазину, без очікування GPS
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
+                    uiSettings = MapUiSettings(zoomControlsEnabled = true),
+                    onMapClick = {
+                        onDismiss()
                     }
-                } else {
-                    GoogleMap(
-                        modifier = Modifier.fillMaxSize(),
-                        cameraPositionState = cameraPositionState,
-                        properties = MapProperties(isMyLocationEnabled = userLocation != null),
-                        uiSettings = MapUiSettings(zoomControlsEnabled = true),
-                        onMapClick = {
-                            onDismiss()
-                        }
-                    ) {
-                        Marker(
-                            state = markerState,
-                            title = shop.name,
-                            snippet = shop.fullAddress + if (shop.locationDetails.isNotEmpty()) "\n${shop.locationDetails}" else "",
-                            onClick = { true }
-                        )
-                    }
+                ) {
+                    Marker(
+                        state = markerState,
+                        title = shop.name,
+                        snippet = shop.fullAddress + if (shop.locationDetails.isNotEmpty()) "\n${shop.locationDetails}" else "",
+                        onClick = { true }
+                    )
                 }
             }
 

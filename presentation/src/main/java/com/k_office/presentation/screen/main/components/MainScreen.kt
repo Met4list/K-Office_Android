@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.k_office.presentation.R
 import com.k_office.presentation.base.utils.FragmentUtil
@@ -84,9 +85,19 @@ internal inline fun MainScreen(viewModel: HomeViewModel, fragmentManager: Fragme
         }
     }
 
-    SwipeRefresh(state = refreshState, onRefresh = {
-        viewModel.updateUserInfo()
-    }) {
+    SwipeRefresh(
+        state = refreshState,
+        onRefresh = {
+            viewModel.updateUserInfo()
+        },
+        indicator = { state, trigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = trigger,
+                contentColor = colorResource(R.color.blue_primary)
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

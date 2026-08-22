@@ -36,18 +36,20 @@ class RegistrationFragment : BaseFragment() {
     override fun setupViewModelCallbacks() {
         super.setupViewModelCallbacks()
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel
                 .isSuccessfulyRegistered
                 .collect {
                 if (it) {
                     showMessage(id = R.string.successfully_registered)
-                    navController.navigate(RegistrationFragmentDirections.actionRegistrationFragmentToHomeFragment())
+                    navigateSafely(
+                        RegistrationFragmentDirections.actionRegistrationFragmentToHomeFragment()
+                    )
                 }
             }
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel
                 .uiTextMessage
                 .collect(::showMessage)

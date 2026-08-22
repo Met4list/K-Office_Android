@@ -28,8 +28,8 @@ android {
         minSdk 24
         // Play з 31.08.2026 приймає оновлення лише з target API 36
         targetSdk 36
-        versionCode 7
-        versionName "1.1.8.6"
+        versionCode 8
+        versionName "1.1.8.7"
 
         manifestPlaceholders = [
                 MAPS_API_KEY: mapsApiKey

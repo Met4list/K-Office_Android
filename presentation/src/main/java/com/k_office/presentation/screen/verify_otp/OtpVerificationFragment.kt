@@ -48,13 +48,13 @@ class OtpVerificationFragment : BaseFragment() {
 
     override fun setupViewModelCallbacks() {
         super.setupViewModelCallbacks()
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.onSuccess
                 .collect {
                     when (AuthType.findByType(args.type)) {
                         AuthType.REGISTER -> {
                             if (it) {
-                                navController.navigate(
+                                navigateSafely(
                                     OtpVerificationFragmentDirections.actionOtpVerificationFragmentToRegistrationFragment(
                                         args.phoneNumber
                                     )
@@ -66,7 +66,9 @@ class OtpVerificationFragment : BaseFragment() {
                             if (it) {
                                 showMessage(id = R.string.successfully_auth)
                                 (requireActivity() as MainActivity).onUserUpdateStart()
-                                navController.navigate(OtpVerificationFragmentDirections.actionOtpVerificationFragmentToHomeFragment())
+                                navigateSafely(
+                                    OtpVerificationFragmentDirections.actionOtpVerificationFragmentToHomeFragment()
+                                )
                             }
                         }
 
@@ -75,7 +77,7 @@ class OtpVerificationFragment : BaseFragment() {
                 }
         }
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel
                 .uiTextMessage
                 .collect(::showMessage)

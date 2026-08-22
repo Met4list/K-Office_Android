@@ -65,11 +65,22 @@ internal fun OtpVerificationScreen(
 ) {
     val context = LocalContext.current
     val otpValue by viewModel.otpState.collectAsStateWithLifecycle()
+    val otpFilledFromSms by viewModel.otpFilledFromSms.collectAsStateWithLifecycle()
     var remainingSeconds by remember { mutableStateOf(60) }
     var isTimerRunning by remember { mutableStateOf(true) }
+    var autoSubmitted by remember { mutableStateOf(false) }
 
     val loading by viewModel.loading.collectAsStateWithLifecycle()
     val retryOtp by viewModel.retryOtp.collectAsStateWithLifecycle(false)
+
+    // Автопродовження лише якщо код реально підставили з SMS
+    LaunchedEffect(otpValue, otpFilledFromSms) {
+        val code = otpValue.orEmpty()
+        if (otpFilledFromSms && code.length == 4 && !autoSubmitted) {
+            autoSubmitted = true
+            onVerificationComplete(code)
+        }
+    }
 
 
     val consentLauncher = rememberLauncherForActivityResult(
@@ -103,6 +114,7 @@ internal fun OtpVerificationScreen(
         if (retryOtp) {
             remainingSeconds = 60
             isTimerRunning = true
+            autoSubmitted = false
             Timber.d("OtpScreen", "Retry requested, restarting SMS User Consent")
             context.startSmsRetriever()
         }
@@ -155,11 +167,10 @@ internal fun OtpVerificationScreen(
         }
     }
 
-    // Остальная часть UI остается той же...
     if (loading) {
         LoadingDialog()
-    } else {
-        Column(
+    }
+    Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
@@ -188,7 +199,10 @@ internal fun OtpVerificationScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            OtpInputField(otpValue = otpValue ?: "") { newValue ->
+            OtpInputField(
+                otpValue = otpValue ?: "",
+                readOnly = otpFilledFromSms,
+            ) { newValue ->
                 if (newValue.length <= 4) {
                     viewModel.onOtpReceived(newValue)
                 }
@@ -229,7 +243,8 @@ internal fun OtpVerificationScreen(
 
             Button(
                 onClick = { onVerificationComplete(otpValue ?: "") },
-                enabled = otpValue?.length == 4,
+                // Сіра й недоступна лише після перехоплення SMS; інакше клієнт тисне сам
+                enabled = !otpFilledFromSms && !loading && otpValue?.length == 4,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
@@ -243,12 +258,12 @@ internal fun OtpVerificationScreen(
                 Text(stringResource(R.string.verify_otp))
             }
         }
-    }
 }
 
 @Composable
 private fun OtpInputField(
     otpValue: String,
+    readOnly: Boolean = false,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -258,6 +273,7 @@ private fun OtpInputField(
                 onValueChange(newValue)
             }
         },
+        readOnly = readOnly,
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

@@ -37,6 +37,10 @@ class OtpVerificationViewModel @Inject constructor(
     private val _otpState = MutableStateFlow<String?>(null)
     val otpState = _otpState.asStateFlow()
 
+    // true лише коли код підставили з SMS, не з ручного вводу
+    private val _otpFilledFromSms = MutableStateFlow(false)
+    val otpFilledFromSms = _otpFilledFromSms.asStateFlow()
+
     private val _smsPermissionGranted = MutableStateFlow(false)
     val smsPermissionGranted = _smsPermissionGranted.asStateFlow()
 
@@ -80,6 +84,7 @@ class OtpVerificationViewModel @Inject constructor(
 
     fun onOtpReceived(otp: String?) {
         viewModelScope.launch {
+            _otpFilledFromSms.emit(false)
             _otpState.emit(otp)
         }
     }
@@ -91,6 +96,7 @@ class OtpVerificationViewModel @Inject constructor(
             if (extractedOTP.isNotEmpty() && SMSHelper.isValidOTP(extractedOTP)) {
                 viewModelScope.launch {
                     _otpState.emit(extractedOTP)
+                    _otpFilledFromSms.emit(true)
                 }
             }
         } catch (e: Exception) {
@@ -99,6 +105,7 @@ class OtpVerificationViewModel @Inject constructor(
     }
 
     fun clearOTP() {
+        _otpFilledFromSms.value = false
         _otpState.value = ""
     }
 }

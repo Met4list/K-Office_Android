@@ -83,5 +83,5 @@ jobs:
             --app "1:351969825260:android:49ebb4a972ae48f5dff0c9" \
             --project "com-koffice-app" \
             --testers "madarthas445@gmail.com" \
-            --release-notes "K-Office prod 1.1.8.6"
+            --release-notes "K-Office prod 1.1.8.7"
           rm -f firebase-sa.json

@@ -20,6 +20,7 @@
     <string name="login" tools:ignore="MissingTranslation">Увійти</string>
     <string name="auth" tools:ignore="MissingTranslation">Авторизація</string>
     <string name="phone_number" tools:ignore="MissingTranslation">Номер телефону</string>
+    <string name="invalid_phone_number" tools:ignore="MissingTranslation">Введіть номер у форматі +380XXXXXXXXX</string>
     <string name="scan_in_shop" tools:ignore="MissingTranslation">Скануйте в магазині</string>
     <string name="logout_message" tools:ignore="MissingTranslation">Ви впевнені, що хочете вийти?</string>
     <string name="cancel" tools:ignore="MissingTranslation">Скасувати</string>

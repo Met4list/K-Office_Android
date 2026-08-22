@@ -56,6 +56,8 @@ internal fun LoginScreen(viewModel: LoginViewModel) {
     val context = LocalContext.current
 
     var phoneNumber by remember { mutableStateOf(TextFieldValue("+380")) }
+    var phoneTouched by remember { mutableStateOf(false) }
+    val isPhoneValid = viewModel.isValidPhoneNumber(phoneNumber.text)
 
     val loading by viewModel.loading.collectAsStateWithLifecycle()
 
@@ -132,24 +134,23 @@ internal fun LoginScreen(viewModel: LoginViewModel) {
                 value = phoneNumber,
                 onValueChange = { newValue ->
                     val input = newValue.text
-
-                    // Enforce prefix and max length
-                    if (input.length >= 4 && input.startsWith("+380")) {
-                        if (input.length <= 13) {
-                            // Keep cursor at the end after update
-                            phoneNumber = newValue.copy(
-                                text = input,
-                                selection = TextRange(input.length)
-                            )
-                        }
-                    } else if (input == "+380") {
-                        phoneNumber = newValue.copy(
-                            text = "+380",
-                            selection = TextRange("+380".length)
-                        )
-                    }
+                    if (!input.startsWith("+380")) return@OutlinedTextField
+                    // Лише цифри після +380, максимум 9
+                    val digits = input.removePrefix("+380").filter { it.isDigit() }.take(9)
+                    val normalized = "+380$digits"
+                    phoneTouched = digits.isNotEmpty()
+                    phoneNumber = newValue.copy(
+                        text = normalized,
+                        selection = TextRange(normalized.length)
+                    )
                 },
                 label = { Text(stringResource(R.string.phone_number)) },
+                supportingText = {
+                    if (phoneTouched && !isPhoneValid) {
+                        Text(stringResource(R.string.invalid_phone_number))
+                    }
+                },
+                isError = phoneTouched && !isPhoneValid,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
@@ -191,7 +192,7 @@ internal fun LoginScreen(viewModel: LoginViewModel) {
             // Login button
             Button(
                 onClick = { viewModel.login(phoneNumber.text) },
-                enabled = phoneNumber.text.isNotBlank() && viewModel.isValidPhoneNumber(phoneNumber.text),
+                enabled = isPhoneValid,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
