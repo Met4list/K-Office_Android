@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- EncryptedSharedPreferences не можна відновлювати без старого ключа Keystore -->
+        <exclude domain="sharedpref" path="tokens_config.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="tokens_config.xml" />
+    </device-transfer>
+</data-extraction-rules>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- EncryptedSharedPreferences не можна відновлювати без старого ключа Keystore -->
+    <exclude domain="sharedpref" path="tokens_config.xml" />
+</full-backup-content>

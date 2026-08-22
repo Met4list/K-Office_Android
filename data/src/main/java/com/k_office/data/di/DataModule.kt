@@ -39,6 +39,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
+import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
@@ -47,6 +49,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
+
+    companion object {
+        private const val TOKEN_PREFS_NAME = "tokens_config"
+    }
 
     @Provides
     @Singleton
@@ -123,17 +129,28 @@ class DataModule {
     @Provides
     @Singleton
     fun provideTokenStorage(@ApplicationContext context: Context): TokenStorage {
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        val sharedPreferences = EncryptedSharedPreferences.create(
-            "tokens_config",
-            masterKeyAlias,
+        return TokenStorageImpl(createEncryptedPrefs(context, TOKEN_PREFS_NAME))
+    }
+
+    // Після reinstall Auto Backup відновлює XML, а ключ Keystore уже новий — Tink падає
+    private fun createEncryptedPrefs(context: Context, prefsName: String) =
+        try {
+            createEncryptedPrefsInternal(context, prefsName)
+        } catch (e: Exception) {
+            Timber.w(e, "Encrypted prefs damaged, recreating %s", prefsName)
+            context.deleteSharedPreferences(prefsName)
+            File(context.applicationInfo.dataDir, "shared_prefs/$prefsName.xml").delete()
+            createEncryptedPrefsInternal(context, prefsName)
+        }
+
+    private fun createEncryptedPrefsInternal(context: Context, prefsName: String) =
+        EncryptedSharedPreferences.create(
+            prefsName,
+            MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
             context,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
-
-        return TokenStorageImpl(sharedPreferences)
-    }
 
     @Provides
     @Singleton
