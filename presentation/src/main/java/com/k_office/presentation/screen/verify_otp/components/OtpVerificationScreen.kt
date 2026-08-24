@@ -4,6 +4,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,6 +52,7 @@ import com.k_office.presentation.R
 import com.k_office.presentation.base.compose.LoadingDialog
 import com.k_office.presentation.base.utils.formatPhoneNumber
 import com.k_office.presentation.base.utils.startSmsRetriever
+import com.k_office.presentation.base.utils.startSmsUserConsent
 import com.k_office.presentation.screen.verify_otp.OtpVerificationViewModel
 import kotlinx.coroutines.delay
 import timber.log.Timber
@@ -70,6 +74,14 @@ internal fun OtpVerificationScreen(
     val loading by viewModel.loading.collectAsStateWithLifecycle()
     val retryOtp by viewModel.retryOtp.collectAsStateWithLifecycle(false)
     val focusRequester = remember { FocusRequester() }
+    val consentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val smsMessage = result.data?.extras?.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
+        if (!smsMessage.isNullOrBlank()) {
+            viewModel.onSMSReceived(smsMessage)
+        }
+    }
 
     // Автопродовження лише якщо код реально підставили з SMS
     LaunchedEffect(otpValue, otpFilledFromSms) {
@@ -83,6 +95,7 @@ internal fun OtpVerificationScreen(
     LaunchedEffect(Unit) {
         // Дублюємо старт тут, щоб ловити SMS навіть при нестабільній навігації
         context.startSmsRetriever()
+        context.startSmsUserConsent()
         // Клавіатура як запасний шлях, якщо SMS не перехопиться
         focusRequester.requestFocus()
     }
@@ -103,6 +116,7 @@ internal fun OtpVerificationScreen(
             isTimerRunning = true
             autoSubmitted = false
             context.startSmsRetriever()
+            context.startSmsUserConsent()
         }
     }
 
@@ -118,6 +132,16 @@ internal fun OtpVerificationScreen(
                         val message = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
                         if (!message.isNullOrBlank()) {
                             viewModel.onSMSReceived(message)
+                        } else {
+                            val consentIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                extras.getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT, Intent::class.java)
+                            } else {
+                                @Suppress("DEPRECATION")
+                                extras.getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT) as? Intent
+                            }
+                            if (consentIntent != null) {
+                                consentLauncher.launch(consentIntent)
+                            }
                         }
                     }
                     CommonStatusCodes.TIMEOUT -> {
