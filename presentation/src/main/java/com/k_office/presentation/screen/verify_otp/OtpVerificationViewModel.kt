@@ -1,9 +1,5 @@
 package com.k_office.presentation.screen.verify_otp
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import com.k_office.domain.base.DataState
 import com.k_office.domain.use_case.AuthorizationUseCase
@@ -43,9 +39,6 @@ class OtpVerificationViewModel @Inject constructor(
     private val _otpFilledFromSms = MutableStateFlow(false)
     val otpFilledFromSms = _otpFilledFromSms.asStateFlow()
 
-    private val _smsPermissionGranted = MutableStateFlow(false)
-    val smsPermissionGranted = _smsPermissionGranted.asStateFlow()
-
     fun verifyOtp(phoneNumber: String, otp: String) {
         launchWithResponseState(block = { verifyOtpUseCase.invoke(Pair(phoneNumber, otp)) }) {
             _onSuccess.emit(true)
@@ -59,6 +52,10 @@ class OtpVerificationViewModel @Inject constructor(
     }
 
     init {
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            // Додатково стартуємо Retriever на OTP екрані, якщо ранній старт не спрацював
+            smsRetrieverCoordinator.startListening()
+        }
         viewModelScope.launch {
             smsRetrieverCoordinator.messages.collect { message ->
                 onSMSReceived(message)
