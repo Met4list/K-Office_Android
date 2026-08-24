@@ -1,10 +1,5 @@
 package com.k_office.presentation.screen.verify_otp.components
 
-import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +18,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,19 +35,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.android.gms.common.api.Status
 import com.k_office.presentation.R
 import com.k_office.presentation.base.compose.LoadingDialog
 import com.k_office.presentation.base.utils.formatPhoneNumber
 import com.k_office.presentation.screen.verify_otp.OtpVerificationViewModel
 import kotlinx.coroutines.delay
-import timber.log.Timber
 
-@SuppressLint("TimberArgCount")
 @Composable
 internal fun OtpVerificationScreen(
     viewModel: OtpVerificationViewModel,
@@ -62,7 +49,6 @@ internal fun OtpVerificationScreen(
     onVerificationComplete: (String) -> Unit,
     onRetryClick: () -> Unit,
 ) {
-    val context = LocalContext.current
     val otpValue by viewModel.otpState.collectAsStateWithLifecycle()
     val otpFilledFromSms by viewModel.otpFilledFromSms.collectAsStateWithLifecycle()
     var remainingSeconds by remember { mutableStateOf(60) }
@@ -83,8 +69,6 @@ internal fun OtpVerificationScreen(
     }
 
     LaunchedEffect(Unit) {
-        Timber.d("OtpScreen", "Starting SMS Retriever")
-        context.startSmsRetriever()
         // Клавіатура як запасний шлях, якщо SMS не перехопиться
         focusRequester.requestFocus()
     }
@@ -104,57 +88,6 @@ internal fun OtpVerificationScreen(
             remainingSeconds = 60
             isTimerRunning = true
             autoSubmitted = false
-            Timber.d("OtpScreen", "Retry requested, restarting SMS Retriever")
-            context.startSmsRetriever()
-        }
-    }
-
-    DisposableEffect(key1 = Unit) {
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (SmsRetriever.SMS_RETRIEVED_ACTION == intent?.action) {
-                    val extras = intent.extras
-                    val status = extras?.get(SmsRetriever.EXTRA_STATUS) as? Status
-                    when (status?.statusCode) {
-                        CommonStatusCodes.SUCCESS -> {
-                            Timber.d("OtpScreen", "SMS_RETRIEVED_ACTION: SUCCESS")
-                            val message = extras?.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
-                            if (message != null) {
-                                viewModel.onSMSReceived(message)
-                            } else {
-                                Timber.w("OtpScreen", "SMS message extra is null")
-                            }
-                        }
-
-                        CommonStatusCodes.TIMEOUT -> {
-                            Timber.w("OtpScreen", "SMS_RETRIEVED_ACTION: TIMEOUT")
-                            context?.startSmsRetriever()
-                        }
-
-                        else -> {
-                            Timber.w(
-                                "OtpScreen",
-                                "SMS_RETRIEVED_ACTION: Unknown status ${status?.statusCode}"
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
-        // SEND_PERMISSION + EXPORTED: лише GMS може надіслати інтент (Android 14+)
-        ContextCompat.registerReceiver(
-            context,
-            receiver,
-            intentFilter,
-            SmsRetriever.SEND_PERMISSION,
-            null,
-            ContextCompat.RECEIVER_EXPORTED
-        )
-
-        onDispose {
-            context.unregisterReceiver(receiver)
         }
     }
 
@@ -279,21 +212,4 @@ private fun OtpInputField(
             unfocusedBorderColor = Color.Gray
         )
     )
-}
-
-private fun Context.startSmsRetriever() {
-    try {
-        val client = SmsRetriever.getClient(this)
-        client.startSmsRetriever()
-            .addOnSuccessListener { Timber.d("OtpViewModel", "SMS Retriever started successfully") }
-            .addOnFailureListener { e ->
-                Timber.e(
-                    "OtpViewModel",
-                    "Failed to start SMS Retriever",
-                    e
-                )
-            }
-    } catch (e: Exception) {
-        Timber.e("OtpViewModel", "Exception starting SMS Retriever: ${e.message}", e)
-    }
 }

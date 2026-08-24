@@ -5,11 +5,13 @@ import android.content.Context
 import android.os.Build
 import android.provider.Settings
 import android.util.Base64
+import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.k_office.data.provider.BaseConfigProvider
 import java.util.Locale
 import java.util.TimeZone
 
+@Keep
 data class DeviceDebugInfo(
     val appVersionName: String,
     val appVersionCode: Long,

@@ -10,6 +10,7 @@ import com.k_office.domain.use_case.AuthorizationUseCase
 import com.k_office.domain.use_case.VerifyOtpUseCase
 import com.k_office.domain.use_case.VerifyRegisterUseCase
 import com.k_office.presentation.base.utils.SMSHelper
+import com.k_office.presentation.base.utils.SmsRetrieverCoordinator
 import com.k_office.presentation.base.view_model.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,7 @@ class OtpVerificationViewModel @Inject constructor(
     private val verifyOtpUseCase: VerifyOtpUseCase,
     private val verifyRegisterUseCase: VerifyRegisterUseCase,
     private val authorizationUseCase: AuthorizationUseCase,
+    private val smsRetrieverCoordinator: SmsRetrieverCoordinator,
 ) : BaseViewModel() {
 
     private val _onSuccess = MutableStateFlow(false)
@@ -56,8 +58,17 @@ class OtpVerificationViewModel @Inject constructor(
         }
     }
 
+    init {
+        viewModelScope.launch {
+            smsRetrieverCoordinator.messages.collect { message ->
+                onSMSReceived(message)
+            }
+        }
+    }
+
     fun retryOtp(phoneNumber: String) {
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+            smsRetrieverCoordinator.startListening()
             authorizationUseCase.invoke(phoneNumber).collect {
                 when (it) {
                     DataState.Default -> {

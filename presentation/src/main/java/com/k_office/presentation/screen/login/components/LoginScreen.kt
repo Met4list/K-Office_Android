@@ -191,7 +191,9 @@ internal fun LoginScreen(viewModel: LoginViewModel) {
 
             // Login button
             Button(
-                onClick = { viewModel.login(phoneNumber.text) },
+                onClick = {
+                    viewModel.login(phoneNumber.text)
+                },
                 enabled = isPhoneValid,
                 modifier = Modifier
                     .fillMaxWidth()
