@@ -1,5 +1,9 @@
 package com.k_office.presentation.screen.verify_otp.components
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +22,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,12 +40,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.common.api.Status
 import com.k_office.presentation.R
 import com.k_office.presentation.base.compose.LoadingDialog
 import com.k_office.presentation.base.utils.formatPhoneNumber
+import com.k_office.presentation.base.utils.startSmsRetriever
 import com.k_office.presentation.screen.verify_otp.OtpVerificationViewModel
 import kotlinx.coroutines.delay
+import timber.log.Timber
 
 @Composable
 internal fun OtpVerificationScreen(
@@ -49,6 +60,7 @@ internal fun OtpVerificationScreen(
     onVerificationComplete: (String) -> Unit,
     onRetryClick: () -> Unit,
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val otpValue by viewModel.otpState.collectAsStateWithLifecycle()
     val otpFilledFromSms by viewModel.otpFilledFromSms.collectAsStateWithLifecycle()
     var remainingSeconds by remember { mutableStateOf(60) }
@@ -69,6 +81,8 @@ internal fun OtpVerificationScreen(
     }
 
     LaunchedEffect(Unit) {
+        // Дублюємо старт тут, щоб ловити SMS навіть при нестабільній навігації
+        context.startSmsRetriever()
         // Клавіатура як запасний шлях, якщо SMS не перехопиться
         focusRequester.requestFocus()
     }
@@ -88,6 +102,46 @@ internal fun OtpVerificationScreen(
             remainingSeconds = 60
             isTimerRunning = true
             autoSubmitted = false
+            context.startSmsRetriever()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        // Локальний receiver на екрані OTP — перевірений шлях автозаповнення
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(ctx: Context?, intent: Intent?) {
+                if (SmsRetriever.SMS_RETRIEVED_ACTION != intent?.action) return
+                val extras = intent.extras
+                val status = extras?.get(SmsRetriever.EXTRA_STATUS) as? Status
+                when (status?.statusCode) {
+                    CommonStatusCodes.SUCCESS -> {
+                        val message = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
+                        if (!message.isNullOrBlank()) {
+                            viewModel.onSMSReceived(message)
+                        }
+                    }
+                    CommonStatusCodes.TIMEOUT -> {
+                        Timber.w("OtpScreen: SMS Retriever timeout, restarting")
+                        ctx?.startSmsRetriever()
+                    }
+                    else -> {
+                        Timber.w("OtpScreen: SMS Retriever status=${status?.statusCode}")
+                    }
+                }
+            }
+        }
+
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION),
+            SmsRetriever.SEND_PERMISSION,
+            null,
+            ContextCompat.RECEIVER_EXPORTED
+        )
+
+        onDispose {
+            runCatching { context.unregisterReceiver(receiver) }
         }
     }
 
