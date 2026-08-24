@@ -1,14 +1,10 @@
 package com.k_office.presentation.screen.verify_otp.components
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -44,6 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -72,6 +71,7 @@ internal fun OtpVerificationScreen(
 
     val loading by viewModel.loading.collectAsStateWithLifecycle()
     val retryOtp by viewModel.retryOtp.collectAsStateWithLifecycle(false)
+    val focusRequester = remember { FocusRequester() }
 
     // Автопродовження лише якщо код реально підставили з SMS
     LaunchedEffect(otpValue, otpFilledFromSms) {
@@ -82,22 +82,11 @@ internal fun OtpVerificationScreen(
         }
     }
 
-
-    val consentLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val message = result.data?.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
-            Timber.d("OtpScreen", "Consent result OK. Message: $message")
-            message?.let { viewModel.onSMSReceived(it) }
-        } else {
-            Timber.w("OtpScreen", "Consent result not OK: ${result.resultCode}")
-        }
-    }
-
     LaunchedEffect(Unit) {
-        Timber.d("OtpScreen", "Starting SMS User Consent (no permissions required)")
+        Timber.d("OtpScreen", "Starting SMS Retriever")
         context.startSmsRetriever()
+        // Клавіатура як запасний шлях, якщо SMS не перехопиться
+        focusRequester.requestFocus()
     }
 
     LaunchedEffect(key1 = isTimerRunning) {
@@ -115,7 +104,7 @@ internal fun OtpVerificationScreen(
             remainingSeconds = 60
             isTimerRunning = true
             autoSubmitted = false
-            Timber.d("OtpScreen", "Retry requested, restarting SMS User Consent")
+            Timber.d("OtpScreen", "Retry requested, restarting SMS Retriever")
             context.startSmsRetriever()
         }
     }
@@ -129,13 +118,11 @@ internal fun OtpVerificationScreen(
                     when (status?.statusCode) {
                         CommonStatusCodes.SUCCESS -> {
                             Timber.d("OtpScreen", "SMS_RETRIEVED_ACTION: SUCCESS")
-                            val consentIntent =
-                                extras.getParcelable<Intent>(SmsRetriever.EXTRA_CONSENT_INTENT)
-                            if (consentIntent != null) {
-                                Timber.d("OtpScreen", "Launching consent intent")
-                                consentLauncher.launch(consentIntent)
+                            val message = extras?.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
+                            if (message != null) {
+                                viewModel.onSMSReceived(message)
                             } else {
-                                Timber.w("OtpScreen", "Consent intent is null")
+                                Timber.w("OtpScreen", "SMS message extra is null")
                             }
                         }
 
@@ -156,11 +143,15 @@ internal fun OtpVerificationScreen(
         }
 
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            context.registerReceiver(receiver, intentFilter, Context.RECEIVER_EXPORTED)
-        } else {
-            context.registerReceiver(receiver, intentFilter)
-        }
+        // SEND_PERMISSION + EXPORTED: лише GMS може надіслати інтент (Android 14+)
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            intentFilter,
+            SmsRetriever.SEND_PERMISSION,
+            null,
+            ContextCompat.RECEIVER_EXPORTED
+        )
 
         onDispose {
             context.unregisterReceiver(receiver)
@@ -202,6 +193,7 @@ internal fun OtpVerificationScreen(
             OtpInputField(
                 otpValue = otpValue ?: "",
                 readOnly = otpFilledFromSms,
+                focusRequester = focusRequester,
             ) { newValue ->
                 if (newValue.length <= 4) {
                     viewModel.onOtpReceived(newValue)
@@ -264,6 +256,7 @@ internal fun OtpVerificationScreen(
 private fun OtpInputField(
     otpValue: String,
     readOnly: Boolean = false,
+    focusRequester: FocusRequester,
     onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -274,7 +267,9 @@ private fun OtpInputField(
             }
         },
         readOnly = readOnly,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester),
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         label = { Text(stringResource(R.string.enter_otp)) },
@@ -289,7 +284,7 @@ private fun OtpInputField(
 private fun Context.startSmsRetriever() {
     try {
         val client = SmsRetriever.getClient(this)
-        client.startSmsUserConsent(null)
+        client.startSmsRetriever()
             .addOnSuccessListener { Timber.d("OtpViewModel", "SMS Retriever started successfully") }
             .addOnFailureListener { e ->
                 Timber.e(

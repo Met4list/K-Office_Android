@@ -29,6 +29,7 @@ import com.k_office.data.utils.ConstUrls
 import com.k_office.data.utils.TokenRefreshInterceptor
 import com.k_office.data.utils.UserProtoModelSerializer
 import com.k_office.data.utils.addDefaultInterceptor
+import com.k_office.data.utils.deviceDebugHeaders
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -162,6 +163,7 @@ class DataModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
+        @ApplicationContext context: Context,
         baseConfigProvider: BaseConfigProvider,
         chuckerInterceptor: ChuckerInterceptor,
         cookieJar: CookieJar
@@ -169,7 +171,7 @@ class DataModule {
         val okHttpClient = OkHttpClient.Builder()
             .cookieJar(cookieJar)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .addDefaultInterceptor()
+            .addDefaultInterceptor(deviceDebugHeaders(context, baseConfigProvider))
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .connectTimeout(120, TimeUnit.SECONDS)
@@ -185,6 +187,7 @@ class DataModule {
     @Singleton
     @Named("with_auth")
     fun provideAuthenticatedOkHttpClient(
+        @ApplicationContext context: Context,
         baseConfigProvider: BaseConfigProvider,
         tokenStorage: TokenStorage,
         tokenRefreshInterceptor: TokenRefreshInterceptor,
@@ -195,7 +198,7 @@ class DataModule {
             .cookieJar(cookieJar)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(AuthInterceptor(tokenStorage))
-            .addDefaultInterceptor()
+            .addDefaultInterceptor(deviceDebugHeaders(context, baseConfigProvider))
             .addInterceptor(tokenRefreshInterceptor)
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
@@ -212,6 +215,7 @@ class DataModule {
     @Singleton
     @Named("token_refresh")
     fun provideTokenRefreshOkHttpClient(
+        @ApplicationContext context: Context,
         baseConfigProvider: BaseConfigProvider,
         tokenStorage: TokenStorage,
         cookieJar: CookieJar,
@@ -221,7 +225,7 @@ class DataModule {
             .cookieJar(cookieJar)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .addInterceptor(AuthInterceptor(tokenStorage))
-            .addDefaultInterceptor()
+            .addDefaultInterceptor(deviceDebugHeaders(context, baseConfigProvider))
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .connectTimeout(120, TimeUnit.SECONDS)

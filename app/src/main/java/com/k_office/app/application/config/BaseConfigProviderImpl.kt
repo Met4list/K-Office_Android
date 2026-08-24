@@ -26,6 +26,14 @@ class BaseConfigProviderImpl @Inject constructor(): BaseConfigProvider {
         return BuildConfig.DEBUG
     }
 
+    override fun provideFlavor(): String {
+        return BuildConfig.FLAVOR
+    }
+
+    override fun provideBuildTypeName(): String {
+        return BuildConfig.BUILD_TYPE
+    }
+
     @SuppressLint("PackageManagerGetSignatures", "TimberArgCount")
     override fun provideAppSignature(context: Context): String? {
         return try {

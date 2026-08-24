@@ -10,5 +10,9 @@ interface BaseConfigProvider {
 
     fun provideIsDebug(): Boolean
 
+    fun provideFlavor(): String
+
+    fun provideBuildTypeName(): String
+
     fun provideAppSignature(context: Context): String?
 }
